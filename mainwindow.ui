@@ -6130,9 +6130,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="lbSetupMnemonicCurrentWord">
       <property name="geometry">
        <rect>
-        <x>340</x>
+        <x>320</x>
         <y>102</y>
-        <width>91</width>
+        <width>141</width>
         <height>31</height>
        </rect>
       </property>
@@ -6288,9 +6288,9 @@ p, li { white-space: pre-wrap; }
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>60</x>
         <y>150</y>
-        <width>781</width>
+        <width>671</width>
         <height>20</height>
        </rect>
       </property>
@@ -6306,12 +6306,39 @@ p, li { white-space: pre-wrap; }
        <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
-       <string>Use the previous/next buttons to cycle through the words on the display of the unit</string>
+       <string>Use the previous/next buttons to cycle through the words on the</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QLabel" name="label_23">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>170</y>
+        <width>671</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Nimbus Sans [UKWN]</family>
+        <pointsize>13</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>display of the unit</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>     
      <widget class="QPushButton" name="btSetupMnemonic4_Previous">
       <property name="geometry">
        <rect>
@@ -6386,9 +6413,9 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>50</x>
-        <y>180</y>
+        <y>200</y>
         <width>711</width>
-        <height>271</height>
+        <height>251</height>
        </rect>
       </property>
       <property name="font">
