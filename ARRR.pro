@@ -32,7 +32,7 @@ FORMS += \
     mainwindow.ui
 
 # Project base path is referenced with $$PWD
-LIBS += -L$$PWD/libraries -ldl /usr/lib/x86_64-linux-gnu/libcrypto.a
+LIBS += -L$$PWD/libraries -ldl -lcrypto
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
