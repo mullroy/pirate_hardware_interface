@@ -2,6 +2,7 @@
 Navigate with a web browser to https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers<br>
 Select the 'DOWNLOADS' tab<br>
   Select: CP210x Universal Windows driver<br>
+  (Note: Some Windows installations won't recognise the universal driver. In that case, download the 'CP210x Windows Drivers' linke)<br>
   Extract the downloaded zip archive on your local machine<br>
   From Windows Explorer, right-click on silabser.inf and select 'Install' from the menu<br>
   <br>
@@ -16,8 +17,7 @@ Note: Inside Cygwin, the device handel (/dev/ttySx) is one number less than what
 Note: The installation takes up approx 2.2GB of hard drive space<br>
 
 # Cygwin
-Installing (Update) Cygwin Packages<br>
------------------------------------<br>
+# Installing (Update) Cygwin Packages
 Create a local directory on your hard drive to keep the files, i.e. c:\installs<br>
 Navigate with a web browser to https://cygwin.com/install.html<br>
 Under the heading 'Installing and updating cygwin...', right click on 'setup-x86_64.exe' and select 'Save target as'<br>
@@ -100,35 +100,34 @@ Note: To make sure the packages specified above were all installed, relaunch the
       The list should have, apart from other packages you may have chosen to explore the ecosystem:<br>
         gcc-g++, git, joe, libGL-devel, libssl1.0-devel, make, mingw64-i686-gcc-g++, mingw64-i686-qt5-base,<br>
         mingw64-i686-qt5-serialport, mingw64-i686-qt5-tools, xinit, xorg-server-devel, xorg-x11-fonts-dpi75<br>
-        <br>
-        <br>
-      <br>
-Run cygwin shell:<br>
+
+# Run cygwin shell:
 From the start menu or Desktop, launch 'Cygwin64 Terminal'<br>
-On the first run, your home directory will be created in c:\cygwin64\home\<your_windows_username><br>
+On the first run, your home directory will be created in c:\cygwin64\home\ <your_windows_username><br>
 The BASH shell offers a Unix style terminal. <br>
 <br>
 Some usefull commands, if you' re not used to this kind of terminal:<br>
-$ ls  -- Directory listing, same as 'dir' under MS Dos<br>
+$ ls<br>
+&nbsp;&nbsp;Directory listing, same as 'dir' under MS Dos<br>
 &nbsp;&nbsp;Note: In Unix clones, like cygwin, filenames starting with a '.' are hidden. To see <br>
 &nbsp;&nbsp;all the files in a directory, type: ls -sal <br>
-$ pwd
+$ pwd<br>
 &nbsp;&nbsp;Print working (current) directory, i.e. where are you in the file system<br>
-$ cd <path>
+$ cd &lt;path&gt;<br>
 &nbsp;&nbsp;Change directory. If you type only 'cd' without a path, you're returned to your<br>
 &nbsp;&nbsp;home directory<br>
-$ which <file>
+$ which &lt;file&gt;<br>
 &nbsp;&nbsp;Shows you where this application is in the filesystem. Only the directories in <br>
 &nbsp;&nbsp;the PATH variable are searched.<br>
 
 # Environmental variables
 The path to QT is not by default included in the Cygwin environmental variables.<br>
-The BASH shell config file (.bashrc) is texed based with UNIX style newlines. <br>
+The BASH shell config file (.bashrc) is text based with UNIX style newlines. <br>
 If you edit this file using Notepad or Wordpad, it will use the Microsoft newline<br>
-styel (\r\n) and break the file.<br>
+style (\r\n) and break the file.<br>
 <br>
 You have to edit this file inside the Cygwin BASH shell, or get a proper editor for <br>
-Windows that doesn't break the newline style. The next steps will use the editors that <br>
+Windows that doesn't break the newline style. The next steps will use the joe editor that <br>
 you've installed:<br>
 $ cd<br>
   This shoudl return you to your home directory<br>
@@ -145,7 +144,7 @@ $ joe .bashrc<br>
   with the command: ctrl+k followed by v <br>
   To jump to the top of the file, press: ctrl+k followed by u<br>
   <br>
-  At the bottom of the file, add the updated PATH. Set the default X11 display path. <br>
+  At the bottom of the file, add the updated PATH. Also set the default X11 display path. <br>
   This is used by the Xwindows display subsystem, which is required by GUI apps:<br>
   <br>
   export PATH=$PATH:/lib/qt5/bin<br>
