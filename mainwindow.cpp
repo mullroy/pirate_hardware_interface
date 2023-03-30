@@ -802,7 +802,9 @@ int8_t MainWindow::Setup_GUI_for_upgrade()
     cUpgradeVersionApplication=0;
     cUpgradeVersionCommunication=0;
 
-    ui->lbDownload_Result->setText("");    
+    ui->lbDownload_Result->setText(""); 
+    ui->lbDownload_ResultCommsThread->setText(""); 
+       
     ui->lbDownload_File->setVisible(false);
     ui->lbDownload_FileCommsVersion->setVisible(false);
     ui->lbDownload_FileVersion->setVisible(false);
