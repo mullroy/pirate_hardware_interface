@@ -1,14 +1,34 @@
-Instructions to build from source
----------------------------------
-(Linux Ubuntu (deb) example)
-
+# Linux
+# Install Packages
+Install the packages through a package manager. On a Ubuntu Linux 22.04 the commands are:<br>
 $ sudo apt-get update<br>
-$ sudo apt-get install build-essential qt5-qmake qtbase5-dev qtbase5-dev-tools libqt5serialport5 libssl-dev<br>
-$ qmake -makefile<br>
-$ make<br>
+$ sudo apt-get install build-essential qt5-qmake qtbase5-dev qtbase5-dev-tools libqt5serialport5 libssl-dev git<br>
 
-Dependencies
-------------
+# Obtain Pirate hardware wallet control software
+Git repository:<br>
+$ cd<br>
+Change directory back to your home directory<br>
+$ git clone https://github.com/mullroy/pirate_hardware_interface.git<br>
+Clone the repository into pirate_hardware_interface<br>
+<br>
+If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
+$ cd ~/pirate_hardware_interface<br>
+$ git pull<br>
+You will have to rebuild the project again after a source code update
+
+# Build the software
+$ cd pirate_hardware_interface<br>
+$ qmake -makefile<br>
+   -- Let Qt create a Makefile for the project<br>
+$ make -j 2<br>
+   -- Compile the project, using 2 processor cores. You can increse the number, but the resources<br>
+      used will also increase. Do not overload your machine by specifying a number higher than twice <br>
+      the number of CPU cores in your machine or the compile will grind to a halt. You can press <br>
+      ctrl+c to interrupt the build<br>
+      <br>
+Output: ARRR
+
+# Dependencies
 The wallet uses 2 serial ports emulated over the USB port. The brand is: Silicon Labs CP210x<br>
 The kernel module is called cp210x.
 
