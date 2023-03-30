@@ -174,6 +174,11 @@ $ cd<br>
     -- Change directory back to your home directory<br>
 $ git clone https://github.com/mullroy/pirate_hardware_interface.git<br>
    -- Clone the repository into pirate_hardware_interface<br>
+<br>
+If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
+$ cd ~/pirate_hardware_interface<br>
+$ git pull<br>
+You will have to rebuild the project again after a source code update
 
 # Build the software
 $ cd pirate_hardware_interface<br>
