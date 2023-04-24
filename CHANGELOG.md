@@ -1,8 +1,11 @@
 ## [1.2] - 2023-03-14
-Initial release. Communication version 1, application version 2
+Initial public release: Communication version 1, application version 2<br>
 Added windows build option & build documentation
-## [0.7] - 2023-01-13
-Internal development. Add Window
+## [1.1] - 2023-01-13
+Internal development, Initial release<br>
+Reworked mnemonic and password registration<br>
+Removed fingerprint reader<br>
+Reset configuration if password was entered incorrectly 8x in a row<br>
 ## [0.6] - 2022-09-11
 Internal development. Updates for TCV hardware summit
 ## [0.5] - 2022-06-15
