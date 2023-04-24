@@ -21,46 +21,53 @@ Under Ports (COM&LPT), two USB/UART entries should be shown, each with a unique 
   * Silicon Labs Dual CP2105 USB to UART Bridge Enhanced COM Port (COMx)<br>
 Note: Inside Cygwin, the device handle (/dev/ttySx) is one number less than what is shown in Windows Device Manager, i.e. COM3 will be /dev/ttyS2<br>
 **![Device Manager](screenshots/04_step3.jpg?raw=true "Device Manager")**<br>
-
-<br>
-# Cygwin<br>
+# Cygwin
 Note: The installation takes up approx 2.2GB of hard drive space<br>
 
-# Cygwin
 # Installing (Update) Cygwin Packages
 Create a local directory on your hard drive to keep the files, i.e. c:\installs<br>
 Navigate with a web browser to https://cygwin.com/install.html<br>
+**![Cygwin home page](screenshots/05_step1.jpg?raw=true "Cygwin home page")**<br>
 Under the heading 'Installing and updating cygwin...', right click on 'setup-x86_64.exe' and select 'Save target as'<br>
 Save it into c:\installs. The file is 1.3MB<br>
+**![Cygwin installer](screenshots/05_step2.jpg?raw=true "Cygwin installer")**<br>
 <br>
-Launch setup-x86_64.exe from Windows File Explorer<br>
+Launch setup-x86_64.exe from Windows File Explorer.<br>
+Accept the prompt about the unknown publisher<br>
+**![Cygwin installer](screenshots/06_step1.jpg?raw=true "Cygwin installer")**<br>
 Options: <br>
 * Download source: Install from Internet<br>
+**![Cygwin options](screenshots/06_step2.jpg?raw=true "Cygwin options")**<br>
 * Root install directory: c:\cygwin64<br>
     Install for all users  <br>
+**![Cygwin options](screenshots/06_step3.jpg?raw=true "Cygwin options")**<br>
 * Local package directory: Change the default entry to:  c:\installs\cygwin<br>
   Click 'Next' to continue. A popup will ask if the directory should be created<br>
+**![Cygwin options](screenshots/06_step4.jpg?raw=true "Cygwin options")**<br>
 * Your internet connection: Direct Connection<br>
+**![Cygwin options](screenshots/06_step5.jpg?raw=true "Cygwin options")**<br>
 <br>
 The application will download the sites list from the internet.<br>
 * Choose Download Site: Choose one of the sites. mirrors.kernel.org is a reliable site.<br>
+**![Cygwin options](screenshots/06_step7.jpg?raw=true "Cygwin options")**<br>
 <br>
 The application will download the package list. This takes a while the first time your run the application.<br>
 * Select packages:<br>
    View: Category<br>
-   <br>
+<br>
    Expand All, Devel<br>
     Search: Type 'mingw64-i686-qt5' into the text box<br>
     mingw64-i686-qt5-base  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-tools  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-serialport  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
-    <br>
+
+<br>    
     Search: Press the 'Clear' button, type 'gcc-g++' into the text box<br>
     gcc-g++ : Change dropdown 'Skip'  to '11.3.0-1'<br>
-   <br>
+<br>
     Search: Press the 'Clear' button, type 'git' into the text box<br>
     git  : Change dropdown 'Skip'  to '2.39.0-1'<br>
-    <br>
+<br>
     Search: Press the 'Clear' button, type 'make' into the text box<br>
     make  : Change dropdown 'Skip'  to '4.4.1-1'<br>
 <br>
@@ -68,19 +75,19 @@ The application will download the package list. This takes a while the first tim
   Expand All, Libs<br>
     Search: Type 'libGL' into the text box<br>
     libGL-devel : Change dropdown 'Skip'  to '19.1.6-1' <br>
-       <br>
+<br>
     Search: Press the 'Clear' button, type 'libssl' into the text box<br>
     libssl1.0-devel : Change dropdown 'Skip'  to '1.0.2u-1' <br>
-  <br>
+<br>
   Search: Press the 'Clear' button<br>
   Expand All, X11<br>
     Search: Type 'xorg-' into the text box<br>
     xorg-server : Change dropdown 'Skip'  to '21.1.4-2' <br>
     xorg-x11-fonts-dpi75 : Change dropdown 'Skip'  to '7.5-4' <br>
-    <br>
+<br>
     Search: Press the 'Clear' button, type 'xinit' into the text box  <br>
     xinit : Change dropdown 'Skip'  to '1.4.2-2' <br>
-    <br>
+<br>
   Search: Press the 'Clear' button<br>
   Expand All, Editors<br>
     Search: Type 'joe' into the text box<br>
