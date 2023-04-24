@@ -46,78 +46,65 @@ Options: <br>
 **![Cygwin options](screenshots/06_step4.jpg?raw=true "Cygwin options")**<br>
 * Your internet connection: Direct Connection<br>
 **![Cygwin options](screenshots/06_step5.jpg?raw=true "Cygwin options")**<br>
-<br>
 The application will download the sites list from the internet.<br>
 * Choose Download Site: Choose one of the sites. mirrors.kernel.org is a reliable site.<br>
 **![Cygwin options](screenshots/06_step7.jpg?raw=true "Cygwin options")**<br>
-<br>
 The application will download the package list. This takes a while the first time your run the application.<br>
 * Select packages:<br>
    View: Category<br>
-<br>
    Expand All, Devel<br>
     Search: Type 'mingw64-i686-qt5' into the text box<br>
     mingw64-i686-qt5-base  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-tools  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-serialport  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
-
-<br>    
+**![Cygwin options](screenshots/06_step8.jpg?raw=true "Cygwin options")**<br>
     Search: Press the 'Clear' button, type 'gcc-g++' into the text box<br>
     gcc-g++ : Change dropdown 'Skip'  to '11.3.0-1'<br>
-<br>
     Search: Press the 'Clear' button, type 'git' into the text box<br>
     git  : Change dropdown 'Skip'  to '2.39.0-1'<br>
-<br>
     Search: Press the 'Clear' button, type 'make' into the text box<br>
     make  : Change dropdown 'Skip'  to '4.4.1-1'<br>
-<br>
-  Search: Press the 'Clear' button<br>
-  Expand All, Libs<br>
+  -Search: Press the 'Clear' button<br>
+  -Expand All, Libs<br>
     Search: Type 'libGL' into the text box<br>
     libGL-devel : Change dropdown 'Skip'  to '19.1.6-1' <br>
-<br>
     Search: Press the 'Clear' button, type 'libssl' into the text box<br>
     libssl1.0-devel : Change dropdown 'Skip'  to '1.0.2u-1' <br>
-<br>
-  Search: Press the 'Clear' button<br>
-  Expand All, X11<br>
+  -Search: Press the 'Clear' button<br>
+  -Expand All, X11<br>
     Search: Type 'xorg-' into the text box<br>
     xorg-server : Change dropdown 'Skip'  to '21.1.4-2' <br>
     xorg-x11-fonts-dpi75 : Change dropdown 'Skip'  to '7.5-4' <br>
-<br>
     Search: Press the 'Clear' button, type 'xinit' into the text box  <br>
     xinit : Change dropdown 'Skip'  to '1.4.2-2' <br>
-<br>
-  Search: Press the 'Clear' button<br>
-  Expand All, Editors<br>
+  -Search: Press the 'Clear' button<br>
+  -Expand All, Editors<br>
     Search: Type 'joe' into the text box<br>
     joe : Change dropdown 'Skip'  to '4.6-1' <br>
- <br>
-  (Note: The dependency packages will be automatically selected)<br>
+  Note: The dependency packages will be selected automatically
   Click Next, continue <br>
-<br>
-Wait for the download to complete - approx 330mb. The files are cached in c:\installs\cygwin<br>
-Installation status and create icons:<br>
+* Wait for the download to complete - approx 330mb. The files are cached in c:\installs\cygwin<br>
+During the installation some files may not have downloaded. When presented with the list, press the retry button to download those files again.<br>
+**![Cygwin options](screenshots/06_stepa.jpg?raw=true "Cygwin options")**<br>
+* Installation status and create icons:<br>
 Choose icons to create. Defaults are OK.<br>
-<br>
+**![Cygwin options](screenshots/06_stepb.jpg?raw=true "Cygwin options")**<br>
 Note: If you'd like to add more packages later, run the setup application again and go through<br>
       all the menus as described above. Select your additional packages during the 'Select packages'<br>
       section<br>
-<br>
-Note: It appears that after the initial install completed, there may still be packages pending.<br>
-      Launch the installer again, navigate through all the options till you get to the 'Select Packages'<br>
-      screen. Change the View dropdown list to 'Pending'.<br>
-      It should say 'Nothing to install or update' in the main window. If there are packages listed,<br>
-      select Next to continue. A window will show which package versions will be uninstalled and which <br>
-      new packages will be installed in their place. Continue and wait for the installation to complete.<br>
-      <br>
+It appears that after the initial install completed, there may still be packages pending.<br>
+Launch the installer again, navigate through all the options untill you get to 'Select Packages'<br>
+Change the View dropdown list to 'Pending'.<br>
+It should say 'Nothing to install or update' in the main window. If there are packages listed,<br>
+select Next to continue. A window will show which package versions will be uninstalled and which <br>
+new packages will be installed in their place. Continue and wait for the installation to complete.<br>
+**![Cygwin pending](screenshots/08.jpg?raw=true "Cygwin pending")**<br>
 Note: To make sure the packages specified above were all installed, relaunch the installer again, <br>
-      navigate through all the options till you get to the 'Select Packages'. Change the View dropdown<br>
+      navigate through all the options untill you get to 'Select Packages'. Change the View dropdown<br>
       list to 'Picked'.<br>
-      The list should have, apart from other packages you may have chosen to explore the ecosystem:<br>
+      The list should contain, apart from other packages you may have chosen to explore the ecosystem:<br>
         gcc-g++, git, joe, libGL-devel, libssl1.0-devel, make, mingw64-i686-gcc-g++, mingw64-i686-qt5-base,<br>
         mingw64-i686-qt5-serialport, mingw64-i686-qt5-tools, xinit, xorg-server-devel, xorg-x11-fonts-dpi75<br>
-
 # Run cygwin shell:
 From the start menu or Desktop, launch 'Cygwin64 Terminal'<br>
 On the first run, your home directory will be created in c:\cygwin64\home\ <your_windows_username><br>
@@ -191,6 +178,7 @@ $ cd<br>
     -- Change directory back to your home directory<br>
 $ git clone https://github.com/mullroy/pirate_hardware_interface.git<br>
    -- Clone the repository into pirate_hardware_interface<br>
+**![GIT clone](screenshots/10.jpg?raw=true "GIT clone")**<br>   
 <br>
 If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
 $ cd ~/pirate_hardware_interface<br>
@@ -212,7 +200,9 @@ Output: Arrr.exe<br>
 # Run the software
 Launch the X-windows (xorg, X11) windowing interface for Cygwin to draw into:<br>
 Select Start->Cygwin-X->XWin Server <br>
+**![Xwindows](screenshots/11.jpg?raw=true "Xwindows")**<br>
 The xwindows sytem runs in the background and will will reside under the hidden icons on the taskbar.<br>
+**![Xwindows icon](screenshots/09_step2.jpg?raw=true "Xwindows icon")**<br>
 <br>
 With the hardware wallet plugged into the PC, see under which serial port nr it was registered:<br>
 $ ls /dev/ttyS*<br>
@@ -225,3 +215,4 @@ $ cd pirate_hw_interface<br>
 $ ./ARRR.exe<br>
     Enter the serial port to use. Its usually the higher of the 2 values, i.e. /dev/ttyS4 in this <br>
     example, but try the other one too if communication isn't established.<br>
+**![ARRR](screenshots/12.jpg?raw=true "ARRR")**<br>
