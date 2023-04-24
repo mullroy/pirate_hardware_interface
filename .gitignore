@@ -1,0 +1,8 @@
+*.o
+moc_*.cpp
+qrc_*.cpp
+moc_*.h
+ARRR
+Makefile
+ui_mainwindow.h
+.qmake.stash
