@@ -1,5 +1,6 @@
 # Serial/USB driver
 Navigate with a web browser to https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers<br>
+**![Silabs home page](screenshots/01_silabs.jpg?raw=true "Silabs home page")**
 Select the 'DOWNLOADS' tab<br>
   Select: CP210x Universal Windows driver<br>
   (Note: Some Windows installations won't recognise the universal driver. In that case, download the 'CP210x Windows Drivers' linke)<br>
