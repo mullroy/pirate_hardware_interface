@@ -3,17 +3,26 @@ Navigate with a web browser to https://www.silabs.com/developers/usb-to-uart-bri
 **![Silabs home page](screenshots/01_silabs.jpg?raw=true "Silabs home page")**
 Select the 'DOWNLOADS' tab<br>
   Select: CP210x Universal Windows driver<br>
-  (Note: Some Windows installations won't recognise the universal driver. In that case, download the 'CP210x Windows Drivers' linke)<br>
+  (Note: Some Windows installations won't recognise the universal driver. In that case, download the 'CP210x Windows Drivers' link)<br>
   Extract the downloaded zip archive on your local machine<br>
   From Windows Explorer, right-click on silabser.inf and select 'Install' from the menu<br>
+  **![Install driver](screenshots/02_driver_install.jpg?raw=true "Install driver")**
   <br>
+  Accept all the prompts that are presented to you:<br>
+  **![Install driver](screenshots/03_driver_install.jpg?raw=true "Install driver")**
+  <br><br>
 Attach the Pirate Hardware wallet via a micro USB cable to the PC<br>
 <br>
-Open Control Panel -> Hardware and Sound -> Devices and Printers-> Device Manager<br>
+From the Start menu, select Control Panel<br>
+**![Start menu](screenshots/04_step1.jpg?raw=true "Start menu")**<br>
+Under section: Hardware and Sound, Heading: Devices and Printers, Select Device Manager<br>
+**![Control Panel](screenshots/04_step2.jpg?raw=true "Control Panel")**<br>
 Under Ports (COM&LPT), two USB/UART entries should be shown, each with a unique COMx number, i.e. COM3 and COM4<br>
   * Silicon Labs Dual CP2105 USB to UART Bridge Enhanced COM Port (COMx)<br>
-Note: Inside Cygwin, the device handel (/dev/ttySx) is one number less than what is shown in Windows Device Manager, i.e. COM3 will be /dev/ttyS2<br>
+Note: Inside Cygwin, the device handle (/dev/ttySx) is one number less than what is shown in Windows Device Manager, i.e. COM3 will be /dev/ttyS2<br>
+**![Device Manager](screenshots/04_step3.jpg?raw=true "Device Manager")**<br>
 
+<br>
 # Cygwin<br>
 Note: The installation takes up approx 2.2GB of hard drive space<br>
 
