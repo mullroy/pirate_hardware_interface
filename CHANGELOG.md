@@ -1,3 +1,14 @@
+## [2.3] - 2023-04-26
+Communication version 2, GUI application version 3
+Note: This version requires the hardware wallet to be upgraded<br>
+to communication version 2/application version 2. The versions<br>
+of the applications can differ, as long as their communcation<br>
+versions match.<br>
+<br>
+Added OTP prompt before retrieving address or sign transaction<br>
+Step through the fields of the transaction prior to signing<br>
+Clean up build warning<br>
+Fix file dialog on Windows (when selecting the upgrade file)<br>
 ## [1.2] - 2023-03-14
 Initial public release: Communication version 1, application version 2<br>
 Added windows build option & build documentation

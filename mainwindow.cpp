@@ -88,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
   try
   {
-    printf("MainWindow() Start application\n");
+    //printf("MainWindow() Start application\n");
     ui->setupUi(this);
     /*
     //specify a new font.
@@ -165,11 +165,15 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(ui->actionSign_transactions, SIGNAL(triggered()), this, SLOT(Switchto_pageSign));
 
     connect(ui->btSign_Sign,            &QPushButton::released, this, &MainWindow::btSign_Sign_clicked);
+    connect(ui->btSign_Back,            &QPushButton::released, this, &MainWindow::btSign_Back_clicked);
+    connect(ui->btSign_Next,            &QPushButton::released, this, &MainWindow::btSign_Next_clicked);
+    connect(ui->btSign_OTP,             &QPushButton::released, this, &MainWindow::btSign_OTP_clicked);
     connect(ui->btSign_Clear,           &QPushButton::released, this, &MainWindow::btSign_Clear_clicked);
     connect(ui->btSign_RetrieveAddress, &QPushButton::released, this, &MainWindow::Switchto_pageAddress);
     connect(ui->btSign_Disconnect,      &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
 
     connect(ui->btRetrieveAddress,            &QPushButton::released, this, &MainWindow::btRetrieveAddress_clicked);
+    connect(ui->btRetrieveAddress_OTP,        &QPushButton::released, this, &MainWindow::btRetrieveAddressOTP_clicked);
     connect(ui->btRetrieveAddress_Sign,       &QPushButton::released, this, &MainWindow::Switchto_pageSign);
     connect(ui->btRetrieveAddress_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
 
@@ -241,7 +245,7 @@ MainWindow::MainWindow(QWidget *parent)
     eff->setBlurRadius(5.0);
     eff->setColor(Qt::red);
     ui->centralwidget->setGraphicsEffect(eff);
-
+    
   }
   catch(...)
   {
@@ -261,7 +265,7 @@ MainWindow::~MainWindow()
   }
 }
 
-void MainWindow::paintEvent(QPaintEvent *event)
+void MainWindow::paintEvent(QPaintEvent *)
 {
   try
   {
@@ -297,7 +301,7 @@ QString MainWindow::exec(const char* cmd)
 }
 
 
-bool MainWindow::eventFilter(QObject *Object, QEvent *Event)
+bool MainWindow::eventFilter(QObject *, QEvent *Event)
 {
   if (Event->type() == QEvent::KeyPress)
   {
@@ -510,9 +514,8 @@ int8_t MainWindow::CloseSerialPort()
 {
   try
   {
-    int8_t cReturnCode;
-    uint8_t cByte;
-    uint8_t caData[2];
+//    uint8_t cByte;
+//    uint8_t caData[2];
 
 
     //Stop the timers:
@@ -552,12 +555,59 @@ int8_t MainWindow::CloseSerialPort()
   {
     ui->statusbar->showMessage("An exception occurred");
     Exception();
+    return -1;
   }
-
+  return 0;
 }
 
 void MainWindow::ResolveSerialPorts()
 {
+  sUpgradePort="(Could not auto detect)";
+#ifdef __CYGWIN__
+  //Get the serial ports
+  QString sResult = exec("ls /dev/ttyS* 2>/dev/null  | grep -v '/dev/ttyS0' | awk '{ print $1 }' | sed -e 's/\\/dev\\/ttyS//'");
+  if (sResult.length()==0)
+  {
+    ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
+    return;
+  }
+  QStringList lstPorts = sResult.trimmed().split("\n");
+
+  int iParts=lstPorts.size();
+  if (iParts!=2)
+  {
+    ui->statusbar->showMessage("Too many serial ports found. Could not uniquely identify the serial ports of the wallet.");
+    return;
+  }
+
+  bool bOK=false;
+  int iTest = lstPorts.at(0).toInt(&bOK);
+  if (bOK!=TRUE)
+  {
+    ui->statusbar->showMessage("Could not isolate the serial port number");
+    return;
+  }
+  int iOne = iTest;
+  iTest = lstPorts.at(1).toInt(&bOK);
+  if (bOK!=TRUE)
+  {
+    ui->statusbar->showMessage("Could not isolate the serial port number");
+    return;
+  }
+  int iTwo = iTest;
+
+  if (iOne>iTwo)
+  {
+    iTest=iOne;
+    iOne=iTwo;
+    iTwo=iTest;
+  }
+
+  QString sPort;
+  sPort = sPort.asprintf("/dev/ttyS%d",iOne);
+  ui->leConnect->setText(sPort);
+  sUpgradePort = sPort.asprintf("/dev/ttyS%d",iTwo);
+#else
   //Get the serial ports
   QString sResult = exec("find /sys/bus/usb-serial/drivers/cp210x -name 'ttyUSB*' 2>/dev/null | sed -e 's/\\/sys\\/bus\\/usb-serial\\/drivers\\/cp210x\\/ttyUSB//'");
   if (sResult.length()==0)
@@ -600,8 +650,18 @@ void MainWindow::ResolveSerialPorts()
   QString sPort;
   sPort = sPort.asprintf("/dev/ttyUSB%d",iOne);
   ui->leConnect->setText(sPort);
-
   sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+#endif
+}
+
+void MainWindow::close_connection()
+{
+  CloseSerialPort();
+
+  if (poMyController!=nullptr)
+  {
+    poMyController->CancelTransfer();
+  }
 }
 
 void MainWindow::btDisconnect_clicked()
@@ -609,9 +669,10 @@ void MainWindow::btDisconnect_clicked()
   uint8_t caData[2];
   int8_t  cReturnCode;
 
+  ui->statusbar->clearMessage();
+
   caData[0]=0x55;
   caData[1]=0xAA;
-
   cMessageQueued=1;
   cReturnCode = oMsgFrame->Pack(MSGID_LOGOUT, &caData[0], 1);
   if (cReturnCode!=0)
@@ -619,12 +680,7 @@ void MainWindow::btDisconnect_clicked()
     ui->statusbar->showMessage("Could not send the command to the hardware unit");
   }
 
-  CloseSerialPort();
-
-  if (poMyController!=nullptr)
-  {
-    poMyController->CancelTransfer();
-  }
+  close_connection();
 }
 
 void MainWindow::btCancel_clicked()
@@ -677,7 +733,7 @@ void MainWindow::timerConnect_timeout()
     cReturnCode=0;
     if (bConnectionCancel == TRUE)
     {
-      btDisconnect_clicked();
+      close_connection();
     }
   }
   catch (...)
@@ -693,6 +749,7 @@ void MainWindow::timerUpgradeProgress_timeout()
   {
     if (poMyController==nullptr)
     {
+      printf("Open upgrade port: %s\n",sUpgradePort.toStdString().c_str());
       poMyController = new MyController(&sCompleteFilename, &sUpgradePort, this);
       QObject::connect(poMyController, &MyController::TxTICK,     this, &MainWindow::filetx_tick,     Qt::QueuedConnection );
       QObject::connect(poMyController, &MyController::TxCOMPLETE, this, &MainWindow::filetx_complete, Qt::QueuedConnection );
@@ -783,7 +840,7 @@ void MainWindow::timerSendPeriodicMsgs_timeout()
     if (iPeriodicCounter>10)  //20 seconds
     {
       ui->statusbar->showMessage("No response from the unit after 20 seconds. Connection closed.");
-      btDisconnect_clicked();
+      close_connection();
     }
   }
   catch (...)
@@ -802,10 +859,8 @@ int8_t MainWindow::Setup_GUI_for_upgrade()
     cUpgradeVersionApplication=0;
     cUpgradeVersionCommunication=0;
 
-    ui->lbDownload_Result->setText(""); 
-    ui->lbDownload_ResultCommsThread->setText(""); 
-       
-    ui->lbDownload_File->setVisible(false);
+    ui->lbDownload_Result->setText("");    
+    ui->lbDownload_ResultCommsThread->setText("");
     ui->lbDownload_FileCommsVersion->setVisible(false);
     ui->lbDownload_FileVersion->setVisible(false);
     ui->lbDownload_FileCommsVersion->setText(" ");
@@ -818,6 +873,12 @@ int8_t MainWindow::Setup_GUI_for_upgrade()
     ui->btDownload_Start->setEnabled(false);
 
     ui->stackedWidget->setCurrentWidget(ui->pageDownload);    
+
+    //We've already established a session with the h/w wallet. We
+    //know which serial port is used for that. Use the other port
+    //for the upgrade path.
+    ui->leDownload_Port->setText(sUpgradePort);
+
 
     sData = sData.asprintf("%u",APPLICATION_VERSION);
     ui->lbDownload_GUIVersion->setText( sData );
@@ -832,7 +893,12 @@ int8_t MainWindow::Setup_GUI_for_upgrade()
     //Communication version mismatch between GUI and the wallet?
     if (COMMUNICATION_VERSION != cWalletVersionCommunication)
     {
+      ui->teDownload_Mismatch->show();
       ui->statusbar->showMessage("Connected to the unit. Communication version mismatch");
+    }
+    else
+    {
+      ui->teDownload_Mismatch->hide();
     }
     return 0;
   }
@@ -917,7 +983,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         {
           timerSendPeriodicMsgs->stop();
           ui->statusbar->showMessage("Entered invalid session key");
-          btDisconnect_clicked();
+          close_connection();
           return;
         }
 
@@ -957,6 +1023,11 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
               cReturnCode = oMsgFrame->Pack( MSGID_LOGIN,
                                              &caData[0],
                                              2);
+              if (cReturnCode!=0)
+              {
+                ui->statusbar->showMessage("Could not send the command to the hardware unit");
+                return;
+              }                                             
           }
           else  //Unit not yet configured
           {
@@ -1300,8 +1371,27 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         iPeriodicCounter=0;
         break;
 
+      case MSGID_RETRIEVE_ADDRESS_OTP:
+        //Switch to the OTP page:
+        ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_OTP);
+        ui->leRetrieveAddress_OTP->clear();
+
+        //If the message length>0, then it contains an error message about the OTP:
+        if (iLength>0)
+        {
+          memcpy( &caData[0], (char *)pcaData, iLength );
+          caData[iLength]=0;
+          sData = sTmp.asprintf("%s",&caData[0]);
+          ui->statusbar->showMessage(sData);
+
+          //On error an OTP inpu will not be processed again. Revert back to the address page:
+          ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+        }
+        break;
+
       case MSGID_RETRIEVE_ADDRESS:
-        //FIXIT: Check length of incoming data to not overrun buffers!
+        //OTP accepted. Process the retrieved address details:
+        ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
 
         if (iLength > COMMS_RX_BUFFER_SIZE)
         {
@@ -1336,11 +1426,47 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         ui->statusbar->showMessage("Received spending key & extended full viewing key");
         break;
 
+      case MSGID_SIGN_OTP:
+        //Switch to the OTP page:
+        ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_OTP);
+        ui->leSign_OTP->clear();
+
+        //If the message length>0, then it contains an error message about the OTP:
+        if (iLength>0)
+        {
+          memcpy( &caData[0], (char *)pcaData, iLength );
+          caData[iLength]=0;
+          sData = sTmp.asprintf("%s",&caData[0]);
+          ui->statusbar->showMessage(sData);
+
+          //On error an OTP inpu will not be processed again. Revert back to the sign page:
+          ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+        }
+        break;
+      case MSGID_SIGN_NAVIGATE:
+        //Feedback on navigating through the transaction:
+        ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Navigate);
+        //If the message length>0, then it contains an error message about the OTP:
+        if (iLength>0)
+        {
+          memcpy( &caData[0], (char *)pcaData, iLength );
+          caData[iLength]=0;
+          sData = sTmp.asprintf("%s",&caData[0]);
+          ui->lbSign_Detail->setText(sData);
+        }
+        else
+        {
+          ui->lbSign_Detail->setText("");
+        }
+        break;
       case MSGID_SIGN_ACK:
         if (timerSendPeriodicMsgs->isActive()==FALSE)
         {
           timerSendPeriodicMsgs->start(2000); //Start sending ping/pong
         }
+
+        //OTP accepted. Process the signed transaction details:
+        ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
 
         //FIXIT: Add extra markers to verify that the contents are valid, like a checksum on the payload level?
         if (iLength > COMMS_RX_BUFFER_SIZE)
@@ -1355,6 +1481,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         sData = sData.asprintf("%s",&caData[0]);
         ui->teSign_Output->setText("sendrawtransaction "+sData);
         break;
+
       case MSGID_UPGRADE_STATUS:
         //Reset the ping/pong counter
         iPeriodicCounter=0;
@@ -1362,7 +1489,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         if (iLength!=1)
         {
           ui->statusbar->showMessage("Message invalid length");
-          btDisconnect_clicked();
+          close_connection();
           break;
         }
 
@@ -1453,7 +1580,6 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         if (cUpgradeStatus==0)
         {
           //Reset GUI:
-          ui->lbDownload_File->setEnabled(true);
           ui->btDownload_Browse->setEnabled(true);
           ui->btDownload_Start->setEnabled(true);
         }
@@ -1469,9 +1595,9 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         ui->statusbar->showMessage("Error: "+sData);
         bConnectionCancel=TRUE;
         break;
-      default:
-        btDisconnect_clicked();
+      default:        
         ui->statusbar->showMessage("Error: Unknown message received");
+        close_connection();
         break;
     }
   }
@@ -1523,6 +1649,8 @@ void MainWindow::btSign_Sign_clicked()
   bool bOK;
   QString sAmount="";
   QString sChecksumInput;
+  uint64_t llTmp;
+  
   try
   {
     uint8_t caTransaction[COMMS_RX_BUFFER_SIZE+1];
@@ -1581,7 +1709,12 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
 
-    if (iTmp!=COMMUNICATION_VERSION)
+    //Version check:
+    //Communication version 1 & 2 has the same transaction format:
+    if (
+       (iTmp!=1)                    &&
+       (iTmp!=COMMUNICATION_VERSION)
+       )
     {
       sTmp = sTmp.asprintf("Transaction format error: Version mismatch. Only supporting %u",COMMUNICATION_VERSION);
       ui->teSign_Output->setText(sTmp);
@@ -1589,7 +1722,7 @@ void MainWindow::btSign_Sign_clicked()
     }
     sChecksumInput+=sVersion+" ";
 
-    if (COMMUNICATION_VERSION==1)
+    if (TRANSACTION_VERSION==1)
     {
       if (slParts.count() != 17)
       {
@@ -1600,7 +1733,7 @@ void MainWindow::btSign_Sign_clicked()
     else
     {
       //At the moment only version 1 supported
-      ui->teSign_Output->setText("Transaction format error: Only version 1 supported at the moment.");
+      ui->teSign_Output->setText("Transaction format error: Only transaction version 1 supported at the moment.");
       return;
     }
 
@@ -1855,7 +1988,7 @@ void MainWindow::btSign_Sign_clicked()
 
     //Further network parameters
     QString sMinconf = slParts[6];
-    unsigned long llMinconf = sMinconf.toULong(&bOK);
+    llTmp = sMinconf.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
@@ -1935,7 +2068,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sNextBlockHeight = slParts[8];
-    unsigned long llNextBlockHeight = sNextBlockHeight.toULong(&bOK);
+    llTmp = sNextBlockHeight.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
@@ -1945,7 +2078,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sBranchID = slParts[9];
-    unsigned long llBranchID = sBranchID.toULong(&bOK);
+    llTmp = sBranchID.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
@@ -1972,7 +2105,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sOverwintered = slParts[11];
-    unsigned long llOverwintered = sOverwintered.toULong(&bOK);
+    llTmp = sOverwintered.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 10 not an integer");
@@ -1982,7 +2115,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sExpiryHeight = slParts[12];
-    unsigned long llExpiryHeight = sExpiryHeight.toULong(&bOK);
+    llTmp = sExpiryHeight.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 11 not an integer");
@@ -1992,7 +2125,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sVersionGroupID = slParts[13];
-    unsigned long llVersionGroupID = sVersionGroupID.toULong(&bOK);
+    llTmp = sVersionGroupID.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 12 not an integer");
@@ -2002,7 +2135,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sVersion = slParts[14];
-    unsigned long llVersion = sVersion.toULong(&bOK);
+    llTmp = sVersion.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 13 not an integer");
@@ -2012,7 +2145,7 @@ void MainWindow::btSign_Sign_clicked()
 
 
     QString sZipEnabled = slParts[15];
-    unsigned long llZipEnabled = sZipEnabled.toULong(&bOK);
+    llTmp = sZipEnabled.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 14 not an integer");
@@ -2035,13 +2168,13 @@ void MainWindow::btSign_Sign_clicked()
     }
 
     QString sChecksum = slParts[16];
-    unsigned long llChecksum = sChecksum.toULong(&bOK);
+    llTmp = sChecksum.toULong(&bOK);
     if (bOK!=true)
     {
        ui->teSign_Output->setText("Transaction format error: Parameter 15 not an integer");
        return;
     }
-    if (llChecksum != iChecksum)
+    if (llTmp != iChecksum)
     {
       ui->teSign_Output->setText("Transaction format error: The checksum in the message mismatches the calculated checksum");
       return;
@@ -2065,22 +2198,16 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
 
-    ui->pbSign->setValue(0);
-    ui->pbSign->setVisible(true);
-    ui->teSign_Output->setVisible(false);
-    if (timerSignProgress->isActive()==FALSE)
-    {
-      timerSignProgress->start(1000); //1 second interval
-    }
 
-    cMessageQueued=40; //40 seconds to sign enough?
+
+    cMessageQueued=3;
     int8_t cReturnCode = oMsgFrame->Pack( MSGID_SIGN,
                                           (uint8_t *)&caTransaction[0],
                                           iSize);
     switch (cReturnCode)
     {
       case 0:
-        ui->teSign_Output->setText("Transaction send to the hardware wallet. It will take approx. 30 seconds to complete.");
+        ui->teSign_Output->setText("Transaction send to the hardware wallet.");
         timerSendPeriodicMsgs->stop();
         break;
       case 1:
@@ -2096,8 +2223,147 @@ void MainWindow::btSign_Sign_clicked()
     ui->teSign_Output->setText("Transaction format error: Exception");
     Exception();
   }
-
 }
+
+void MainWindow::btSign_Back_clicked()
+{
+  try
+  {
+    int8_t cReturnCode;
+    uint8_t caData[4];
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3; //X seconds for a reply
+
+
+    caData[0] = 1; //Back
+    ui->statusbar->showMessage("Request previous transaction part");
+
+    cReturnCode = oMsgFrame->Pack(MSGID_SIGN_NAVIGATE, &caData[0], 1 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+      return;
+    }
+
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+void MainWindow::btSign_Next_clicked()
+{
+  try
+  {
+    int8_t cReturnCode;
+    uint8_t caData[4];
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3; //X seconds for a reply
+
+
+    caData[0] = 2; //Next
+    ui->statusbar->showMessage("Request next transaction part");
+
+    cReturnCode = oMsgFrame->Pack(MSGID_SIGN_NAVIGATE, &caData[0], 1 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+      return;
+    }
+
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+void MainWindow::btSign_OTP_clicked()
+{
+  try
+  {
+    bool bOK;
+    int8_t cReturnCode;
+    uint8_t caData[4];
+    QString sTmp;
+    int32_t iOTP;
+
+    //Convert text input to OTP number:
+    sTmp = ui->leSign_OTP->text();
+    if (sTmp.length()!=4)
+    {
+      ui->statusbar->showMessage("Please enter the 4 numbers of the OTP as it appears on the hardware wallet");
+      return;
+    }
+
+    iOTP = sTmp.toInt(&bOK,10);
+    if (
+       (bOK==FALSE) ||
+       (iOTP < 0)
+       )
+    {
+      ui->statusbar->showMessage("Please enter the 4 numbers of the OTP as it appears on the hardware wallet");
+      return;
+    }
+
+    //Split number into its parts:
+    caData[0] = iOTP % 10;           // Ones
+    caData[1] = (iOTP % 100)  / 10;  // Tens
+    caData[2] = (iOTP % 1000) / 100; // Hundres
+    caData[3] = iOTP / 1000;         // Thousands
+
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=40; //40 seconds to sign enough?
+    ui->statusbar->showMessage("Request address OTP");
+
+    //OTP send. Return to the sign details page.
+    //Only 1 OTP/retrieve request. Have to initiate a new sign request to try again.    
+    ui->teSign_Output->clear();
+    ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+
+    cReturnCode = oMsgFrame->Pack(MSGID_SIGN_OTP, &caData[0], 4 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+      return;
+    }
+
+    //With the data send, start the countdown timer
+    ui->pbSign->setValue(0);
+    ui->pbSign->setVisible(true);
+    ui->teSign_Output->setVisible(false);
+    if (timerSignProgress->isActive()==FALSE)
+    {
+      timerSignProgress->start(1000); //1 second interval
+    }
+    ui->statusbar->showMessage("It will take approx. 30 seconds to sign the transaction.");
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+
 
 void MainWindow::btSign_Clear_clicked()
 {
@@ -2130,7 +2396,6 @@ void MainWindow::btSetup_clicked()
 
 void MainWindow::btSetupMnemonic2_clicked()
 {
-  uint8_t caData[2];
   uint8_t cByte=0;
   int8_t cReturnCode=0;
 
@@ -2386,7 +2651,7 @@ void MainWindow::btSetupMnemonic4_Previous_clicked()
   char cChar;
   uint8_t cByte;
   int8_t cReturnCode;
-  int32_t iI;
+//  int32_t iI;
 
   try
   {
@@ -2401,13 +2666,10 @@ void MainWindow::btSetupMnemonic4_Previous_clicked()
     ui->statusbar->showMessage("Request the previous mnemonic");
 
     QString sData = ui->leSetupMnemonic4->text();
-    if (sData.length() == 0)
-    {
-      //With an empty value, proceed to previous mnemonic item
-      //without processing the current item
-      iI=0;
-    }
-    else
+    //With an empty value, proceed to previous mnemonic item
+    //without processing the current item.
+    //Else, if length>0, process it:
+    if (sData.length() != 0)
     {
       QChar qChar = sData[0].toUpper();
       cChar = qChar.toLatin1();
@@ -2437,7 +2699,7 @@ void MainWindow::btSetupMnemonic4_Next_clicked()
   char cChar;
   uint8_t cByte;
   int8_t cReturnCode;
-  int32_t iI;
+//  int32_t iI;
 
   try
   {
@@ -2452,13 +2714,10 @@ void MainWindow::btSetupMnemonic4_Next_clicked()
     ui->statusbar->showMessage("Request the next mnemonic word");
 
     QString sData = ui->leSetupMnemonic4->text();
-    if (sData.length() == 0)
-    {
-      //With an empty value, proceed to next mnemonic item
-      //without processing the current item
-      iI=0;
-    }
-    else
+    //With an empty value, proceed to next mnemonic item
+    //without processing the current item,
+    //else, process the value:
+    if (sData.length() != 0)
     {
       QChar qChar = sData[0].toUpper();
       cChar = qChar.toLatin1();
@@ -2489,34 +2748,27 @@ void MainWindow::btSetupMnemonic4_Continue_clicked()
   uint8_t caData[2];
   try
   {
-    //if (cEmojiPosition==6) //Busy with login. The 4 password fields were already entered
-    //{
-    //  bLoggedIn=TRUE;
-    //  Switchto_pageSign();
-    //}
-    //else                    //Registration
+    //Registration
+    if (cMessageQueued>0)
     {
-      if (cMessageQueued>0)
-      {
-        //This should not happen...
-        ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
-        return;
-      }
-      cMessageQueued=3; //X seconds for a reply
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3; //X seconds for a reply
 
+    ui->statusbar->showMessage("Request password setup");
+    //Generate a new password:
+    caData[0]=0x55;
+    caData[1]=0xAA;
+    cReturnCode = oMsgFrame->Pack(MSGID_GENERATE_PASSWORD, &caData[0], 2);
+    if (cReturnCode==0)
+    {
       ui->statusbar->showMessage("Request password setup");
-      //Generate a new password:
-      caData[0]=0x55;
-      caData[1]=0xAA;
-      cReturnCode = oMsgFrame->Pack(MSGID_GENERATE_PASSWORD, &caData[0], 2);
-      if (cReturnCode==0)
-      {
-        ui->statusbar->showMessage("Request password setup");
-      }
-      else
-      {
-        ui->statusbar->showMessage("Could not send message to the unit");
-      }
+    }
+    else
+    {
+      ui->statusbar->showMessage("Could not send message to the unit");
     }
   }
   catch (...)
@@ -2974,6 +3226,7 @@ void MainWindow::btDownload_Start_clicked()
 {
   int8_t cReturnCode;
   uint8_t caData[3];
+  QString sTmp;
 
   if (sCompleteFilename.length()==0)
   {
@@ -2992,12 +3245,31 @@ void MainWindow::btDownload_Start_clicked()
   else
   {
     //Comms versions are equal. Is the app version larger?
-    if (cUpgradeVersionApplication<=cWalletVersionApplication)
+    if (cUpgradeVersionApplication<cWalletVersionApplication)
     {
-      ui->lbDownload_Result->setText("The application version of the file is less than the h/w wallet");
+      ui->lbDownload_Result->setText("The application version of the file is less than that of the wallet");
       return;
     }
   }
+
+  //Does the specified port exist?
+  if (ui->leDownload_Port->text().length()==0)
+  {
+    ui->lbDownload_Result->setText("Set the serial port to use for the upgrade");
+    return;
+  }
+
+  sTmp = ui->leDownload_Port->text();
+  QFile qFile( sTmp );
+  if (!qFile.open(QIODevice::ReadWrite))
+  {
+    ui->lbDownload_Result->setText("Can't get read/write access to the serial port");
+    return;
+  }
+  qFile.close();
+  //The port could have been updated on the GUI. Set the internal variable to it.
+  sUpgradePort = ui->leDownload_Port->text();
+
 
   caData[0]=1; //Start download
   caData[1]=cUpgradeVersionCommunication; //Comms version of upgrade file
@@ -3091,27 +3363,38 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   fclose(datafile);
 
 
-
   // Verify that calculated digest and signature match
   // Note: Only QT classes can access 'resources':
   //       https://stackoverflow.com/questions/9465727/convert-qfile-to-file  
-  FILE *pubkey = fopen("/data/coin/source/hw_wallet_gui/ARRR/keys/upgrade_key.pub","rb");
-  if (pubkey == nullptr)
+
+  // Can wrap the data in a BIO buffer and still access it via the file I/O functions that
+  // openssl relies on:
+  QFile qFile(":/keys/upgrade_key.pub");
+  if (!qFile.open(QIODevice::ReadOnly))
+  {
+    return -3;
+  }
+  QByteArray qbaData = qFile.readAll();
+  qFile.close();
+  if (qbaData.size()==0)
   {
     return -3;
   }
 
-  // Read public key from file
-  RSA* rsa_pubkey = PEM_read_RSA_PUBKEY(pubkey, nullptr, nullptr, nullptr);
+  BIO *bufio;
+  RSA* pRSA_pubkey;
+  bufio = BIO_new_mem_buf((void*)qbaData.constData(), qbaData.size());
+  //Should the bufio memory be cleared/freed?
+
+  EVP_PKEY* evp_key = PEM_read_bio_PUBKEY(bufio, NULL, NULL, NULL);
+  pRSA_pubkey = EVP_PKEY_get1_RSA(evp_key);
 
   // Decrypt signature (in buffer) and verify it matches
   // with the digest calculated from data file.
   ret = RSA_verify(NID_sha256, digest, SHA256_DIGEST_LENGTH,
-                          cSignature, (unsigned int)bytes, rsa_pubkey);
+                   cSignature, (unsigned int)bytes, pRSA_pubkey);
 
-  RSA_free(rsa_pubkey);
-
-  fclose(pubkey);
+  RSA_free(pRSA_pubkey);
 
   if(ret == 1)
   {      
@@ -3134,14 +3417,34 @@ void MainWindow::btDownload_Browse_clicked()
     QString sFilename;
 
     ui->btDownload_Start->setEnabled(false);
-    ui->lbDownload_File->setVisible(false);
     ui->lbDownload_FileCommsVersion->setVisible(false);
     ui->lbDownload_FileVersion->setVisible(false);
 
+//On Cygwin the windows default system file dialog is not availabe.
+//The Qt file dialog under Cygwin, however, does not correctly set the initial path.
+//The only way I could get the root path to be set already when the dialog opens was 
+//to use '/'.
 
-    sFilename = QFileDialog::getOpenFileName(this, ("Open File"),
-                                                 ".",
+//The file dialog inherits the stylesheet settings. In our case this causes the 
+//background to be black, with black text.
+//A work around was to create a new, unused widget (pageDownloadNoStyle), and set
+//its background to white. The dialog appears correctly now
+#ifdef __CYGWIN__
+    printf("CYGWIN\n");
+    sFilename = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
+                                                 "/",
                                                  ("Data container (*.dat)"));
+#else
+    printf("LIN\n");
+    sFilename = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
+                                                 ".",
+                                                 ("Data container (*.dat)"));                                                 
+#endif                                                 
+    if (sFilename.length()==0)
+    {
+      ui->leDownload_Filename->clear();
+      return;
+    }
     sCompleteFilename=sFilename;
     sTmp = QString(sCompleteFilename.split("/").last());
 
@@ -3151,7 +3454,6 @@ void MainWindow::btDownload_Browse_clicked()
     {
       ui->leDownload_Filename->setText(sTmp);
 
-      ui->lbDownload_File->setVisible(true);
       sTmp = sTmp.asprintf("%u",cUpgradeVersionCommunication);
       ui->lbDownload_FileCommsVersion->setText(sTmp);
       ui->lbDownload_FileCommsVersion->setVisible(true);
@@ -3176,7 +3478,7 @@ void MainWindow::btDownload_Browse_clicked()
       else
       {
         //Comms versions are equal. Is the app version larger?
-        if (cUpgradeVersionApplication<=cWalletVersionApplication)
+        if (cUpgradeVersionApplication<cWalletVersionApplication)
         {
           ui->lbDownload_Result->setText("The application version of the file is less than the h/w wallet");
           return;
@@ -3221,6 +3523,7 @@ void MainWindow::Switchto_pageSign()
 
     ui->btSign_Sign->setFocus();
     ui->stackedWidget->setCurrentWidget(ui->pageSign);
+    ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
   }
   catch (...)
   {
@@ -3247,6 +3550,7 @@ void MainWindow::Switchto_pageAddress()
 
     ui->sbRetrieveAddress_Index->setFocus();
     ui->stackedWidget->setCurrentWidget(ui->pageAddress);
+    ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
   }
   catch (...)
   {
@@ -3260,7 +3564,7 @@ void MainWindow::btRetrieveAddress_clicked()
 {
   try
   {
-    bool bOK;
+//    bool bOK;
     int8_t cReturnCode;
     uint8_t caData[2];
 
@@ -3296,20 +3600,66 @@ void MainWindow::btRetrieveAddress_clicked()
   }
 }
 
+void MainWindow::btRetrieveAddressOTP_clicked()
+{
+  try
+  {
+    bool bOK;
+    int8_t cReturnCode;
+    uint8_t caData[4];
+    QString sTmp;
+    int32_t iOTP;
+
+    //Convert text input to OTP number:
+    sTmp = ui->leRetrieveAddress_OTP->text();
+    if (sTmp.length()!=4)
+    {
+      ui->statusbar->showMessage("Please enter the 4 numbers of the OTP as it appears on the hardware wallet");
+      return;
+    }
+
+    iOTP = sTmp.toInt(&bOK,10);
+    if (
+       (bOK==FALSE) ||
+       (iOTP < 0)
+       )
+    {
+      ui->statusbar->showMessage("Please enter the 4 numbers of the OTP as it appears on the hardware wallet");
+      return;
+    }
+
+    //Split number into its parts:
+    caData[0] = iOTP % 10;           // Ones
+    caData[1] = (iOTP % 100)  / 10;  // Tens
+    caData[2] = (iOTP % 1000) / 100; // Hundres
+    caData[3] = iOTP / 1000;         // Thousands
 
 
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3;  //X seconds for a reply
+    ui->statusbar->showMessage("Request address OTP");
 
+    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS_OTP, &caData[0], 4 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
 
-
-
-
-
-
-
-
-
-
-
+    //OTP send. Return to the retrieved address details page.
+    //Only 1 OTP/retrieve request. Have to initiate a new address retrieve to try again.
+    ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
 
 //How to prevent the worker thread variables from being globals?
 bool_t  bCancelTransfer=false;
@@ -3338,7 +3688,7 @@ uint8_t cWorker_error=0;      //cError: 0 - No error
 //Worker::Worker(QObject* thingy, QObject* parent)
 Worker::Worker(QString* oFileToSend,
                QString* oSerialPort,
-               QObject* parent)
+               QObject* )
     : QObject(nullptr)    //no real parent, so we can move to a different thread
 {
   try
@@ -3421,7 +3771,6 @@ void Worker::doWork()
   uint16_t iSyncCount=0;
   uint16_t iPacketNr=0;
 
-  uint16_t iTmp=0;;
   size_t tRead=0;;
   int16_t iReturnCode=0;;
   int8_t cReturnCode=0;;
@@ -3430,10 +3779,8 @@ void Worker::doWork()
   uint8_t caData[ COMMS_BUFFER_SIZE+20 ];
   uint8_t cMsgID=0;;
 
-  bool_t bFileTxInProgress=false;
   FILE *pFH=nullptr;
   uint16_t iCounter=0;
-  uint8_t cTimeout=0;
   uint8_t caMD5[33];
 
   char caFilename[255]; //Tested in previous function if filename <= 254
@@ -3442,7 +3789,7 @@ void Worker::doWork()
   QThread* thisthread = this->thread();
   try
   {
-    printf("thisthread starting\n");
+    //printf("thisthread starting\n");
 
     memset(caPort,0,sizeof(caPort));
     memcpy(&caPort[0], sSerialPort.toLocal8Bit().data(), (size_t)sSerialPort.length()  );
@@ -3479,14 +3826,14 @@ void Worker::doWork()
         goto EXIT;
     }
 
-    cReturnCode = CommsFiletx_Init(0, &caPort[0] );
+    cReturnCode = CommsFiletx_Init( &caPort[0] );
     iCounter=0;
     while(1)
     {
       iReturnCode = CommsFiletx_Unpack(&caData[0], sizeof(caData), &cMsgID);
       if (iReturnCode>0)
       {
-        printf("\nFound response. MsgID=%s, Size= %d after %u ms\n",CommsFileTx_PrintMsgID(cMsgID),iReturnCode,iCounter);
+        //printf("\nFound response. MsgID=%s, Size= %d after %u ms\n",CommsFileTx_PrintMsgID(cMsgID),iReturnCode,iCounter);
 
         if (cMsgID==FILETX_ID_SYNC)
         {
@@ -3501,7 +3848,7 @@ void Worker::doWork()
         }
         else if (cMsgID==FILETX_ID_START_UPGRADE)
         {
-          printf("Start transmission\n");
+          //printf("Start transmission\n");
           if (pFH==nullptr)
           {
             printf("Error: File handle should be open\n");
@@ -3524,7 +3871,7 @@ void Worker::doWork()
           }
           else
           {
-            printf("Start: Sent MD5\n");
+            //printf("Start: Sent MD5\n");
           }
         }
         else if (cMsgID==FILETX_ID_DATA)
@@ -3532,7 +3879,7 @@ void Worker::doWork()
 
           iPacketNr  = (uint16_t) caData[0];
           iPacketNr |= (uint16_t)(caData[1]<<8);
-          printf("Requesting packet nr %u\n",iPacketNr);
+          //printf("Requesting packet nr %u\n",iPacketNr);
 
           //Get the packet data from the file
           wFilePosition= iPacketNr * (COMMS_BUFFER_SIZE-10);
@@ -3567,13 +3914,13 @@ void Worker::doWork()
           {
             bTick=TRUE;
             iWorker_PacketNr = iPacketNr;
-            printf("Sending packet %u, size=%lu\n", iPacketNr, tRead);
+            //printf("Sending packet %u, size=%lu\n", iPacketNr, tRead);
             iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_DATA);
           }
           else //End of file
           {            
             bComplete=TRUE;
-            printf("Sending packet %u, size=%lu -- END OF FILE\n", iPacketNr, tRead);
+            //printf("Sending packet %u, size=%lu -- END OF FILE\n", iPacketNr, tRead);
             iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_END_OF_FILE);
           }
           if (iReturnCode != 1)
@@ -3587,7 +3934,7 @@ void Worker::doWork()
         {
             if (caData[0]==1) //Success
             {
-                printf("Successfull transmission. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
+                //printf("Successfull transmission. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
             }
             else
             {
@@ -3630,190 +3977,6 @@ EXIT:
     fclose(pFH);
   }
 }
-
-
-/*
-    cReturnCode = CommsFiletx_Init(0, &caPort[0] );
-    if (cReturnCode != 0)
-    {
-      cWorker_error=6; //Could not open the serial port.
-      goto EXIT;
-    }
-
-
-    pFH = fopen (&caFilename[0], "rb");
-    if (pFH==nullptr)
-    {
-      cWorker_error=7; //Could not open the file
-      goto EXIT;
-    }
-
-    uint8_t cCounter2=0;
-    while(1)
-    {
-      caData[0]=1;
-      iReturnCode = CommsFiletx_Pack(&caData[0], 1, FILETX_ID_START_UPGRADE);
-      if (iReturnCode!=1)
-      {
-        cWorker_error=8; //Could not send the data to the unit
-        goto EXIT;
-      }
-
-      cCounter=0;
-      while(cCounter<100) // 100 x 1ms = 100ms
-      {
-        usleep(1000);
-        iReturnCode = CommsFiletx_Unpack(&caData[0], sizeof(caData), &cMsgID);
-        if (iReturnCode>0)
-        {
-          if (cMsgID==FILETX_ID_DATA)
-          {
-            iWorker_PacketsSend =(uint16_t)(caData[0]   );
-            iWorker_PacketsSend|=(uint16_t)(caData[1]<<8);
-
-            if (iWorker_PacketsSend==0)
-            {
-              printf("Requesting packet #0\n");
-            }
-            else
-            {
-              printf("Unexpected Msg_ID. Exit\n");
-              cWorker_error=9; //Unexpected response from the unit
-              goto EXIT;
-            }
-          }
-          else
-          {
-            printf("Unexpected Msg_ID. Exit\n");
-            cWorker_error=9; //Unexpected response from the unit
-            goto EXIT;
-          }
-          break; //From while()
-        }
-        cCounter++;
-      }
-
-      cCounter=0;
-      cCounter2++;
-
-      if (cCounter2>10) //10 x 100ms = 1 second
-      {
-        //Timeout waiting for response
-        cWorker_error=10; //Timeout waiting for response from the unit
-        goto EXIT;
-      }
-
-
-      if (iWorker_PacketsSend==0)
-      {
-        break;//From while(1)
-      }
-
-      if (bCancelTransfer==true)
-      {
-        goto EXIT;
-      }
-    }
-
-    while(1)
-    {
-      //Get the packet data from the file
-      iFilePosition= iWorker_PacketsSend * (COMMS_BUFFER_SIZE-10);
-      if ( (iFilePosition+1) >= iFileSize)
-      {
-        cWorker_error=11; //Requested packet nr exceeds the filesize
-        fclose(pFH);
-        goto EXIT;
-      }
-
-      iReturnCode = fseek(pFH,iFilePosition,SEEK_SET);
-      if (iReturnCode != 0)
-      {
-        cWorker_error=12; //Could not seek or read within the file
-        fclose(pFH);
-        goto EXIT;
-      }
-
-      tRead = fread(&caData[2], 1, (COMMS_BUFFER_SIZE-10), pFH);
-      if (tRead==0)
-      {
-        cWorker_error=12; //Could not seek or read within the file
-        goto EXIT;
-      }
-      //printf("Read %lu bytes from the file\n",tRead);
-
-      //Embed the packet nr in the data:
-      caData[0] = (uint8_t)iWorker_PacketsSend;
-      caData[1] = (uint8_t)( iWorker_PacketsSend>>8 );
-
-      if (tRead == (COMMS_BUFFER_SIZE-10))
-      {
-        //printf("Sending packet %u, size=%lu\n", iPacketNr, tRead);
-        iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_DATA);
-        if (iReturnCode != 1)
-        {
-          cWorker_error=8; //Could not send the data to the unit
-          goto EXIT;
-        }
-      }
-      else //End of file
-      {
-        printf("Sending packet %u, size=%lu -- END OF FILE\n", iWorker_PacketsSend, tRead);
-        iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_END_OF_FILE);
-        if (iReturnCode != 1)
-        {
-          cWorker_error=8; //Could not send the data to the unit
-          goto EXIT;
-        }
-      }
-
-      cCounter2++;
-      cCounter=0;
-      while(cCounter<100) // 100 x 1ms = 100ms
-      {
-        usleep(1000);
-        iReturnCode = CommsFiletx_Unpack(&caData[0], sizeof(caData), &cMsgID);
-        if (iReturnCode>0)
-        {
-          cCounter2=0; //Got a response. Clear the counter
-          if (cMsgID==FILETX_ID_DATA)
-          {
-            iTmp =(uint16_t)(caData[0]   );
-            iTmp|=(uint16_t)(caData[1]<<8);
-
-            //printf("\nFound response: %d after %u ms. Requested packet nr=[%u][%u]=%u. Last packet nr send=%u\n",iReturnCode,cCounter,caData[1],caData[0],iTmp,iPacketNr);
-            iWorker_PacketsSend=iTmp;
-            bTick=true;
-          }
-          else if (cMsgID==FILETX_ID_END_OF_FILE)
-          {
-            printf("End of file acknowledged\n");
-            fclose(pFH);
-            bComplete=TRUE;
-          }
-          else
-          {
-            printf("Unknown msgid: %u\n",cMsgID);
-            cWorker_error=9; //Unexpected response from the unit
-            fclose(pFH);
-          }
-          break;
-        }
-        cCounter++;
-      }
-
-      if (cCounter2>=5) //Send the same packet 5x and no response from the unit
-      {
-        cWorker_error=10; //Timeout waiting for response from the unit
-        goto EXIT;
-      }
-      if (bCancelTransfer==true)
-      {
-        goto EXIT;
-      }
-      usleep(5000);
-    }
- */
 
 MyController::MyController(QString* oFileToSend, QString* oSerialPort, QObject* parent)
 {

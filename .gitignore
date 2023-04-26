@@ -1,8 +1,10 @@
 *.o
+*~
 moc_*.cpp
 qrc_*.cpp
 moc_*.h
 ARRR
+ARRR.exe
 Makefile
 ui_mainwindow.h
 .qmake.stash

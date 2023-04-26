@@ -32,7 +32,7 @@
 //--[ GLOBALS]-----------------------------------------------------------------
 
 //--[ FUNCTION PROTOTYPES ]----------------------------------------------------
-int8_t  CommsFiletx_Init(uint8_t cServerOrClient, char_t *pcaServer );
+int8_t  CommsFiletx_Init(char_t *pcaPort );
 int8_t  CommsFiletx_Poll(void);
 int8_t  CommsFiletx_Pack(uint8_t *pData, uint16_t wLength, uint8_t MsgID);
 int16_t CommsFiletx_Unpack(uint8_t *pDataBuffer,uint16_t iDataBufferSize, uint8_t *pcMsgID);

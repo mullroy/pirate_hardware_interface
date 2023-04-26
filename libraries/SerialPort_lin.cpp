@@ -27,32 +27,39 @@ int8_t setBaudRate (BaudRateType_e eBaudRate,
   cReturnCode = 0;
   switch (eBaudRate) {
     case (BAUD9600):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B9600;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B9600;
+      cfsetspeed(pPosix_CommConfig, B9600);
       break;
     case (BAUD38400):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B38400;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B38400;
+      cfsetspeed(pPosix_CommConfig, B38400);
       break;
     case (BAUD57600):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B57600;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B57600;
+      cfsetspeed(pPosix_CommConfig, B57600);
       break;
     case (BAUD115200):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B115200;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B115200;
+      cfsetspeed(pPosix_CommConfig, B115200);
       break;
     case (BAUD230400):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B230400;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B230400;
+      cfsetspeed(pPosix_CommConfig, B230400);
       break;            
     case (BAUD460800):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B460800;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B460800;
+      cfsetspeed(pPosix_CommConfig, B460800);
       break;      
     case (BAUD921600):
-      pPosix_CommConfig->c_cflag &= (~CBAUD);
-      pPosix_CommConfig->c_cflag |= B921600;
+      //pPosix_CommConfig->c_cflag &= (~CBAUD);
+      //pPosix_CommConfig->c_cflag |= B921600;
+      cfsetspeed(pPosix_CommConfig, B921600);
       break;
     default:
       printf("Unsupported baudrate\n");
@@ -272,9 +279,7 @@ int8_t setFlowControl (FlowType_e eFlow, struct termios * pPosix_CommConfig)
 int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
                     uint8_t * pcSerialPortHandle)
 {
-  int rc;
   struct termios Posix_CommConfig;
-  pthread_mutexattr_t sMutex_attr;
   int fd;
   if (cSerialArrayCount >= (MAX_PORTS - 1)) {
     return -1;
@@ -336,7 +341,7 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
 
   sSerialArray[cSerialArrayCount].bStatus_PortIsOpen = TRUE;
   *pcSerialPortHandle = cSerialArrayCount;
-  printf("Copies to local: %s\n",sSerialArray[cSerialArrayCount].sPortSettings.cPCComPortName);
+  //printf("Copies to local: %s\n",sSerialArray[cSerialArrayCount].sPortSettings.cPCComPortName);
   
   cSerialArrayCount++;
   return 0;
@@ -397,6 +402,7 @@ int8_t SP_ClosePort (uint8_t * pcSerialPortHandle)
 * DESCRIPTION : This function returns if the port is open or not.
 *
 * INPUT PARAMETERS : *pcSerialPortHandle   - Handle to the ComPort.
+*                    *pwThreadCounter - (Unused)
 *
 * RETURN PARAMETERS : int8_t   1 : Port is open
 *                              0 : Port is close
@@ -407,7 +413,7 @@ int8_t SP_ClosePort (uint8_t * pcSerialPortHandle)
 *
 *
 ******************************************************************************/
-int8_t SP_IsOpen (uint8_t * pcSerialPortHandle, uint32_t * pwThreadCounter)
+int8_t SP_IsOpen (uint8_t * pcSerialPortHandle, uint32_t *)
 {
   bool_t bReturnCode;
   if ((pcSerialPortHandle == NULL) ||

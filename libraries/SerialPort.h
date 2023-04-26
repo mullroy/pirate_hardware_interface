@@ -79,7 +79,7 @@ extern "C"
   int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
                       uint8_t * pcSerialPortHandle);
   int8_t SP_ClosePort (uint8_t * pcSerialPortHandle);
-  int8_t SP_IsOpen (uint8_t * pcSerialPortHandle, uint32_t * pwThreadCounter);
+  int8_t SP_IsOpen (uint8_t * pcSerialPortHandle, uint32_t *);
   int16_t SP_Write (uint8_t * pcSerialPortHandle, uint8_t * pBuffer,
                      int16_t iCount);
   int16_t SP_Read (uint8_t * pcSerialPortHandle, uint8_t * pBuffer,

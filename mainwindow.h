@@ -13,9 +13,9 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-//TODO: Show the versions of the comms& app on the screen of the unit?
-#define COMMUNICATION_VERSION 0x01
-#define APPLICATION_VERSION   0x02
+#define TRANSACTION_VERSION 0x01
+#define COMMUNICATION_VERSION 0x02
+#define APPLICATION_VERSION   0x03
 
 class Worker : public QObject
 {
@@ -126,7 +126,7 @@ private:
   void   Exception();
   void   ResolveSerialPorts();
   bool   eventFilter(QObject *Object, QEvent *Event) override;
-
+  void   close_connection();
 
   QString exec(const char* cmd);
   MyController *poMyController=nullptr;
@@ -153,6 +153,9 @@ private slots:
 
   void message_framedetected(uint8_t, uint8_t*, uint16_t);
   void btSign_Sign_clicked();
+  void btSign_Back_clicked();
+  void btSign_Next_clicked();
+  void btSign_OTP_clicked();
   void btSign_Clear_clicked();
 
 
@@ -192,6 +195,7 @@ private slots:
 //  void btLogin_Select_clicked();
 
   void btRetrieveAddress_clicked();
+  void btRetrieveAddressOTP_clicked();
 
 
 };

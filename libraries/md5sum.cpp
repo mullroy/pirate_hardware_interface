@@ -188,20 +188,20 @@ void sum(FILE *fd, uint8_t *pcaMD5)
     for(i=0;i<16;i++) 
     {
       sprintf(&caHEX[0],"%02X",digest[i]);
-      printf("%s", &caHEX[0]);
+      //printf("%s", &caHEX[0]);
       
       pcaMD5[2*i]     = caHEX[0];
       pcaMD5[2*i + 1] = caHEX[1];
     }
-    printf("\n");
+    //printf("\n");
     pcaMD5[32]=0;
-    printf("pcaMD5=%s\n", pcaMD5);
+    //printf("pcaMD5=%s\n", pcaMD5);
   }
   else
   {
     enc64(pr64,digest,sizeof(digest));
     pr64[22] = '\0';  /* chop trailing == */
-    printf("%s",pr64);
+    //printf("%s",pr64);
   }
   
   free(buf);
@@ -211,7 +211,7 @@ void sum(FILE *fd, uint8_t *pcaMD5)
 
 int8_t md5sum(char *pcaFilename, uint8_t *pcaMD5)
 {
-  int c;
+//  int c;
   FILE *fd;
 
   hex++;
@@ -397,7 +397,7 @@ init64(void)
 }
 
 int
-dec64(uchar *out, char *in, int n)
+dec64(uchar *out, uchar *in, int n)
 {
 	ulong b24;
 	uchar *start = out;

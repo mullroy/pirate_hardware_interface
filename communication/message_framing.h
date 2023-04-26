@@ -23,8 +23,12 @@ QT_END_NAMESPACE
 #define MSGID_LOGOUT                          0x13
 
 #define MSGID_SIGN                            0x20
-#define MSGID_SIGN_ACK                        0x21
-#define MSGID_RETRIEVE_ADDRESS                0x22
+#define MSGID_SIGN_NAVIGATE                   0x21
+#define MSGID_SIGN_OTP                        0x22
+#define MSGID_SIGN_ACK                        0x23
+
+#define MSGID_RETRIEVE_ADDRESS                0x25
+#define MSGID_RETRIEVE_ADDRESS_OTP            0x26
 
 #define MSGID_GEN_MNEMONIC                    0x30  //Generate a new mnemonic
 #define MSGID_GEN_MNEMONIC_PREVIOUS           0x31  //Show previous word

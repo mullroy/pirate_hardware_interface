@@ -116,7 +116,6 @@ int8_t MsgFrame_Widget::OpenSerialConnection (char *pcDeviceName,
   sSerialSettings.eBaudRate=BAUD115200;
   sSerialSettings.eDataBits=DATA_8;
   sSerialSettings.eFLowType=FLOW_OFF;
-  //sSerialSettings.eParity=PAR_ODD;
   sSerialSettings.eParity=PAR_NONE;
   sSerialSettings.eStopBits=STOP_1;
 
@@ -294,8 +293,11 @@ void MsgFrame_Widget::Frameing (void)
            (cInternalMsgID==MSGID_APPLY_CONFIG)     ||
            (cInternalMsgID==MSGID_REG_STATUS)       ||
 
-           (cInternalMsgID==MSGID_RETRIEVE_ADDRESS) ||
+           (cInternalMsgID==MSGID_RETRIEVE_ADDRESS)      ||
+           (cInternalMsgID==MSGID_RETRIEVE_ADDRESS_OTP) ||
            (cInternalMsgID==MSGID_SIGN_ACK) ||
+           (cInternalMsgID==MSGID_SIGN_NAVIGATE) ||
+           (cInternalMsgID==MSGID_SIGN_OTP) ||
            (cInternalMsgID==MSGID_ERROR)
            )
         {
@@ -432,9 +434,6 @@ int8_t MsgFrame_Widget::Pack (uint8_t cMsgID, uint8_t *pcaData, uint16_t iLength
 {
 
   uint16_t iCRC;
-  uint8_t  cByte;
-  int8_t cReturnCode=0;
-
   ssize_t iBytesSend;
 
   if (iLength > (COMMS_RX_BUFFER_SIZE))

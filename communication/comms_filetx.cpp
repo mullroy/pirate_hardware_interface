@@ -24,19 +24,18 @@ socklen_t slen;
 // NAME        : Comms_Init
 // DESCRIPTION : This function initialises the communication framing layer
 //               as well as the underlying communication channel.
-// INPUT       : cServerOrClient : 1=Server, 2=Client
-//             : pcaDest - What to open
+// INPUT       : pcaPort - Serial port to open
 //
 // OUTPUT      : None
 //
 // RETURN CODE : 0 : Success
 //             :-1 : Could not initialise the communication channel.
 //-----------------------------------------------------------------------------
-int8_t CommsFiletx_Init(uint8_t cServerOrClient, char_t *pcaDest )
+int8_t CommsFiletx_Init(char_t *pcaPort )
 {
   int8_t cReturnCode;
+  int16_t iReturnCode;
   
-
   //Internal variables:
   cPC_InternalBufferState=RxNOSYNC;
   iPC_InternalBufferPos=0;
@@ -44,85 +43,18 @@ int8_t CommsFiletx_Init(uint8_t cServerOrClient, char_t *pcaDest )
   iNwBufReadPos=0;
   iNwBufWritePos=0;
 
-/*
-  printf("Create network\n");
-  //Open network socket
-
-  
-  int i;
-  slen = sizeof(si_other);
-  
-  //create a UDP socket: Server | client
-  if ((socketfd=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-  {
-    printf("Could not create to the socket\n");
-    return -1;
-  }
-  
-  // zero out the structures  
-  memset((char *) &si_me, 0, sizeof(si_me));  
-  si_me.sin_family = AF_INET;
-  si_me.sin_port = htons(PORT);
-  si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-  
-  memset((char *) &si_other, 0, sizeof(si_other));
-  si_other.sin_family = AF_INET;
-  si_other.sin_port = htons(PORT);  
-  
-  
-  
-  socketfd=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (socketfd==-1)
-  {
-    printf("Could not create the network socket\n");
-    return -1;
-  }
-  
-  if (cServerOrClient==1) //Server
-  {
-    printf("Server: Bind to the socket\n");
-    //bind socket to port
-    if( bind(socketfd , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1)
-    {
-      printf("Could not bind to the socket\n");
-      return -1;
-    }
-    printf("Server bound to port\n"); 
-  }
-  else if(cServerOrClient==2) //Client
-  {
-    printf("Client: Open connection to %s\n",pcaServer);
-    if (inet_aton(pcaServer , &si_other.sin_addr) == 0) 
-    {
-       printf("Client could not connect to the server: %s\n",pcaServer);
-       return -2;
-    }
-    printf("Client connection opened\n");
-  }
-  else
-  {
-    printf("Invalid option for Server|Client\n");
-    return -1;
-  }
-  
-  struct timeval read_timeout;
-  read_timeout.tv_sec = 0;
-  read_timeout.tv_usec = 10;
-  setsockopt(socketfd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof read_timeout); 
-*/
-
   //printf("Open serial port\n");
   SerialSettings_s sSerialSettings;
-  uint8_t cByte;
+  uint8_t caData[100];
 
-  if (strlen(pcaDest) >= sizeof(sSerialSettings.cPCComPortName))
+  if (strlen(pcaPort) >= sizeof(sSerialSettings.cPCComPortName))
   {
     return -4;
   }
 
   memset (&sSerialSettings.cPCComPortName[0], 0, sizeof(sSerialSettings.cPCComPortName)-1);
 
-  memcpy (&sSerialSettings.cPCComPortName[0], pcaDest, strlen(pcaDest) );
+  memcpy (&sSerialSettings.cPCComPortName[0], pcaPort, strlen(pcaPort) );
   sSerialSettings.cTimeout=1;
   sSerialSettings.eBaudRate=BAUD460800;
   sSerialSettings.eDataBits=DATA_8;
@@ -130,7 +62,7 @@ int8_t CommsFiletx_Init(uint8_t cServerOrClient, char_t *pcaDest )
   sSerialSettings.eParity=PAR_ODD;
   sSerialSettings.eStopBits=STOP_1;
 
-  cPC_SerialPortHandle=-1;
+  cPC_SerialPortHandle=255;
   cReturnCode = SP_OpenPort (&sSerialSettings,&cPC_SerialPortHandle);
   uint32_t wCount=0;
   if (cReturnCode==0)
@@ -139,15 +71,15 @@ int8_t CommsFiletx_Init(uint8_t cServerOrClient, char_t *pcaDest )
     //was empty:
     while(1)
     {
-      cReturnCode = SP_Read(&cPC_SerialPortHandle,&cByte,1);
-      if (cReturnCode != 1)
+      iReturnCode = SP_Read(&cPC_SerialPortHandle,&caData[0],100);
+      if (iReturnCode != 100)
       {       
         break;
       }
-      wCount++;
-      usleep(10);
+      wCount+=iReturnCode;
+      usleep(1);
     }
-    //printf("Serial port opened successfully. Port handle = %d. Flushed %u bytes\n",cPC_SerialPortHandle, wCount);
+    printf("Serial port opened successfully. Port handle = %d. Flushed %u bytes\n",cPC_SerialPortHandle, wCount);
     return 0;
   }
   else
@@ -194,7 +126,7 @@ int8_t CommsFiletx_Flush()
   uint32_t wFlushedBytes=0;
   uint16_t iRecvLen=0;
   int8_t   cReturnCode=0;
-  uint8_t  cByte;
+//  uint8_t  cByte;
   uint32_t wCounter=0;
   
   //Reset Unpack variables:
@@ -247,14 +179,14 @@ int16_t CommsFiletx_Unpack(uint8_t *pDataBuffer,uint16_t iDataBufferSize,
                             uint8_t *pcMsgID)
 {  	
   int16_t iRecvLen;
-  uint8_t cI;
+//  uint8_t cI;
   uint16_t iJ;
   uint16_t iCalcDataBuffCRC;
   uint8_t cData;
   int16_t iReturnCode;
-  uint8_t cByte;
-  uint32_t wCount;
-  int8_t cReturnCode;
+//  uint8_t cByte;
+//  uint32_t wCount;
+//  int8_t cReturnCode;
 
   *pcMsgID=0;
   
@@ -505,8 +437,8 @@ int8_t CommsFiletx_Poll(void)
 int8_t CommsFiletx_Pack(uint8_t *pcaData, uint16_t iLength, uint8_t MsgID)
 {
   uint16_t iCRC;
-  uint8_t  cByte;
-  int8_t cReturnCode;
+//  uint8_t  cByte;
+//  int8_t cReturnCode;
   uint8_t caData[COMMS_BUFFER_SIZE+7];
   ssize_t iBytesSend;
 
