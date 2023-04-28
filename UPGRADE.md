@@ -79,18 +79,17 @@ The hardware wallet will acknowledge that the transfer is in progress<br>
 The GUI status message will show when the transfer completed. From here on, no further interaction with the GUI is required.<br>
 **![GUI transfer complete](screenshots/upgrade/14_gui_transfer_complete.jpg?raw=true "GUI transfer complete")**<br>
 At this point the upgrade file resides on the hardware wallet. The LCD will prompt you to power cycle the unit, so that the unit can continue with the upgrade process.<br>
-**![Res](screenshots/upgrade/15_transfer_complete.jpg?raw=true "GUI transfer complete")**<br>
+**![Transfer complete](screenshots/upgrade/15_transfer_complete.jpg?raw=true "Transfer complete")**<br>
 
-When the device power up, it will show on the LCD that an upgrade file was detected:
-[15]
-The LCD will show that the wallet has entered upgrade mode. It will verify the integrity of the file
-[16]
-Extract the upgrade file
-[17]
-Deploy it onto the internal filesystem of the wallet
-[18]
-After the upgrade is comlete it will prompt you to power cycle/reboot the unit.
-[19]
-The unit will boot up in operational mode and prompt you to reconfigure your mnemonic seed phrase and password into the unit.
-The newer software release will show the firmware version number on the LCD display.
-[21]
+When the hardware wallet powers up, it will show on the LCD that an upgrade is detected. The upgrade runs automatically. No user input is required.<br>
+**![Upgrade detected](screenshots/upgrade/16_unit_boot_upgrade.jpg?raw=true "Upgrade detected")**<br>
+The wallet verifies the integrity of the file.<br>
+**![Verify integrity](screenshots/upgrade/17_unit_boot_upgrade.jpg?raw=true "Verify integrity")**<br>
+The wallet extracts the archive.<br>
+**![Extract archive](screenshots/upgrade/18_unit_boot_upgrade.jpg?raw=true "Extract archive")**<br>
+The wallet deploys the archive.<br>
+**![Deploy archive](screenshots/upgrade/19_unit_boot_upgrade.jpg?raw=true "Deploy archive")**<br>
+After the upgrade is done the wallet will prompt you to power cycle it.<br>
+**![Upgrade complete](screenshots/upgrade/20_unit_boot_upgrade.jpg?raw=true "Upgrade complete")**<br>
+The wallet will boot up in operational mode and prompt you to configure your mnemonic seed phrase and password. The newer software release will show the firmware version number on the LCD display for easy reference.<br>
+**![Operational](screenshots/upgrade/22_operational-2.jpg?raw=true "Operational")**<br>
