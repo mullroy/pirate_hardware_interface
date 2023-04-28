@@ -20,7 +20,7 @@ If you'd like to revert your GUI application to an earlier version, you can do s
 <i>$ git checkout v1.2</i><br>
 &nbsp;&nbsp;Note: switching to 'v1.2'.<br>
 &nbsp;&nbsp;You are in 'detached HEAD' state.<br>
-Only the source code was altered. You have to rebuild the project to get an executable that matches the latest code.
+Only the source code was altered. You have to rebuild the project (qmake -makefile ; make) to get an executable that matches the source code.
 
 * To return to the top of the repository:<br>
 <br>$ git switch -</i><br>
@@ -57,10 +57,10 @@ Enter this session key in the GUI<br>
 **![GUI session key](screenshots/upgrade/05_gui_session.jpg?raw=true "GUI session key")**<br>
 The LCD of the hardware wallet will show a warning message if the communication version differs from that of the GUI. This will happen when you're for instance running the latest GUI (v2.3) and the wallet is still running v1.1 or v1.2.<br> 
 **![Version mismatch](screenshots/upgrade/07_software_version_mismatch.jpg?raw=true "Version mismatch")**<br>
-If the GUI and wallet versions do match, the wallet will show that the connection was established.<br>
+If the GUI and wallet versions do match, the wallet will show that a connection was established.<br>
 **![Version match](screenshots/upgrade/06_software_version_match.jpg?raw=true "Version mismatch")**<br>
 
-Likewise, the GUI screen will change to the download page. On the download page there are 2 columns. One for communication version and one for the application version. The communication column with the GUI and wallet versions is important.
+The GUI screen will change to the download page. On the download page there are 2 columns. One for communication version and one for the application version. The communication column with the GUI and wallet versions is important.
 **![GUI upgrade page](screenshots/upgrade/08_gui_upgrade.jpg?raw=true "GUI upgrade page")**<br>
 
 Browse to the upgrade file. This is the file you've requested from the development team. If the security features of the file checks out the version numbers (communication+application) will be displayed on the GUI next to 'Upgrade file version'.<br>
@@ -71,7 +71,7 @@ You can initiate the upgrade procedure by clicking on Program. The GUI applicati
 The hardware wallet LCD display will indicate that it's ready to receive the file<br>
 **![Upgrade ready](screenshots/upgrade/11_upgrade_ready.jpg?raw=true "Upgrade ready")**<br>
 
-The data transfer will occur on the second, high speed, serial port. The packet transfer progress is displayed on the GUI.<br>
+The data transfer will start automatically on the second, high speed, serial port. (The USB cable simulates the serial connections.) The packet transfer progress is displayed on the GUI.<br>
 **![GUI packet counter](screenshots/upgrade/12_gui_transferring.jpg?raw=true "GUI packet counter")**<br>
 The hardware wallet will acknowledge that the transfer is in progress<br>
 **![Transferring](screenshots/upgrade/13_upgrade_transferring.jpg?raw=true "Transferring")**<br>
