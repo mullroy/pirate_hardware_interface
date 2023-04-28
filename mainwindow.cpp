@@ -365,6 +365,7 @@ void MainWindow::filetx_complete(uint8_t cStatus)
   {
     case 0:
       sTmp = "Transfer completed successfully";
+      ui->lbDownload_Result->clear();      
       break;
     case 13:
       sTmp = "Checksum failed\n";
