@@ -1,7 +1,8 @@
 ## [2.3] - 2023-04-26
 Communication version 2, GUI application version 3<br>
-<b>Note:</b> This version requires the hardware wallet to be upgraded to communication version 2/application version 2. The versions of the applications can differ, as long as their communcation versions match.<br>
+<b>Note:</b> This version requires the hardware wallet to be upgraded to v2.3 (communication version 2, application version 3). The versions of the applications can differ, as long as their communcation versions match.<br>
 <br>
+Changes:<br>
 Added OTP prompt before retrieving address or sign transaction.<br>
 Step through the fields of the transaction prior to signing.<br>
 Clean up build warning.<br>
