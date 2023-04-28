@@ -1,56 +1,42 @@
-[Overview]
-The upgrade procedure can be triggered in two scenarios.
-You as user can decide from the connection screen to go
-directly to the upgrade screen, by setting the radio button
-to 'Upgrade'.
-If you've selected the 'Standard' operating mode, and there's
-a mismatch between the communication version of the wallet and
-GUI you'll be taken to the upgrade screen too.
-Note: The communication version is important. The application 
-versions may differ. The application version indicate cosmetic changes in the applications themselves, but will not cause an incompatibility between the GUI and hardware wallet.
+# Overview
+The upgrade procedure can be triggered in two scenarios. You can decide from the connection screen to go directly to the upgrade screen, by setting the radio button to 'Upgrade'. If you've selected the 'Standard' operating mode, and there's a mismatch between the communication version of the wallet and
+GUI you'll be taken to the upgrade screen too.<br>
+Note: The communication version between the hardware wallet and GUI must match to use the standard functions of the hardware wallet. The application versions may differ. The application version indicate cosmetic changes in the applications themselves, but will not cause an incompatibility between the GUI and hardware wallet.
 
-[Access earlier versions]
-If you'd like to revert your GUI application to an earlier
-version, you can do so by checking out an earlier version 
-in the GIT source repository:
-See the status of your local repository:
-(You don't want to see any local changes)
-$ git status
-  On branch master
-  Your branch is up to date with 'origin/master'.
+# Revert to earlier versions
+If you'd like to revert your GUI application to an earlier version, you can do so by checking out an earlier version in the GIT source repository.
+* To see the status of your local repository:<br>
+<i>$ git status</i><br>
+&nbsp;&nbsp;On branch master<br>
+&nbsp;&nbsp;Your branch is up to date with 'origin/master'.<br>
   
-View the tags in the repository:
-$ git tag
-  v2.3
-  v1.2
+* View the tags in the repository:<br>
+<i>$ git tag</i><br>
+&nbsp;&nbsp;v2.3
+&nbsp;&nbsp;v1.2
   
-Revert to an earlier release:  
-$ git checkout v1.2
-  Note: switching to 'v1.2'.
-  You are in 'detached HEAD' state.
-Now you can rebuild the project.
+* Revert to an earlier release:<br>
+<i>$ git checkout v1.2</i><br>
+&nbsp;&nbsp;Note: switching to 'v1.2'.<br>
+&nbsp;&nbsp;You are in 'detached HEAD' state.<br>
+Only the source code was altered. You have to rebuild the project to get an executable that matches the latest code.
 
-To return to the top of the repository:
-$ git switch -
-  Switched to branch 'master'
-  Your branch is up to date with 'origin/master'.
+* To return to the top of the repository:<br>
+<br>$ git switch -</i><br>
+&nbsp;&nbsp;Switched to branch 'master'<br>
+&nbsp;&nbsp;Your branch is up to date with 'origin/master'.<br>
   
-[Perform an upgrade]  
-You will need four items to perform an upgrade of the 
-hardware wallet firmware:
-1) Latest version of the GUI application 
-2) The hardware wallet
-3) The upgrade file, which matches your hardware wallet 
-serial number. Steps to obtain it detailed below.
-4) The upgrade erases its configuration. You'll need your
-mnemonic seed phrase to set up the wallet after the upgrade.
+# Perform an upgrade
+You will need four items to perform an upgrade of the hardware wallet firmware:<br>
+1) Latest version of the GUI application<br> 
+2) The hardware wallet<br>
+3) The upgrade file, which matches your hardware wallet serial number. Steps to obtain it detailed below.<br>
+4) The upgrade erases its configuration. You'll need your mnemonic seed phrase to set up the wallet after the upgrade.<br>
 
-Obtain the firmware file
-------------------------
+# Obtain the firmware file
 Power up your device through the USB connection. The Pirate logo appears.
-[0]
-The serial number appears briefly on the screen. Take a photo of
-it with your smartphone or record it in a text editor.
+**![Install driver](screenshots/upgrade/00_unit_boot_logo.jpg?raw=true "Boot logo")**
+The serial number appears briefly on the screen. Take a photo of it with your smartphone or record it in a text editor.
 [1]
 You'll need to send your device serial number to the private Pirate address you've used to purchase your hardware wallet.
 The firmware file will be created by the development team. They'll
