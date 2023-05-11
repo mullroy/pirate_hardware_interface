@@ -3479,10 +3479,16 @@ void MainWindow::btDownload_Browse_clicked()
       else
       {
         //Comms versions are equal. Is the app version larger?
-        if (cUpgradeVersionApplication<cWalletVersionApplication)
+        if (cUpgradeVersionApplication<=cWalletVersionApplication)
         {
-          ui->lbDownload_Result->setText("The application version of the file is less than the h/w wallet");
+          ui->lbDownload_Result->setText("The application version of the file is equal or less than the h/w wallet");
           return;
+        }
+        else
+        {
+          //Ready to start the transfer
+          ui->lbDownload_Result->setText(" ");
+          ui->btDownload_Start->setEnabled(true);
         }
       }
     }
