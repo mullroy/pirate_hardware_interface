@@ -157,10 +157,12 @@ $ joe .bashrc<br>
   Save the file by pressing: ctrl+k followed by x<br>
   If you want to exit the file without saving, simply press: ctrl+c to return to the shell<br>
   <br>
-The config file needs to be reread. There is a command called 'source' to do this, but the <br>
-easiest is to exit the shell and to relaunch it.<br>
+The config file needs to be reread. There is a command called 'source' to do this:<br>
+$ source .bashrc<br>
+The easiest way is to exit the shell and to relaunch it.<br>
 
 # Verify the environment
+All these outputs must be detected, otherwise the following steps will not work.<br>
  $ which qmake<br>
      /lib/qt5/bin/qmake<br>
  $ which gcc<br>
@@ -206,13 +208,20 @@ The xwindows sytem runs in the background and will will reside under the hidden 
 <br>
 With the hardware wallet plugged into the PC, see under which serial port nr it was registered:<br>
 $ ls /dev/ttyS*<br>
-  /dev/ttyS0  /dev/ttyS3  /dev/ttyS4<br>
+  /dev/ttyS0  /dev/ttyS2  /dev/ttyS3<br>
 <br>
 ttyS0 will match COM1, if there is a physical serial port on the motherboard of your PC. <br>
 The other 2 should represent the hardware wallet serial ports.<br>
   <br>
-$ cd pirate_hw_interface<br>
+$ cd pirate_hardware_interface<br>
 $ ./ARRR.exe<br>
-    Enter the serial port to use. Its usually the higher of the 2 values, i.e. /dev/ttyS4 in this <br>
-    example, but try the other one too if communication isn't established.<br>
+&nbsp;&nbsp;Note: If X-Windows (XWin Server) isn't running in the background, you'll get this error message:<br>
+&nbsp;&nbsp;Could not connect to any X display.<br>
+&nbsp;&nbsp;Note: Ignore these errors: libGL error: Windows-DRI extension disabled ; QXcbShmImage: shmget() failed (...) for size 1680000<br>
+&nbsp;&nbsp;Note: Some users reported that, instead of the application window opening in the main Windows desktop, it is rendered<br>
+&nbsp;&nbsp;inside the X-Windows application window. Please check there if you do not see the application.<br>
+<br>
+    The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/ttySx) will already
+    be filled in when the application is launched. If the communication cannot be established to that port, change it to one of the other
+    value found when you ran the <i>ls /dev/ttyS*</i> command above.
 **![ARRR](screenshots/12.jpg?raw=true "ARRR")**<br>
