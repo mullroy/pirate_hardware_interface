@@ -3098,7 +3098,7 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="toolTip">
-       <string>Press 5 or 'center' key on the num. pad</string>
+       <string>Press Enter, Return or 5/'center key' on the num. pad</string>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
@@ -10609,7 +10609,7 @@ password</string>
        </font>
       </property>
       <property name="toolTip">
-       <string>Press 5 or 'center' key on the num. pad</string>
+       <string>Press Enter, Return or 5/'center key' on the num. pad</string>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>

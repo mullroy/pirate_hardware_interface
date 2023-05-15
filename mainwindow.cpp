@@ -341,6 +341,8 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
 
       case Qt::Key_5:
       case 0x100000B:   //Select
+      case Qt::Key_Return:
+      case Qt::Key_Enter:
         btPassword_Select_clicked();
         return true;
 
