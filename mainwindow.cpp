@@ -303,53 +303,144 @@ QString MainWindow::exec(const char* cmd)
 
 bool MainWindow::eventFilter(QObject *, QEvent *Event)
 {
+  QString sName;
   if (Event->type() == QEvent::KeyPress)
   {
+    QKeyEvent *KeyEvent = (QKeyEvent*)Event;
     QWidget *oWidget = ui->stackedWidget->currentWidget();
+    sName = oWidget->objectName();
+
     if (
-       (oWidget->objectName()!="pageVerifyPassword")&&
-       (oWidget->objectName()!="pageLogin")
+       (sName=="pageVerifyPassword")||
+       (sName=="pageLogin")
        )
     {
-      return false;
+      switch(KeyEvent->key())
+      {
+        case Qt::Key_8:
+        case 0x1000013: //Up arrow key
+          btPassword_Up_clicked();
+          return true;
+
+        case Qt::Key_2:
+        case 0x1000015: //Down arrow key
+          btPassword_Down_clicked();
+          return true;
+
+        case Qt::Key_4:
+        case 0x1000012: //Left arrow key
+          btPassword_Left_clicked();
+          return true;
+
+        case Qt::Key_6:
+          case 0x1000014: //Right arrow key
+          btPassword_Right_clicked();
+          return true;
+
+        case Qt::Key_5:
+        case 0x100000B:   //Select
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          btPassword_Select_clicked();
+          return true;
+      }
     }
 
 
-    QKeyEvent *KeyEvent = (QKeyEvent*)Event;
-
-    switch(KeyEvent->key())
+    if (sName=="pageWelcomeScreen")
     {
-      case Qt::Key_8:
-      case 0x1000013: //Up arrow key
-        btPassword_Up_clicked();
-        return true;
-
-      case Qt::Key_2:
-      case 0x1000015: //Down arrow key
-        btPassword_Down_clicked();
-        return true;
-
-      case Qt::Key_4:
-      case 0x1000012: //Left arrow key
-        btPassword_Left_clicked();
-        return true;
-
-      case Qt::Key_6:
-        case 0x1000014: //Right arrow key
-        btPassword_Right_clicked();
-        return true;
-
-      case Qt::Key_5:
-      case 0x100000B:   //Select
-      case Qt::Key_Return:
-      case Qt::Key_Enter:
-        btPassword_Select_clicked();
-        return true;
-
-      default:
-        ui->statusbar->showMessage("Unknown key pressed");
-        break;
+      switch(KeyEvent->key())
+      {
+        //Submit the session key if Enter is pressed
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          if (ui->leConnect->text().length()>0) //Anything filled in?
+          {
+            btConnect_clicked();
+          }
+          return true;
+      }
     }
+
+
+    if (sName=="pageSign")
+    {
+      QWidget *oWidget = ui->stackwidget_Sign->currentWidget();
+      sName = oWidget->objectName();
+      if (sName=="pageSign_OTP")
+      {
+        switch(KeyEvent->key())
+        {
+          //Submit the OTP if Enter is pressed
+          case Qt::Key_Return:
+          case Qt::Key_Enter:
+            if (ui->leSign_OTP->text().length()>0) //Anything filled in?
+            {
+              btSign_OTP_clicked();
+            }
+            return true;
+        }
+      }
+
+      if (sName=="pageSign_Navigate")
+      {
+        switch(KeyEvent->key())
+        {
+          case Qt::Key_4:
+          case 0x1000012: //Left arrow key
+            btSign_Back_clicked();
+            return true;
+
+          case Qt::Key_6:
+          case 0x1000014: //Right arrow key
+            btSign_Next_clicked();
+            return true;
+        }
+      }
+    }
+
+
+    if (sName=="pageAddress")
+    {
+      QWidget *oWidget = ui->stackwidget_RetrieveAddress->currentWidget();
+      sName = oWidget->objectName();
+      if (sName=="pageRetrieveAddress_MainControl")
+      {
+        switch(KeyEvent->key())
+        {
+          //Submit the OTP if Enter is pressed
+          case Qt::Key_Return:
+          case Qt::Key_Enter:
+            try
+            {
+              //Retrieve the address for the current value of the spinbox
+              //(if the value can be obtained)
+              uint16_t iIndex = (uint16_t)ui->sbRetrieveAddress_Index->value();
+              btRetrieveAddress_clicked();
+            }
+            catch(...)
+            {
+            }
+
+            return true;
+        }
+      }
+      if (sName=="pageRetrieveAddress_OTP")
+      {
+        switch(KeyEvent->key())
+        {
+          //Submit the OTP if Enter is pressed
+          case Qt::Key_Return:
+          case Qt::Key_Enter:
+            if (ui->leRetrieveAddress_OTP->text().length()>0) //Anything filled in?
+            {
+              btRetrieveAddressOTP_clicked();
+            }
+            return true;
+        }
+      }
+    }
+
   }
   return false;
 }
@@ -457,6 +548,7 @@ void MainWindow::btConnect_clicked()
         ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
 
         ui->leConnect->clear();
+        ui->leConnect->setFocus();
         ui->btConnect->setText("Connect");
         ui->lbConnect->setText("Port");
         ui->btDisconnect->hide();
@@ -1378,6 +1470,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         //Switch to the OTP page:
         ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_OTP);
         ui->leRetrieveAddress_OTP->clear();
+        ui->leRetrieveAddress_OTP->setFocus();
 
         //If the message length>0, then it contains an error message about the OTP:
         if (iLength>0)
@@ -1387,14 +1480,16 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           sData = sTmp.asprintf("%s",&caData[0]);
           ui->statusbar->showMessage(sData);
 
-          //On error an OTP inpu will not be processed again. Revert back to the address page:
+          //On error an OTP input will not be processed again. Revert back to the address page:
           ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+          ui->sbRetrieveAddress_Index->setFocus();
         }
         break;
 
       case MSGID_RETRIEVE_ADDRESS:
         //OTP accepted. Process the retrieved address details:
         ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+        ui->sbRetrieveAddress_Index->setFocus();
 
         if (iLength > COMMS_RX_BUFFER_SIZE)
         {
@@ -1433,6 +1528,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         //Switch to the OTP page:
         ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_OTP);
         ui->leSign_OTP->clear();
+        ui->leSign_OTP->setFocus();
 
         //If the message length>0, then it contains an error message about the OTP:
         if (iLength>0)
@@ -1758,7 +1854,7 @@ void MainWindow::btSign_Sign_clicked()
 
     QString sMsg;
     sMsg = sMsg.asprintf("Witnessed: %s\n",sInputs.toStdString().c_str() );
-    ui->teSign_Output->append(sMsg);
+//ui->teSign_Output->append(sMsg);
 
     int iCount = slInputsParts.count()-1; //Last entry empty - Matching the last }
     if (iCount < 1)
@@ -1767,7 +1863,7 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
     sMsg = sMsg.asprintf("Inputs: %d\n",iCount );
-    ui->teSign_Output->append(sMsg);
+//ui->teSign_Output->append(sMsg);
 
     sChecksumInput+="spending notes: ";
     uint64_t llTotalIn=0;
@@ -2213,10 +2309,10 @@ void MainWindow::btSign_Sign_clicked()
         ui->teSign_Output->setText("Transaction send to the hardware wallet.");
         timerSendPeriodicMsgs->stop();
         break;
-      case 1:
+      case -1:
         ui->teSign_Output->setText("Input error. Could not queue the message for transmission.");
         break;
-      case 2:
+      case -2:
         ui->teSign_Output->setText("Could not queue the message for transmission.");
         break;
      }
@@ -3554,12 +3650,11 @@ void MainWindow::Switchto_pageAddress()
 
     ui->teRetrieveAddress_SA->clear();
     ui->teRetrieveAddress_EFVK->clear();
-
     ui->statusbar->showMessage(" ");
 
-    ui->sbRetrieveAddress_Index->setFocus();
     ui->stackedWidget->setCurrentWidget(ui->pageAddress);
     ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+    ui->sbRetrieveAddress_Index->setFocus();
   }
   catch (...)
   {
@@ -3662,6 +3757,7 @@ void MainWindow::btRetrieveAddressOTP_clicked()
     //OTP send. Return to the retrieved address details page.
     //Only 1 OTP/retrieve request. Have to initiate a new address retrieve to try again.
     ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
+    ui->sbRetrieveAddress_Index->setFocus();
   }
   catch (...)
   {

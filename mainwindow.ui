@@ -5386,6 +5386,9 @@ p, li { white-space: pre-wrap; }
           <bold>true</bold>
          </font>
         </property>
+        <property name="toolTip">
+         <string>Press 6 or 'right' cursor on the num. pad</string>
+        </property>       
         <property name="styleSheet">
          <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
         </property>
@@ -5409,6 +5412,9 @@ p, li { white-space: pre-wrap; }
           <bold>true</bold>
          </font>
         </property>
+        <property name="toolTip">
+         <string>Press 4 or 'left' cursor on the num. pad</string>
+        </property>        
         <property name="styleSheet">
          <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
         </property>

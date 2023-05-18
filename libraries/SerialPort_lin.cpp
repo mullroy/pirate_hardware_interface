@@ -426,6 +426,10 @@ int8_t SP_IsOpen (uint8_t * pcSerialPortHandle, uint32_t *)
 }
 
 
+// Return codes: >= 0 - actual amount send
+//               -1 - Invalid port handle
+//               -2 - Specified port is not open
+//               -3 - Requested amount of data to send and reported amount mismatch
 int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount)
 {
   #define BLOCKSIZE 100
@@ -435,33 +439,47 @@ int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount
   {
     return -1;
   }
-  if (sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen == FALSE) {
+  if (sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen == FALSE)
+  {
     return -2;
   }
 
   
-  uint8_t cBlocks = iCount / BLOCKSIZE;
+  uint16_t iBlocks = iCount / BLOCKSIZE;
   uint16_t iRemainder = iCount % BLOCKSIZE;
   uint16_t iPosition = 0;
   uint16_t iTotal = 0;
+
+  uint32_t wSleep = (uint32_t)((float_tt)(BLOCKSIZE) / 11520.0 * 1000000.0 * 2.0);
   
-  for (int iI=0;iI<cBlocks;iI++)
+  for (int iI=0;iI<iBlocks;iI++)
   {
     //fprintf(stderr,"Sending from %d: 512 bytes\n",iPosition);
     iReturnCode = write (sSerialArray[*pcSerialPortHandle].hComPort, &pcBuffer[iPosition], BLOCKSIZE);
     iPosition+=BLOCKSIZE;
     iTotal+=iReturnCode;
 
+    if (iReturnCode != BLOCKSIZE)
+    {
+      return -3;
+    }
+
     //fprintf(stderr," Total=%d\n",iTotal);
-    //usleep(6000); // @921600 it takes 5.5ms. Sleep 10 milli's
-    usleep( BLOCKSIZE / 11520 * 1000000 * 2);
+    //usleep twice the transmission time as a safety margin for the O/S to clock out the data over the USB subsystem
+    usleep( wSleep );
   }
   if (iRemainder!=0)
   {
     iReturnCode = write (sSerialArray[*pcSerialPortHandle].hComPort, &pcBuffer[iPosition], iRemainder);
     iTotal+=iReturnCode;
-    //fprintf(stderr," Total=%d\n", iTotal);
-    usleep( iRemainder / 11520 * 1000000 * 2);
+    if (iReturnCode != iRemainder)
+    {
+      return -3;
+    }
+
+    //usleep twice the transmission time as a safety margin for the O/S to clock out the data over the USB subsystem
+    wSleep = (uint32_t)((float_tt)(iRemainder) / 11520.0 * 1000000.0 * 2.0);
+    usleep( wSleep );
   }  
 
   return iTotal;
