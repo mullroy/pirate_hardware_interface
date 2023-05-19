@@ -387,6 +387,8 @@ void MsgFrame_Widget::Frameing (void)
         break;
       case RxEOM:
         cInternalBufferState=RxNOSYNC;
+        iInternalBufferPos=0;
+
         if (cData == PROTOCOL_EOM)
         {
           //printf("Received frame, msgid=%u\n",cInternalMsgID);
@@ -398,7 +400,6 @@ void MsgFrame_Widget::Frameing (void)
 
           //Does the callback happen here at the emit?          
           emit signal_FrameDetected(cInternalMsgID, &cInternalBuffer[0], iInternalBufferLength);
-          iInternalBufferPos=0;          
           return;
         }
         else
