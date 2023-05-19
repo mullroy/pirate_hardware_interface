@@ -1692,7 +1692,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         caData[iLength]=0;
         sData = sTmp.asprintf("%s",&caData[0]);
         ui->statusbar->showMessage("Error: "+sData);
-        bConnectionCancel=TRUE;
+        //bConnectionCancel=TRUE;
         break;
       default:        
         ui->statusbar->showMessage("Error: Unknown message received");
