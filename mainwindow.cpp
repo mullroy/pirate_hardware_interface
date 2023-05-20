@@ -1768,7 +1768,7 @@ void MainWindow::btSign_Sign_clicked()
     iTmp = sTransaction.length();
     if (iTmp > (COMMS_RX_BUFFER_SIZE) )
     {
-      ui->statusbar->showMessage("Transaction too long");
+      ui->statusbar->showMessage("Transaction too long - maximum 10,000 bytes");
       return;
     }
 
