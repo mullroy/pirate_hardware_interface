@@ -1350,6 +1350,32 @@ p, li { white-space: pre-wrap; }
        <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
+     <widget class="QLabel" name="lbConnect_GUIVersion">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>470</y>
+        <width>171</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>GUI version: 2.4</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>     
     </widget>
     <widget class="QWidget" name="pageLogin">
      <widget class="QLabel" name="lbLogin_Heading">

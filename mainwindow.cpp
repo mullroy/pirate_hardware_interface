@@ -222,7 +222,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pbSign->setVisible(false);
     ui->teSign_Output->setVisible(true);
 
-
+    QString sVersion = QString::asprintf("GUI version: %d.%d",COMMUNICATION_VERSION,APPLICATION_VERSION);
+    ui->lbConnect_GUIVersion->setText(sVersion);
     ui->leConnect->clear();
     ui->leConnect->setFocus();
     ui->btConnect->setText("Connect");
