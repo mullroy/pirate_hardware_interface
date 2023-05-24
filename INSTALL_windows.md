@@ -51,6 +51,8 @@ The application will download the sites list from the internet.<br>
 **![Cygwin options](screenshots/06_step7.jpg?raw=true "Cygwin options")**<br>
 The application will download the package list. This takes a while the first time your run the application.<br>
 * Select packages:<br>
+   Note: Select the package names <i>exaclty</i>. There are many other projects with similar package names<br>
+   <br>
    View: Category<br>
    Expand All, Devel<br>
     Search: Type 'mingw64-i686-qt5' into the text box<br>
