@@ -73,7 +73,7 @@ The application will download the package list. This takes a while the first tim
   -Search: Press the 'Clear' button<br>
   -Expand All, X11<br>
     Search: Type 'xorg-' into the text box<br>
-    xorg-server : Change dropdown 'Skip'  to '21.1.4-2' <br>
+    xorg-server-devel : Change dropdown 'Skip'  to '21.1.4-2' <br>
     xorg-x11-fonts-dpi75 : Change dropdown 'Skip'  to '7.5-4' <br>
     Search: Press the 'Clear' button, type 'xinit' into the text box  <br>
     xinit : Change dropdown 'Skip'  to '1.4.2-2' <br>
