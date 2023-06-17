@@ -1,6 +1,6 @@
 ## [2.5] - 2023-06-17
 Communication version 2, GUI application version 5<br>
-<b>Note:</b> This version requires a hardware wallet running v2.x firmare.<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
 Changes:<br>
 Add keyboard navigation (cursor keys, return, +, /) to the mnemonic restore page.<br>
 Increase serial speed of upgrade file transfer<br>
@@ -9,7 +9,7 @@ the hardware wallet is registered on your computer<br>
 <br>
 ## [2.4] - 2023-05-15
 Communication version 2, GUI application version 4<br>
-<b>Note:</b> This version requires a hardware wallet running v2.x firmare.<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
 <br>
 Changes:
 Add keyboard navigation to sign page and address retrieval pages<br>
