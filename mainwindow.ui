@@ -5963,6 +5963,9 @@ p, li { white-space: pre-wrap; }
         <bold>true</bold>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press + for next word</string>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -5986,6 +5989,9 @@ p, li { white-space: pre-wrap; }
         <bold>true</bold>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press - for previous word</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -6146,6 +6152,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>11</pointsize>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press 'right' cursor on the num. pad to go to #2</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -6170,6 +6179,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>11</pointsize>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press 'left' to go to #1 or 'right' cursor to go to #3</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -6194,6 +6206,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>11</pointsize>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press 'left' to go to #2 or 'right' cursor to go to #4</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -6330,6 +6345,9 @@ p, li { white-space: pre-wrap; }
         <bold>true</bold>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press Enter or Return to submit</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -6351,6 +6369,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>11</pointsize>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press 'left' cursor on the num. pad to go to #3</string>
+      </property>      
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>

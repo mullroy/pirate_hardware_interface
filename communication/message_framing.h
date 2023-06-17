@@ -114,6 +114,8 @@ public:
                    uint16_t * piMsgLength);
   bool_t Status (void);
 
+  int8_t Handshake(void);
+
 public slots:
 private slots:
   void qSerialTimer_timeout(void);

@@ -500,3 +500,48 @@ int8_t MsgFrame_Widget::Pack (uint8_t cMsgID, uint8_t *pcaData, uint16_t iLength
 
   return 0;
 }
+
+/*--[ FUNCTION ]***************************************************************
+*
+* FUNCTION NAME : MsgFrame_handshake()
+*
+* DESCRIPTION : See if the unit responds to a handshake prompt. Does 10 tests,
+*               100ms appart
+*
+* INPUT PARAMETERS : None
+*
+* RETURN PARAMETERS : int8_t 1  : Got response
+*                            0  : No response
+*
+* Note :
+*
+******************************************************************************/
+int8_t MsgFrame_Widget::Handshake ( )
+{
+  uint8_t caData[50];
+  int16_t iCount;
+  uint8_t cI;
+
+  for (cI=0;cI<10;cI++)
+  {
+    caData[0]='\n';
+    iCount = SP_Write (&cSerialPortHandle, &caData[0], 1);
+    //Delay for the unit to respond
+    usleep(100000); //100ms
+
+    iCount = SP_Read( &cSerialPortHandle, &caData[0], 50);
+    if (iCount>=4)
+    {
+      if (
+         (caData[0]=='A') &&
+         (caData[1]=='r') &&
+         (caData[2]=='r') &&
+         (caData[3]=='r')
+         )
+      {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}

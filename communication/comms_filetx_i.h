@@ -49,7 +49,7 @@ uint8_t    cPC_InternalBuffer[ COMMS_BUFFER_SIZE+7 ];
 uint16_t   iPC_InternalBufferPos=0;
 uint16_t   iPC_InternalBufferLength=0;
 
-uint8_t    cPC_SerialPortHandle;
+uint8_t    cPC_SerialPortHandle=255;
 
 //--[ Function Prototypes ]----------------------------------------------------
    

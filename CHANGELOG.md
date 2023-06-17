@@ -1,3 +1,20 @@
+## [2.5] - 2023-06-17
+Communication version 2, GUI application version 5<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmare.<br>
+Changes:<br>
+Add keyboard navigation (cursor keys, return, +, /) to the mnemonic restore page.<br>
+Increase serial speed of upgrade file transfer<br>
+Attempt to automatically detect, via handshake, the serial port handle where
+the hardware wallet is registered on your computer<br>
+<br>
+## [2.4] - 2023-05-15
+Communication version 2, GUI application version 4<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmare.<br>
+<br>
+Changes:
+Add keyboard navigation to sign page and address retrieval pages<br>
+Fix serial port buffer flooding due to invalid calculation of the wait state<br>
+<br>
 ## [2.3] - 2023-04-26
 Communication version 2, GUI application version 3<br>
 <b>Note:</b> This version requires the hardware wallet to be upgraded to v2.3 (communication version 2, application version 3). The versions of the applications can differ, as long as their communcation versions match.<br>

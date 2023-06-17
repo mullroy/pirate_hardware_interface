@@ -390,7 +390,7 @@ int8_t SP_ClosePort (uint8_t * pcSerialPortHandle)
     return -4;
   }
   sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen = FALSE;  
-  *pcSerialPortHandle=-1;
+  *pcSerialPortHandle=255;
   return 0;
 }
 
@@ -450,7 +450,38 @@ int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount
   uint16_t iPosition = 0;
   uint16_t iTotal = 0;
 
-  uint32_t wSleep = (uint32_t)((float_tt)(BLOCKSIZE) / 11520.0 * 1000000.0 * 2.0);
+  BaudRateType_e eBaudRate = sSerialArray[ *pcSerialPortHandle ].sPortSettings.eBaudRate;
+  float_tt fByteRate;
+  switch (eBaudRate)
+  {
+    case BAUD9600:
+      fByteRate=960.0;
+      break;
+    case BAUD38400:
+      fByteRate=3840.0;
+      break;
+    case  BAUD57600:
+      fByteRate=5760.0;
+      break;
+    case  BAUD230400:
+      fByteRate=23040.0;
+      break;
+    case  BAUD460800:
+      fByteRate=46080.0;
+      break;
+    case  BAUD921600:
+      fByteRate=92160.0;
+      break;
+    case  BAUD115200:
+    default:
+      //For command port, effectively wait twice as long
+      //as the message transmit time when using the value
+      //to calculate wSleep.
+      fByteRate=5760.0;
+      break;
+  }
+
+  uint32_t wSleep = (uint32_t)((float_tt)(BLOCKSIZE) / fByteRate * 1000000.0);
   
   for (int iI=0;iI<iBlocks;iI++)
   {
@@ -478,7 +509,6 @@ int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount
     }
 
     //usleep twice the transmission time as a safety margin for the O/S to clock out the data over the USB subsystem
-    wSleep = (uint32_t)((float_tt)(iRemainder) / 11520.0 * 1000000.0 * 2.0);
     usleep( wSleep );
   }  
 

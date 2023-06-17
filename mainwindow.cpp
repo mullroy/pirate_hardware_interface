@@ -76,6 +76,31 @@
 #define ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE 10000
 
 
+//FIXIT: Restructure variables to prevent the worker thread variables from being globals
+bool_t  bCancelTransfer=false;
+bool_t  bTick=FALSE;
+bool_t  bComplete=FALSE;
+int     iWorker_PacketNr;     //Current packet nr
+int     iWorker_PacketsTotal; //Total nr of packets
+int     iWorker_Retries;      //Nr of resyncs
+int     iFileSize;
+bool_t  bWorker_Success;
+uint8_t cWorker_error=0;      //cError: 0 - No error
+                              //        1 - File doesn't exist
+                              //        2 - Not a regular file
+                              //        3 - File name too long
+                              //        4 - Serial port string too long
+                              //        5 - Serial port string too long
+                              //        6 - Could not open the serial port.
+                              //        7 - Could not open the file
+                              //        8 - Could not send the data to the unit
+                              //        9 - Unexpected response from the unit
+                              //       10 - Timeout waiting for response from the unit
+                              //       11 - Requested packet nr exceeds the filesize
+                              //       12 - Could not seek or read within the file
+                              //       13 - Checksum failed
+
+
 void MainWindow::Exception()
 {
   QDebug deb = qDebug();
@@ -193,11 +218,6 @@ MainWindow::MainWindow(QWidget *parent)
     timerSignProgress = new QTimer(this);
     connect ( timerSignProgress, SIGNAL(timeout()),
               this,              SLOT(timerSignProgress_timeout())
-            );
-
-    timerUpgradeProgress = new QTimer(this);
-    connect ( timerUpgradeProgress, SIGNAL(timeout()),
-              this,                 SLOT(timerUpgradeProgress_timeout())
             );
 
 
@@ -442,6 +462,33 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
       }
     }
 
+    if (sName=="pageRestoreMnemonic")
+    {
+      switch(KeyEvent->key())
+      {
+        case 0x1000012: //Left arrow key
+          btRestoreMnemonic_Left_clicked();
+          return true;
+
+        case 0x1000014: //Right arrow key
+          btRestoreMnemonic_Right_clicked();
+          return true;
+
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          btRestoreMnemonic_Submit_clicked();
+          return true;
+
+        case Qt::Key_Plus:
+          btRestoreMnemonic_Next_clicked();
+          return true;
+
+        case Qt::Key_Minus:
+          btRestoreMnemonic_Previous_clicked();
+          return true;
+      }
+    }
+
   }
   return false;
 }
@@ -459,7 +506,7 @@ void MainWindow::filetx_complete(uint8_t cStatus)
   {
     case 0:
       sTmp = "Transfer completed successfully";
-      ui->lbDownload_Result->clear();      
+      ui->lbDownload_Result->hide();
       break;
     case 13:
       sTmp = "Checksum failed\n";
@@ -658,6 +705,9 @@ int8_t MainWindow::CloseSerialPort()
 
 void MainWindow::ResolveSerialPorts()
 {
+  QString sPort;
+  int8_t cReturnCode;
+
   sUpgradePort="(Could not auto detect)";
 #ifdef __CYGWIN__
   //Get the serial ports
@@ -736,6 +786,8 @@ void MainWindow::ResolveSerialPorts()
   }
   int iTwo = iTest;
 
+  //The lower of the 2 port numbers are usually mapped to the physical device
+  //that serves the pirate application
   if (iOne>iTwo)
   {
     iTest=iOne;
@@ -743,10 +795,51 @@ void MainWindow::ResolveSerialPorts()
     iTwo=iTest;
   }
 
-  QString sPort;
+  //See if the port responds with the 'Arrr' response:
+  sPort = sPort.asprintf("/dev/ttyUSB%d",iOne);
+  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
+  if (cReturnCode==0)
+  {
+    cReturnCode = oMsgFrame->Handshake();
+    if (cReturnCode == 1) //Got a response on the port
+    {
+      ui->leConnect->setText(sPort);
+      sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+
+      oMsgFrame->CloseSerialConnection();
+
+      ui->statusbar->showMessage("The hardware wallet responded to the handshake");
+      return;
+    }
+    oMsgFrame->CloseSerialConnection();
+  }
+
+  //Try port2
+  sPort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
+  if (cReturnCode==0)
+  {
+    cReturnCode = oMsgFrame->Handshake();
+    if (cReturnCode == 1) //Got a response on the port
+    {
+      ui->leConnect->setText(sPort);
+      sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iOne);
+
+      oMsgFrame->CloseSerialConnection();
+
+      ui->statusbar->showMessage("The hardware wallet responded to the handshake");
+      return;
+    }
+    oMsgFrame->CloseSerialConnection();
+  }
+
+  //Neither of the 2 ports responded...
+  //Stick to the default of using the lowest port:
   sPort = sPort.asprintf("/dev/ttyUSB%d",iOne);
   ui->leConnect->setText(sPort);
   sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+  ui->statusbar->showMessage("Did not receive a handshake response from the hardware wallet");
+
 #endif
 }
 
@@ -839,29 +932,6 @@ void MainWindow::timerConnect_timeout()
   }
 }
 
-void MainWindow::timerUpgradeProgress_timeout()
-{
-  try
-  {
-    if (poMyController==nullptr)
-    {
-      printf("Open upgrade port: %s\n",sUpgradePort.toStdString().c_str());
-      poMyController = new MyController(&sCompleteFilename, &sUpgradePort, this);
-      QObject::connect(poMyController, &MyController::TxTICK,     this, &MainWindow::filetx_tick,     Qt::QueuedConnection );
-      QObject::connect(poMyController, &MyController::TxCOMPLETE, this, &MainWindow::filetx_complete, Qt::QueuedConnection );
-      poMyController->operate();
-    }
-    else
-    {
-      timerUpgradeProgress->stop();
-    }
-
-  }
-  catch (...)
-  {
-    Exception();
-  }
-}
 
 void MainWindow::timerSignProgress_timeout()
 {
@@ -965,7 +1035,11 @@ int8_t MainWindow::Setup_GUI_for_upgrade()
     ui->btDownload_Browse->setEnabled(true);
     ui->leDownload_Filename->setText("");
     ui->leDownload_Filename->setEnabled(true);
+    sCompleteFilename="";
 
+    //The button might still receive the click event, even though
+    //we set it to false here. This appears to be a bug in the GUI
+    //handling of QT.
     ui->btDownload_Start->setEnabled(false);
 
     ui->stackedWidget->setCurrentWidget(ui->pageDownload);    
@@ -1148,6 +1222,8 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         ui->sbRestoreMnemonic_3->setValue(1);
         ui->sbRestoreMnemonic_4->setValue(1);
 
+        ui->sbRestoreMnemonic_1->setFocus();
+
         //[0] : Word #
         if (pcaData[1]>23) // 0..23
         {
@@ -1158,11 +1234,11 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         //[1] : 0 - Empty, 1 - The 3 chars doesn't match a word in the dictionary, 2 - Found a dictionary match
         if (pcaData[1]==2)
         {
-          sData = QString::asprintf("Word #%d -- Matched",pcaData[0]+1);
+          sData = QString::asprintf("Word #%d -- Found match in dictionary",pcaData[0]+1);
         }
         else if (pcaData[1]==1)
         {
-          sData = QString::asprintf("Word #%d -- No match found",pcaData[0]+1);
+          sData = QString::asprintf("Word #%d -- No dictionary match found",pcaData[0]+1);
         }
         else
         {
@@ -1613,6 +1689,8 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         cUpgradeStatus=cI;
         switch (cI)
         {
+          case 0: //Idle
+            break;
           case 1: //Communication process started
             //The transfer is initiated. The user should sit back and wait for the transfer
             //to complete. Disable the buttons:
@@ -1627,12 +1705,18 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
             if (poMyController==nullptr)
             {
               ui->lbDownload_Result->setText("Unit ready for file transfer. Starting download");
-              timerUpgradeProgress->start(50);
+
+              poMyController = new MyController();
+              QObject::connect(poMyController, &MyController::TxTICK,     this, &MainWindow::filetx_tick,     Qt::QueuedConnection );
+              QObject::connect(poMyController, &MyController::TxCOMPLETE, this, &MainWindow::filetx_complete, Qt::QueuedConnection );
             }
-            break;
-          case 100://Transfer could not be started
-            ui->lbDownload_Result->setText("Could not start the upgrade process on the hardware unit");
-            ui->statusbar->showMessage    ("Could not start the upgrade process on the hardware unit");
+
+            //Internally, poMyController will check if the worker is finished, and only then accept the StartTransfer() command
+            cReturnCode = poMyController->StartTransfer(&sCompleteFilename, &sUpgradePort, this);
+            if (cReturnCode==0)
+            {
+              poMyController->operate();
+            }
             break;
 
           case 2: //Transfer in progress
@@ -1640,7 +1724,20 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
             //Don't print anything if its already busy.
             ui->lbDownload_Result->setText("The transfer is in progress");
             break;
+          case 3: //Transfer completed. Verifying data
+            ui->lbDownload_Result->setText("Transfer complete, waiting for verification to complete");
+            ui->statusbar->showMessage    ("Transfer complete, waiting for verification to complete");
+            break;
+          case 4: //Idle, Transfer complete,  archive available for upgrade
+            ui->lbDownload_Result->setText("Transfer complete. Power cycle the unit to complete the upgrade");
+            ui->statusbar->showMessage    ("Transfer complete. Power cycle the unit to complete the upgrade");
+            ui->lbDownload_ResultCommsThread->setVisible(false);
+            break;
 
+          case 100://Transfer could not be started
+            ui->lbDownload_Result->setText("Could not start the upgrade process on the hardware unit");
+            ui->statusbar->showMessage    ("Could not start the upgrade process on the hardware unit");
+            break;
           case 101://Timeout waiting for start or to resync
             ui->lbDownload_Result->setText("Communication timeout occurred");
             ui->statusbar->showMessage    ("Communication timeout occurred");
@@ -1649,12 +1746,6 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
             ui->lbDownload_Result->setText("Communication was cancelled or interrupted");
             ui->statusbar->showMessage    ("Communication was cancelled or interrupted");
             break;
-
-          case 3: //Transfer completed. Verifying data
-            ui->lbDownload_Result->setText("Transfer complete, waiting for verification to complete");
-            ui->statusbar->showMessage    ("Transfer complete, waiting for verification to complete");
-            break;
-
           case 103: //File verification failed
             ui->lbDownload_Result->setText("The integrity check failed");
             ui->statusbar->showMessage    ("The integrity check failed");
@@ -1665,23 +1756,28 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
             ui->statusbar->showMessage    ("A version mismatch was detected");
             break;
 
-          case 4: //Idle, Transfer complete,  archive available for upgrade
-            ui->lbDownload_Result->setText("Transfer complete. Power cycle the unit to complete the upgrade");
-            ui->statusbar->showMessage    ("Transfer complete. Power cycle the unit to complete the upgrade");
-
-            ui->lbDownload_ResultCommsThread->setVisible(false);
-            break;
-
           default:
             ui->lbDownload_Result->setText("Unknown upgrade response from the unit");
             ui->statusbar->showMessage    ("Unknown upgrade response from the unit");
             break;
         }
-        if (cUpgradeStatus==0)
+
+        //Excluding 1,2,3:
+        //Do not reset the gui on 4(complete). The h/w unit must be power cycled (reset)
+        //and the GUI disconnect.
+        if (
+           (cUpgradeStatus==0) ||
+           (cUpgradeStatus>=100)
+           )
         {
           //Reset GUI:
           ui->btDownload_Browse->setEnabled(true);
-          ui->btDownload_Start->setEnabled(true);
+          if (sCompleteFilename.length()>0)
+          {
+            ui->btDownload_Start->setEnabled(true);
+          }
+
+          poMyController->CancelTransfer();
         }
         break;
       case MSGID_ERROR:
@@ -2620,6 +2716,41 @@ void MainWindow::btRestoreMnemonic_Clear_clicked()
   return;
 }
 
+void MainWindow::btRestoreMnemonic_Left_clicked()
+{
+  //Which spinbox is focused?
+  // 2,3,4 can go left:
+  if (ui->sbRestoreMnemonic_2->hasFocus())
+  {
+    ui->sbRestoreMnemonic_1->setFocus();
+  }
+  else if (ui->sbRestoreMnemonic_3->hasFocus())
+  {
+    ui->sbRestoreMnemonic_2->setFocus();
+  }
+  else if (ui->sbRestoreMnemonic_4->hasFocus())
+  {
+    ui->sbRestoreMnemonic_3->setFocus();
+  }
+}
+void MainWindow::btRestoreMnemonic_Right_clicked()
+{
+  //Which spinbox is focused?
+  // 1,2,3 can go right:
+  if (ui->sbRestoreMnemonic_1->hasFocus())
+  {
+    ui->sbRestoreMnemonic_2->setFocus();
+  }
+  else if (ui->sbRestoreMnemonic_2->hasFocus())
+  {
+    ui->sbRestoreMnemonic_3->setFocus();
+  }
+  else if (ui->sbRestoreMnemonic_3->hasFocus())
+  {
+    ui->sbRestoreMnemonic_4->setFocus();
+  }
+}
+
 void MainWindow::btRestoreMnemonic_Submit_clicked()
 {
   int8_t cReturnCode;
@@ -3328,6 +3459,10 @@ void MainWindow::btDownload_Start_clicked()
   uint8_t caData[3];
   QString sTmp;
 
+  ui->lbDownload_Result->clear();
+  ui->lbDownload_Result->show();
+  ui->lbDownload_Result->clear();
+
   if (sCompleteFilename.length()==0)
   {
     ui->lbDownload_Result->setText("Provide the upgrade filename");
@@ -3375,6 +3510,7 @@ void MainWindow::btDownload_Start_clicked()
   caData[1]=cUpgradeVersionCommunication; //Comms version of upgrade file
   caData[2]=cUpgradeVersionApplication;   //App version of upgrade file
 
+  ui->statusbar->showMessage(" ");
   cReturnCode = oMsgFrame->Pack( MSGID_UPGRADE,
                                  &caData[0],
                                  3);
@@ -3767,29 +3903,6 @@ void MainWindow::btRetrieveAddressOTP_clicked()
   }
 }
 
-//How to prevent the worker thread variables from being globals?
-bool_t  bCancelTransfer=false;
-bool_t  bTick=FALSE;
-bool_t  bComplete=FALSE;
-int     iWorker_PacketNr;     //Current packet nr
-int     iWorker_PacketsTotal; //Total nr of packets
-int     iWorker_Retries;      //Nr of resyncs
-int     iFileSize;
-bool_t  bWorker_Success;
-uint8_t cWorker_error=0;      //cError: 0 - No error
-                              //        1 - File doesn't exist
-                              //        2 - Not a regular file
-                              //        3 - File name too long
-                              //        4 - Serial port string too long
-                              //        5 - Serial port string too long
-                              //        6 - Could not open the serial port.
-                              //        7 - Could not open the file
-                              //        8 - Could not send the data to the unit
-                              //        9 - Unexpected response from the unit
-                              //       10 - Timeout waiting for response from the unit
-                              //       11 - Requested packet nr exceeds the filesize
-                              //       12 - Could not seek or read within the file
-                              //       13 - Checksum failed
 
 //Worker::Worker(QObject* thingy, QObject* parent)
 Worker::Worker(QString* oFileToSend,
@@ -3866,6 +3979,19 @@ Worker::Worker(QString* oFileToSend,
   }
 }
 
+Worker::~Worker()
+{
+  bCancelTransfer=true;
+
+  if (this->thread() == nullptr)
+  {
+    fprintf(stderr, "Worker::~Worker: thread is closed");
+  }
+  else
+  {
+    fprintf(stderr, "Worker::~Worker: thread still open");
+  }
+}
 
 void Worker::doWork()
 {
@@ -4046,7 +4172,6 @@ void Worker::doWork()
             {
                 printf("Transfer failed. Checksum mismatch. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
             }
-            cReturnCode = CommsFiletx_Close( );
             goto EXIT;
         }
         else
@@ -4063,6 +4188,11 @@ void Worker::doWork()
         goto EXIT;
       }
       usleep(10000);
+
+      if (bCancelTransfer==TRUE) //External signal to stop
+      {
+        goto EXIT;
+      }
     }
   }
   catch (...)
@@ -4072,6 +4202,7 @@ void Worker::doWork()
   }
 
 EXIT:
+  cReturnCode = CommsFiletx_Close( );
   //Worker is finished. Signal the thread to quit.
   if (thisthread!=nullptr)
   {
@@ -4081,10 +4212,19 @@ EXIT:
   if (pFH != nullptr)
   {
     fclose(pFH);
+    pFH = nullptr;
   }
 }
 
-MyController::MyController(QString* oFileToSend, QString* oSerialPort, QObject* parent)
+MyController::MyController()
+{
+}
+
+//ReturnCodes: 0 - Transfer started
+//            -1 - Exception
+//            -2 - Supplied input parameters invalid
+//            -3 - Existing worker still in progress
+int8_t MyController::StartTransfer(QString* oFileToSend, QString* oSerialPort, QObject* parent)
 {
   iI=0;
 
@@ -4092,6 +4232,17 @@ MyController::MyController(QString* oFileToSend, QString* oSerialPort, QObject* 
   {
     if (poWorker==nullptr)
     {
+
+      //The button was clicked before a file was specified
+      if (
+         (oFileToSend->length()==0)||
+         (oSerialPort->length()==0)
+         )
+      {
+        fprintf(stderr, "MyController::MyController() Filename or serial port not specified");
+        return -2;
+      }
+
       poWorker = new  Worker(oFileToSend, oSerialPort, parent);
       poWorker->moveToThread(&workerThread);
       // provide meaningful debug output
@@ -4109,16 +4260,23 @@ MyController::MyController(QString* oFileToSend, QString* oSerialPort, QObject* 
                 this,        SLOT(timerThread_timeout())
               );
       timerThread->start(250);
+
+      return 0;
+    }
+    else
+    {
+      return -3;
     }
   }
   catch (...)
   {
     fprintf(stderr, "MyController::MyController() Exception");
+    return -1;
   }
 }
 
 MyController::~MyController()
-{
+{  
   workerThread.quit();
   workerThread.wait();
 }
@@ -4141,10 +4299,22 @@ void MyController::timerThread_timeout()
     bTick=FALSE;
     emit TxTICK(iWorker_PacketNr, iWorker_PacketsTotal, iWorker_Retries);
   }
-  if (bComplete==TRUE)
+
+  if (
+     (bComplete==TRUE)||
+     (bCancelTransfer==TRUE)
+     )
   {
     emit TxCOMPLETE(cWorker_error);
     timerThread->stop();
-  }
 
+    //Worker done. Delete them
+    workerThread.quit();
+    workerThread.wait();
+    poWorker=nullptr;
+
+    //Reset variables
+    bComplete=FALSE;
+    bCancelTransfer=FALSE;
+  }
 }

@@ -15,7 +15,7 @@ QT_END_NAMESPACE
 
 #define TRANSACTION_VERSION 0x01
 #define COMMUNICATION_VERSION 0x02
-#define APPLICATION_VERSION   0x04
+#define APPLICATION_VERSION   0x05
 
 class Worker : public QObject
 {
@@ -23,6 +23,7 @@ class Worker : public QObject
 public:
     //Worker(QObject* thingy, QObject* parent = nullptr);
     Worker(QString* oFileToSend, QString* oSerialPort, QObject* parent = nullptr);
+    ~Worker() override;
 
 private:
     //QObject* mythingy;
@@ -43,8 +44,9 @@ class MyController : public QObject
   //      present...
   Q_OBJECT
 public:
-    MyController(QString* oFileToSend, QString* oSerialPort, QObject* parent = nullptr);
-    ~MyController();
+    MyController();
+    ~MyController() override;
+    int8_t StartTransfer(QString* oFileToSend, QString* oSerialPort, QObject* parent = nullptr);
     void CancelTransfer();
     void operate();
 private:
@@ -98,8 +100,7 @@ private:
 
   QTimer    *timerConnect;
   QTimer    *timerSendPeriodicMsgs;  
-  QTimer    *timerSignProgress;
-  QTimer    *timerUpgradeProgress;
+  QTimer    *timerSignProgress;  
   MsgFrame_Widget *oMsgFrame;
 
   uint8_t    cEmojiPosition;
@@ -149,7 +150,7 @@ private slots:
   void timerConnect_timeout(void);
   void timerSendPeriodicMsgs_timeout(void);
   void timerSignProgress_timeout(void);
-  void timerUpgradeProgress_timeout(void);
+
 
   void message_framedetected(uint8_t, uint8_t*, uint16_t);
   void btSign_Sign_clicked();
@@ -170,6 +171,8 @@ private slots:
   void btRestoreMnemonic_Next_clicked();
   void btRestoreMnemonic_Clear_clicked();
   void btRestoreMnemonic_Submit_clicked();
+  void btRestoreMnemonic_Left_clicked();
+  void btRestoreMnemonic_Right_clicked();
 
   void btSetupMnemonic4_Previous_clicked();
   void btSetupMnemonic4_Next_clicked();
