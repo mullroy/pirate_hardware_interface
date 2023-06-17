@@ -63,7 +63,7 @@ If the GUI and wallet versions do match, the wallet will show that a connection 
 The GUI screen will change to the download page. On the download page there are 2 columns. One for communication version and one for the application version. The communication column with the GUI and wallet versions is important.
 **![GUI upgrade page](screenshots/upgrade/08_gui_upgrade.jpg?raw=true "GUI upgrade page")**<br>
 
-Browse to the upgrade file. This is the file you've requested from the development team. If the security features of the file checks out the version numbers (communication+application) will be displayed on the GUI next to 'Upgrade file version'.<br>
+Browse to the upgrade file. If you run on Windows/Cygwin, the file dialog shows the directory root of the Cygwin environment. Your home directory is located under /home/your_account. Cygwin maps your native hard drives under /cygdrive, i.e. C: will be at /cygrive/c.<br> Select the upgrade file you've received from the development team. If the security features of the file checks out the version numbers (communication+application) will be displayed on the GUI next to 'Upgrade file version'.<br>
 **![GUI upgrade page](screenshots/upgrade/09_gui_upgrade.jpg?raw=true "GUI upgrade page")**<br>
 
 You can initiate the upgrade procedure by clicking on Program. The GUI application will instruct the hardware wallet to initiate the upgrade.<br>
