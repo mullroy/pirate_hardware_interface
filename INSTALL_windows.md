@@ -164,7 +164,10 @@ $ source .bashrc<br>
 The easiest way is to exit the shell and to relaunch it.<br>
 
 # Verify the environment
-All these outputs must be detected, otherwise the following steps will not work.<br>
+All these outputs must be detected, otherwise the build steps for the control software will not work.<br>
+**![Environment](screenshots/08_environment.jpg?raw=true "Environment")**<br>
+ $ env | grep PATH<br>
+   PATH=<i>(many entries)</i>:/lib/qt5/bin<br>
  $ which qmake<br>
      /lib/qt5/bin/qmake<br>
  $ which gcc<br>
@@ -217,13 +220,12 @@ The other 2 should represent the hardware wallet serial ports.<br>
   <br>
 $ cd pirate_hardware_interface<br>
 $ ./ARRR.exe<br>
-&nbsp;&nbsp;Note: If X-Windows (XWin Server) isn't running in the background, you'll get this error message:<br>
-&nbsp;&nbsp;Could not connect to any X display.<br>
-&nbsp;&nbsp;Note: Ignore these errors: libGL error: Windows-DRI extension disabled ; QXcbShmImage: shmget() failed (...) for size 1680000<br>
-&nbsp;&nbsp;Note: Some users reported that, instead of the application window opening in the main Windows desktop, it is rendered<br>
-&nbsp;&nbsp;inside the X-Windows application window. Please check there if you do not see the application.<br>
-<br>
-    The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/ttySx) will already
-    be filled in when the application is launched. If the communication cannot be established to that port, change it to one of the other
-    value found when you ran the <i>ls /dev/ttyS*</i> command above.
+- Note: If X-Windows (XWin Server) isn't running in the background, you'll get this error message:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Could not connect to any X display.<br>
+- Note: Ignore these errors:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;libGL error: Windows-DRI extension disabled for GDI Generic rendered<br>
+&nbsp;&nbsp;&nbsp;&nbsp;QXcbShmImage: shmget() failed (...) for size 1680000<br>
+- Note: Some users reported that, instead of the application window opening in the main Windows desktop, it is rendered inside the X-Windows application window. Please check there if you do not see the application.<br>
+
+The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/ttySx) will already be filled in when the application is launched. If the communication cannot be established to that port, change it to one of the other  value found when you ran the <i>ls /dev/ttyS*</i> command above.<br>
 **![ARRR](screenshots/12.jpg?raw=true "ARRR")**<br>
