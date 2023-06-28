@@ -706,10 +706,12 @@ int8_t MainWindow::CloseSerialPort()
 void MainWindow::ResolveSerialPorts()
 {
   QString sPort;
-  int8_t cReturnCode;
-
+  uint8_t cReturnCode;
+  QString sBase;
   sUpgradePort="(Could not auto detect)";
 #ifdef __CYGWIN__
+  sBase="/dev/ttyS";
+
   //Get the serial ports
   QString sResult = exec("ls /dev/ttyS* 2>/dev/null  | grep -v '/dev/ttyS0' | awk '{ print $1 }' | sed -e 's/\\/dev\\/ttyS//'");
   if (sResult.length()==0)
@@ -749,11 +751,9 @@ void MainWindow::ResolveSerialPorts()
     iTwo=iTest;
   }
 
-  QString sPort;
-  sPort = sPort.asprintf("/dev/ttyS%d",iOne);
-  ui->leConnect->setText(sPort);
-  sUpgradePort = sPort.asprintf("/dev/ttyS%d",iTwo);
 #else
+  sBase="/dev/ttyUSB";
+
   //Get the serial ports
   QString sResult = exec("find /sys/bus/usb-serial/drivers/cp210x -name 'ttyUSB*' 2>/dev/null | sed -e 's/\\/sys\\/bus\\/usb-serial\\/drivers\\/cp210x\\/ttyUSB//'");
   if (sResult.length()==0)
@@ -794,9 +794,10 @@ void MainWindow::ResolveSerialPorts()
     iOne=iTwo;
     iTwo=iTest;
   }
+#endif
 
   //See if the port responds with the 'Arrr' response:
-  sPort = sPort.asprintf("/dev/ttyUSB%d",iOne);
+  sPort = sBase + sPort.asprintf("%d",iOne);
   cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
   if (cReturnCode==0)
   {
@@ -804,7 +805,7 @@ void MainWindow::ResolveSerialPorts()
     if (cReturnCode == 1) //Got a response on the port
     {
       ui->leConnect->setText(sPort);
-      sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+      sUpgradePort = sBase+sPort.asprintf("%d",iTwo);
 
       oMsgFrame->CloseSerialConnection();
 
@@ -815,7 +816,7 @@ void MainWindow::ResolveSerialPorts()
   }
 
   //Try port2
-  sPort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+  sPort = sBase + sPort.asprintf("%d",iTwo);
   cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
   if (cReturnCode==0)
   {
@@ -823,7 +824,7 @@ void MainWindow::ResolveSerialPorts()
     if (cReturnCode == 1) //Got a response on the port
     {
       ui->leConnect->setText(sPort);
-      sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iOne);
+      sUpgradePort = sBase + sPort.asprintf("%d",iOne);
 
       oMsgFrame->CloseSerialConnection();
 
@@ -835,12 +836,11 @@ void MainWindow::ResolveSerialPorts()
 
   //Neither of the 2 ports responded...
   //Stick to the default of using the lowest port:
-  sPort = sPort.asprintf("/dev/ttyUSB%d",iOne);
+  sPort = sBase + sPort.asprintf("%d",iOne);
   ui->leConnect->setText(sPort);
-  sUpgradePort = sPort.asprintf("/dev/ttyUSB%d",iTwo);
+  sUpgradePort = sBase + sPort.asprintf("%d",iTwo);
   ui->statusbar->showMessage("Did not receive a handshake response from the hardware wallet");
 
-#endif
 }
 
 void MainWindow::close_connection()

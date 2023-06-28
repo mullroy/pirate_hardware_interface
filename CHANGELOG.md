@@ -1,4 +1,4 @@
-## [2.5] - 2023-06-17
+## [2.5] - 2023-06-28
 Communication version 2, GUI application version 5<br>
 <b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
 Changes:<br>
