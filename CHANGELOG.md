@@ -4,7 +4,7 @@ Communication version 2, GUI application version 5<br>
 Changes:<br>
 Add keyboard navigation (cursor keys, return, +, /) to the mnemonic restore page.<br>
 Increase serial speed of upgrade file transfer<br>
-Attempt to automatically detect, via handshake, the serial port handle where
+Automatically detect, via handshake, the serial port handle where
 the hardware wallet is registered on your computer<br>
 <br>
 ## [2.4] - 2023-05-15
