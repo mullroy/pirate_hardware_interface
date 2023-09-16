@@ -136,51 +136,43 @@ Another way is to log out of the desktop session and to log back in. The config 
 <br>
 Verify the environment<br>
 All these outputs must be detected, otherwise the build steps for the control software will not work.<br>
-**![Environment](screenshots/08_environment.jpg?raw=true "Environment")**<br>
 &nbsp;&nbsp;$<b> which qmake</b><br>
 &nbsp;&nbsp;&nbsp;&nbsp;/Users/&lt;your account&gt;/Documents/Qt5/5.12.12/clang_64/bin/qmake<br>
 &nbsp;&nbsp;$<b>which clang</b><br>
 &nbsp;&nbsp;&nbsp;&nbsp;/usr/bin/clang<br>
-<b>
+<br>
 # Pirate hardware wallet control software
 Download the GIT source repository:<br>
+**![GIT clone](screenshots/mac/22_git.jpg?raw=true "GIT clone")**<br>
 &nbsp;&nbsp;$<b> cd</b><br>
 &nbsp;&nbsp;-- Change directory back to your home directory<br>
-&nbsp;&nbsp;$<b> cd Documents</b>
+&nbsp;&nbsp;$<b> cd Documents</b><br>
 &nbsp;&nbsp;$<b> git clone https://github.com/mullroy/pirate_hardware_interface.git</b><br>
 &nbsp;&nbsp;-- Clone the repository into pirate_hardware_interface<br>
-**![GIT clone](screenshots/10.jpg?raw=true "GIT clone")**<br>   
 <br>
 If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
 &nbsp;&nbsp;$<b> cd ~/pirate_hardware_interface</b><br>
 &nbsp;&nbsp;$<b> git pull</b><br>
-You will have to rebuild the project again after a source code update<b>
-<b>
-<b>Build the software</b><br>
-&nbsp;&nbsp;$<b>cd pirate_hardware_interface</b><br>
+You will have to rebuild the project again after a source code update<br>
+<br>
+Build the software<br>
+&nbsp;&nbsp;$<b> cd pirate_hardware_interface</b><br>
 &nbsp;&nbsp;$<b> qmake -makefile</b><br>
 &nbsp;&nbsp;-- Qt creates a Makefile for the project<br>
-$ make -j 2<br>
-   -- Compile the project, using 2 processor cores. You can increse the number, but the resources<br>
-      used will also increase. Do not overload your machine by specifying a number higher than twice <br>
-      the number of CPU cores in your machine or the compile will grind to a halt. You can press <br>
-      ctrl+c to interrupt the build<br>
-      <br>
+&nbsp;&nbsp;$<b> make -j 2</b><br>
 Output: ARRR.app<br>
-
-Make a symlink to the 'Applications' directory, so ARRR is visible in the menu system:
-$ ln -s ${pwd}/ARRR.app /Applications/ARRR.app
-
-
+<br>
+Make a symlink to the 'Applications' directory, so that ARRR is visible in the Launchpad menu system:<br>
+&nbsp;&nbsp;$<b> ln -s ${pwd}/ARRR.app /Applications/ARRR.app</b><br>
+<br>
 # Run the software
-From Finder, select ARRR
+From Launchpad, select ARRR<br>
 **![ARRR](screenshots/12.jpg?raw=true "ARRR")**<br>
 <br>
 The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/tty.SLAB_USBtoUARTx) will already be filled in when the application is launched.<br>
 Troubleshooting:<br>
-If the serial port cannot be detected, see if the operating system detected the ports:
-Launch the terminal emulator
-$ ls -sal /dev/tty.S*<br>
-  /dev/tty.SLAB_USBtoUART /dev/tty.SLAB_USBtoUARTx<br> 
-
-
+1. If the serial port cannot be detected, make sure the hardware wallet is powered up and LCD display shows that it is ready to accept a connection.<br>
+2. See if the operating system detected the ports:<br>
+Launch the terminal emulator<br>
+&nbsp;&nbsp;$<b> ls -sal /dev/tty.S*</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;/dev/tty.SLAB_USBtoUART /dev/tty.SLAB_USBtoUARTx<br>
