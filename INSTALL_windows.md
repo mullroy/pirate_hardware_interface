@@ -6,49 +6,49 @@ Select the 'DOWNLOADS' tab<br>
   (Note: Some Windows installations won't recognise the universal driver. In that case, download the 'CP210x Windows Drivers' link)<br>
   Extract the downloaded zip archive on your local machine<br>
   From Windows Explorer, right-click on silabser.inf and select 'Install' from the menu<br>
-  **![Install driver](screenshots/02_driver_install.jpg?raw=true "Install driver")**
+  **![Install driver](screenshots/win/02_driver_install.jpg?raw=true "Install driver")**
   <br>
   Accept all the prompts that are presented to you:<br>
-  **![Install driver](screenshots/03_driver_install.jpg?raw=true "Install driver")**
+  **![Install driver](screenshots/win/03_driver_install.jpg?raw=true "Install driver")**
   <br><br>
 Attach the Pirate Hardware wallet via a micro USB cable to the PC<br>
 <br>
 From the Start menu, select Control Panel<br>
-**![Start menu](screenshots/04_step1.jpg?raw=true "Start menu")**<br>
+**![Start menu](screenshots/win/04_step1.jpg?raw=true "Start menu")**<br>
 Under section: Hardware and Sound, Heading: Devices and Printers, Select Device Manager<br>
-**![Control Panel](screenshots/04_step2.jpg?raw=true "Control Panel")**<br>
+**![Control Panel](screenshots/win/04_step2.jpg?raw=true "Control Panel")**<br>
 Under Ports (COM&LPT), two USB/UART entries should be shown, each with a unique COMx number, i.e. COM3 and COM4<br>
   * Silicon Labs Dual CP2105 USB to UART Bridge Enhanced COM Port (COMx)<br>
 Note: Inside Cygwin, the device handle (/dev/ttySx) is one number less than what is shown in Windows Device Manager, i.e. COM3 will be /dev/ttyS2<br>
-**![Device Manager](screenshots/04_step3.jpg?raw=true "Device Manager")**<br>
+**![Device Manager](screenshots/win/04_step3.jpg?raw=true "Device Manager")**<br>
 # Cygwin
 Note: The installation takes up approx 2.2GB of hard drive space<br>
 
 # Installing (Update) Cygwin Packages
 Create a local directory on your hard drive to keep the files, i.e. c:\installs<br>
 Navigate with a web browser to https://cygwin.com/install.html<br>
-**![Cygwin home page](screenshots/05_step1.jpg?raw=true "Cygwin home page")**<br>
+**![Cygwin home page](screenshots/win/05_step1.jpg?raw=true "Cygwin home page")**<br>
 Under the heading 'Installing and updating cygwin...', right click on 'setup-x86_64.exe' and select 'Save target as'<br>
 Save it into c:\installs. The file is 1.3MB<br>
-**![Cygwin installer](screenshots/05_step2.jpg?raw=true "Cygwin installer")**<br>
+**![Cygwin installer](screenshots/win/05_step2.jpg?raw=true "Cygwin installer")**<br>
 <br>
 Launch setup-x86_64.exe from Windows File Explorer.<br>
 Accept the prompt about the unknown publisher<br>
-**![Cygwin installer](screenshots/06_step1.jpg?raw=true "Cygwin installer")**<br>
+**![Cygwin installer](screenshots/win/06_step1.jpg?raw=true "Cygwin installer")**<br>
 Options: <br>
 * Download source: Install from Internet<br>
-**![Cygwin options](screenshots/06_step2.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step2.jpg?raw=true "Cygwin options")**<br>
 * Root install directory: c:\cygwin64<br>
     Install for all users  <br>
-**![Cygwin options](screenshots/06_step3.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step3.jpg?raw=true "Cygwin options")**<br>
 * Local package directory: Change the default entry to:  c:\installs\cygwin<br>
   Click 'Next' to continue. A popup will ask if the directory should be created<br>
-**![Cygwin options](screenshots/06_step4.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step4.jpg?raw=true "Cygwin options")**<br>
 * Your internet connection: Direct Connection<br>
-**![Cygwin options](screenshots/06_step5.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step5.jpg?raw=true "Cygwin options")**<br>
 The application will download the sites list from the internet.<br>
 * Choose Download Site: Choose one of the sites. mirrors.kernel.org is a reliable site.<br>
-**![Cygwin options](screenshots/06_step7.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step7.jpg?raw=true "Cygwin options")**<br>
 The application will download the package list. This takes a while the first time your run the application.<br>
 * Select packages:<br>
    Note: Select the package names <i>exaclty</i>. There are many other projects with similar package names<br>
@@ -59,7 +59,7 @@ The application will download the package list. This takes a while the first tim
     mingw64-i686-qt5-base  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-tools  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
     mingw64-i686-qt5-serialport  : Change dropdown 'Skip'  to ' 5.9.4-1' <br>
-**![Cygwin options](screenshots/06_step8.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_step8.jpg?raw=true "Cygwin options")**<br>
     Search: Press the 'Clear' button, type 'gcc-g++' into the text box<br>
     gcc-g++ : Change dropdown 'Skip'  to '11.3.0-1'<br>
     Search: Press the 'Clear' button, type 'git' into the text box<br>
@@ -87,10 +87,10 @@ The application will download the package list. This takes a while the first tim
   Click Next, continue <br>
 * Wait for the download to complete - approx 330mb. The files are cached in c:\installs\cygwin<br>
 During the installation some files may not have downloaded. When presented with the list, press the retry button to download those files again.<br>
-**![Cygwin options](screenshots/06_stepa.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_stepa.jpg?raw=true "Cygwin options")**<br>
 * Installation status and create icons:<br>
 Choose icons to create. Defaults are OK.<br>
-**![Cygwin options](screenshots/06_stepb.jpg?raw=true "Cygwin options")**<br>
+**![Cygwin options](screenshots/win/06_stepb.jpg?raw=true "Cygwin options")**<br>
 Note: If you'd like to add more packages later, run the setup application again and go through<br>
       all the menus as described above. Select your additional packages during the 'Select packages'<br>
       section<br>
@@ -100,7 +100,7 @@ Change the View dropdown list to 'Pending'.<br>
 It should say 'Nothing to install or update' in the main window. If there are packages listed,<br>
 select Next to continue. A window will show which package versions will be uninstalled and which <br>
 new packages will be installed in their place. Continue and wait for the installation to complete.<br>
-**![Cygwin pending](screenshots/08.jpg?raw=true "Cygwin pending")**<br>
+**![Cygwin pending](screenshots/win/08.jpg?raw=true "Cygwin pending")**<br>
 Note: To make sure the packages specified above were all installed, relaunch the installer again, <br>
       navigate through all the options untill you get to 'Select Packages'. Change the View dropdown<br>
       list to 'Picked'.<br>
@@ -165,7 +165,7 @@ The easiest way is to exit the shell and to relaunch it.<br>
 
 # Verify the environment
 All these outputs must be detected, otherwise the build steps for the control software will not work.<br>
-**![Environment](screenshots/08_environment.jpg?raw=true "Environment")**<br>
+**![Environment](screenshots/win/08_environment.jpg?raw=true "Environment")**<br>
  $ env | grep PATH<br>
    PATH=<i>(many entries)</i>:/lib/qt5/bin<br>
  $ which qmake<br>
@@ -185,7 +185,7 @@ $ cd<br>
     -- Change directory back to your home directory<br>
 $ git clone https://github.com/mullroy/pirate_hardware_interface.git<br>
    -- Clone the repository into pirate_hardware_interface<br>
-**![GIT clone](screenshots/10.jpg?raw=true "GIT clone")**<br>   
+**![GIT clone](screenshots/win/10.jpg?raw=true "GIT clone")**<br>   
 <br>
 If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
 $ cd ~/pirate_hardware_interface<br>
@@ -207,9 +207,9 @@ Output: Arrr.exe<br>
 # Run the software
 Launch the X-windows (xorg, X11) windowing interface for Cygwin to draw into:<br>
 Select Start->Cygwin-X->XWin Server <br>
-**![Xwindows](screenshots/11.jpg?raw=true "Xwindows")**<br>
+**![Xwindows](screenshots/win/11.jpg?raw=true "Xwindows")**<br>
 The xwindows sytem runs in the background and will will reside under the hidden icons on the taskbar.<br>
-**![Xwindows icon](screenshots/09_step2.jpg?raw=true "Xwindows icon")**<br>
+**![Xwindows icon](screenshots/win/09_step2.jpg?raw=true "Xwindows icon")**<br>
 <br>
 With the hardware wallet plugged into the PC, see under which serial port nr it was registered:<br>
 $ ls /dev/ttyS*<br>
