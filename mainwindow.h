@@ -128,7 +128,8 @@ private:
   void   ResolveSerialPorts();
   bool   eventFilter(QObject *Object, QEvent *Event) override;
   void   close_connection();
-
+  void   stylesheet();
+  
   QString exec(const char* cmd);
   MyController *poMyController=nullptr;
 

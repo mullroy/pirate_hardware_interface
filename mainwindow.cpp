@@ -101,6 +101,113 @@ uint8_t cWorker_error=0;      //cError: 0 - No error
                               //       13 - Checksum failed
 
 
+void MainWindow::stylesheet()
+{
+
+
+  QString sButton="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Courier\";";
+  QString sLineEdit="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
+  QString sTextEdit   ="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 11pt \"Arial\";";
+  QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 11pt \"Arial\";";
+  QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
+  
+  ui->sbRetrieveAddress_Index->setStyleSheet(sSpinBox);
+  ui->sbRestoreMnemonic_1->setStyleSheet(sSpinBox);
+  ui->sbRestoreMnemonic_2->setStyleSheet(sSpinBox);
+  ui->sbRestoreMnemonic_3->setStyleSheet(sSpinBox);
+  ui->sbRestoreMnemonic_4->setStyleSheet(sSpinBox);
+  
+  ui->btDisconnect->setStyleSheet(sButton);
+  ui->btConnect->setStyleSheet(sButton);
+  ui->btLogin_Down->setStyleSheet(sButton);
+  ui->btLogin_Right->setStyleSheet(sButton);
+  ui->btLogin_Select->setStyleSheet(sButton);
+  ui->btLogin_Left->setStyleSheet(sButton);
+  ui->btLogin_Reset->setStyleSheet(sButton);
+  ui->btLogin_Up->setStyleSheet(sButton);
+  ui->btLogin_Disconnect->setStyleSheet(sButton);
+  ui->btLogin_Continue->setStyleSheet(sButton);
+  ui->btRetrieveAddress_Disconnect->setStyleSheet(sButton);
+  ui->btRetrieveAddress_Sign->setStyleSheet(sButton);
+  ui->btRetrieveAddress->setStyleSheet(sButton);
+  ui->btRetrieveAddress_OTP->setStyleSheet(sButton);
+  ui->btSign_Disconnect->setStyleSheet(sButton);
+  ui->btSign_RetrieveAddress->setStyleSheet(sButton);
+  ui->btSign_Sign->setStyleSheet(sButton);
+  ui->btSign_Clear->setStyleSheet(sButton);
+  ui->btSign_OTP->setStyleSheet(sButton);
+  ui->btSign_Next->setStyleSheet(sButton);
+  ui->btSign_Back->setStyleSheet(sButton);
+  ui->btDisconnect_3->setStyleSheet(sButton);
+  ui->btSetup->setStyleSheet(sButton);
+  ui->btDisconnect_4->setStyleSheet(sButton);
+  ui->btSetupMnemonic2->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Next->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Previous->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Clear->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Submit->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Cancel->setStyleSheet(sButton);
+  ui->btRestoreMnemonic_Continue->setStyleSheet(sButton);
+  ui->btSetupMnemonic3_Previous->setStyleSheet(sButton);
+  ui->btSetupMnemonic3_Next->setStyleSheet(sButton);
+  ui->btSetupMnemonic3_Cancel->setStyleSheet(sButton);
+  ui->btSetupMnemonic3->setStyleSheet(sButton);
+  ui->btSetupMnemonic4_Previous->setStyleSheet(sButton);
+  ui->btSetupMnemonic4_Next->setStyleSheet(sButton);
+  ui->btSetupMnemonic4_Cancel->setStyleSheet(sButton);
+  ui->btSetupMnemonic4_Continue->setStyleSheet(sButton);
+  ui->btSetupPassword_Cancel->setStyleSheet(sButton);
+  ui->btSetupPassword_Continue->setStyleSheet(sButton);
+  ui->btSetupPassword_Generate->setStyleSheet(sButton);
+  ui->btVerifyPassword_Continue->setStyleSheet(sButton);
+  ui->btVerifyPassword_Disconnect->setStyleSheet(sButton);
+  ui->btVerifyPassword_Left->setStyleSheet(sButton);
+  ui->btVerifyPassword_Reset->setStyleSheet(sButton);
+  ui->btVerifyPassword_Select->setStyleSheet(sButton);
+  ui->btVerifyPassword_Down->setStyleSheet(sButton);
+  ui->btVerifyPassword_Right->setStyleSheet(sButton);
+  ui->btVerifyPassword_Up->setStyleSheet(sButton);
+  ui->btVerifyPassword_Back->setStyleSheet(sButton);
+  ui->btApplyConfig_Disconnect->setStyleSheet(sButton);
+  ui->btApplyConfig_Start->setStyleSheet(sButton);
+  ui->btCancel->setStyleSheet(sButton);
+  ui->btDownload_Browse->setStyleSheet(sButton);
+  ui->btDisconnect_2->setStyleSheet(sButton);
+  ui->btDownload_Start->setStyleSheet(sButton);
+  
+  ui->leConnect->setStyleSheet(sLineEdit);
+  ui->leRetrieveAddress_OTP->setStyleSheet(sLineEdit);
+  ui->leSign_OTP->setStyleSheet(sLineEdit);
+  ui->leSetupMnemonic4->setStyleSheet(sLineEdit);
+  ui->leDownload_Filename->setStyleSheet(sLineEdit);
+  ui->leDownload_Port->setStyleSheet(sLineEdit);
+
+#if defined(__APPLE__)
+  ui->leConnect->setFixedWidth(170);
+  ui->leDownload_Port->setFixedWidth(170);
+#endif
+
+
+
+
+
+  ui->teMnemonicInstruction->setStyleSheet(sTextEdit);
+  ui->teSetupMneumonic4->setStyleSheet(sTextEdit);
+  ui->teDownload_Mismatch->setStyleSheet(sTextEdit);
+
+  ui->textConnect->setStyleSheet(sTextBrowser);
+  ui->tbRetrieveAddress_Heading->setStyleSheet(sTextBrowser);
+  ui->textConnect_3->setStyleSheet(sTextBrowser);
+  ui->textBrowser->setStyleSheet(sTextBrowser);
+  ui->textBrowser_2->setStyleSheet(sTextBrowser);
+  ui->textBrowser_4->setStyleSheet(sTextBrowser);
+  
+  ui->teSign_Output->setStyleSheet(sTextBrowser);
+  ui->teSign_Input->setStyleSheet(sTextBrowser);
+  ui->teRetrieveAddress_SA->setStyleSheet(sTextBrowser);
+  ui->teRetrieveAddress_EFVK->setStyleSheet(sTextBrowser);
+
+}
 void MainWindow::Exception()
 {
   QDebug deb = qDebug();
@@ -123,6 +230,9 @@ MainWindow::MainWindow(QWidget *parent)
     */
     //this->centralWidget()->setStyleSheet(
     //         "background-image:url(':/images/treasure.png'); background-position: center;" );
+
+    stylesheet();
+     
     _pixmapBg.load(":/images/piratemap.png");
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     this->setFixedSize(QSize(800, 525));
@@ -248,6 +358,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->leConnect->setFocus();
     ui->btConnect->setText("Connect");
     ui->lbConnect->setText("Port:");
+    ui->lbConnect->setFixedWidth(170);
     ui->btDisconnect->hide();
 
     ui->statusbar->showMessage(" ");
@@ -602,6 +713,7 @@ void MainWindow::btConnect_clicked()
         ui->leConnect->setFocus();
         ui->btConnect->setText("Connect");
         ui->lbConnect->setText("Port");
+        ui->lbConnect->setFixedWidth(170);
         ui->btDisconnect->hide();
 
         ui->lbConnect_1->show();
@@ -685,6 +797,7 @@ int8_t MainWindow::CloseSerialPort()
     ui->leConnect->clear();
     ui->btConnect->setText("Connect");
     ui->lbConnect->setText("Port");
+    ui->leConnect->setFixedWidth(170);
     ui->btDisconnect->hide();
 
     ui->lbConnect_1->show();
@@ -708,15 +821,20 @@ int8_t MainWindow::CloseSerialPort()
 
 void MainWindow::ResolveSerialPorts()
 {
-  QString sPort;
+  QString sPortA, sPortB;
   uint8_t cReturnCode;
   QString sBase;
+  QString sResult;
+  QString sTmp;
+  
   sUpgradePort="(Could not auto detect)";
-#ifdef __CYGWIN__
-  sBase="/dev/ttyS";
 
+#if defined(__CYGWIN__) //Windows
+  printf("Windows\n");
+  sBase="/dev/ttyS";
   //Get the serial ports
-  QString sResult = exec("ls /dev/ttyS* 2>/dev/null  | grep -v '/dev/ttyS0' | awk '{ print $1 }' | sed -e 's/\\/dev\\/ttyS//'");
+  sResult = exec("ls /dev/ttyS* 2>/dev/null  | grep -v '/dev/ttyS0' | awk '{ print $1 }' | sed -e 's/\\/dev\\/ttyS//'");
+
   if (sResult.length()==0)
   {
     ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
@@ -753,12 +871,46 @@ void MainWindow::ResolveSerialPorts()
     iOne=iTwo;
     iTwo=iTest;
   }
-
-#else
-  sBase="/dev/ttyUSB";
-
+  sPortA = sBase + sPort.asprintf("%d",iOne);
+  sPortB = sBase + sPort.asprintf("%d",iTwo);
+#elif defined(__APPLE__)
   //Get the serial ports
-  QString sResult = exec("find /sys/bus/usb-serial/drivers/cp210x -name 'ttyUSB*' 2>/dev/null | sed -e 's/\\/sys\\/bus\\/usb-serial\\/drivers\\/cp210x\\/ttyUSB//'");
+  printf("MAC OSX\n");
+
+  sResult = exec("ls /dev/tty.SLAB_USBtoUART* 2>/dev/null");
+  if (sResult.length()==0)
+  {
+    ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
+    return;
+  }
+  //MAC numbers the ports uniquely. The first entry doesn't have a trailing index nr
+  //and second one has the number. Use the 2 entries without midification:
+  QStringList lstPorts = sResult.trimmed().split("\n");
+
+  int iParts=lstPorts.size();
+  if (iParts!=2)
+  {
+      if (iParts>2)
+      {
+        ui->statusbar->showMessage("Too many serial ports found. Could not uniquely identify the serial ports of the wallet.");
+      }
+      else
+      {
+         ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
+      }
+      return;
+  }
+  sPortA = lstPorts[0];
+  sPortB = lstPorts[1];
+
+//  sPortA = "/dev/tty.serial1";
+//  sPortB = "/dev/tty.serial1";
+#else
+  printf("Linux\n");
+  sBase="/dev/ttyUSB";
+  
+  //Get the serial ports
+  sResult = exec("find /sys/bus/usb-serial/drivers/cp210x -name 'ttyUSB*' 2>/dev/null | sed -e 's/\\/sys\\/bus\\/usb-serial\\/drivers\\/cp210x\\/ttyUSB//'");
   if (sResult.length()==0)
   {
     ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
@@ -797,37 +949,44 @@ void MainWindow::ResolveSerialPorts()
     iOne=iTwo;
     iTwo=iTest;
   }
+  sPortA = sBase + sTmp.asprintf("%d",iOne);
+  sPortB = sBase + sTmp.asprintf("%d",iTwo);
 #endif
 
   //See if the port responds with the 'Arrr' response:
-  sPort = sBase + sPort.asprintf("%d",iOne);
-  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
+  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPortA.toStdString().c_str(), (uint8_t)sPortA.length() );
   if (cReturnCode==0)
   {
     cReturnCode = oMsgFrame->Handshake();
     if (cReturnCode == 1) //Got a response on the port
     {
-      ui->leConnect->setText(sPort);
-      sUpgradePort = sBase+sPort.asprintf("%d",iTwo);
+      ui->leConnect->setText(sPortA);
+      sUpgradePort = sPortB;
 
       oMsgFrame->CloseSerialConnection();
 
       ui->statusbar->showMessage("The hardware wallet responded to the handshake");
+
+//  ui->stackedWidget->setCurrentWidget(ui->pageSign);
+//  ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
       return;
     }
     oMsgFrame->CloseSerialConnection();
   }
+  else
+  {
+    fprintf(stderr,"Serial return code:%d\n",cReturnCode);
+  }
 
   //Try port2
-  sPort = sBase + sPort.asprintf("%d",iTwo);
-  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPort.toStdString().c_str(), (uint8_t)sPort.length() );
+  cReturnCode = oMsgFrame->OpenSerialConnection( (char *)sPortB.toStdString().c_str(), (uint8_t)sPortB.length() );
   if (cReturnCode==0)
   {
     cReturnCode = oMsgFrame->Handshake();
     if (cReturnCode == 1) //Got a response on the port
     {
-      ui->leConnect->setText(sPort);
-      sUpgradePort = sBase + sPort.asprintf("%d",iOne);
+      ui->leConnect->setText(sPortB);
+      sUpgradePort = sPortA;
 
       oMsgFrame->CloseSerialConnection();
 
@@ -839,9 +998,8 @@ void MainWindow::ResolveSerialPorts()
 
   //Neither of the 2 ports responded...
   //Stick to the default of using the lowest port:
-  sPort = sBase + sPort.asprintf("%d",iOne);
-  ui->leConnect->setText(sPort);
-  sUpgradePort = sBase + sPort.asprintf("%d",iTwo);
+  ui->leConnect->setText(sPortA);
+  sUpgradePort = sPortB;
   ui->statusbar->showMessage("Did not receive a handshake response from the hardware wallet");
 
 }
@@ -1135,6 +1293,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         ui->leConnect->clear();
         ui->leConnect->setFocus();
         ui->lbConnect->setText("Session key:");
+        ui->leConnect->setFixedWidth(50);
         ui->btConnect->setText("Submit");
         ui->btDisconnect->show();
 
