@@ -2028,8 +2028,8 @@ void MainWindow::btSign_Sign_clicked()
     ui->statusbar->showMessage(" ");
     ui->teSign_Output->setText("");
 
-
-    QString sTransaction = ui->teSign_Input->toPlainText();
+    //Remove trailing whitespace that can be present after copy/paste
+    QString sTransaction = ui->teSign_Input->toPlainText().trimmed();
     if (sTransaction.length()==0)
     {
       ui->statusbar->showMessage("No transaction provided");
