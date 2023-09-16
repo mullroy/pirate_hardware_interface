@@ -374,6 +374,7 @@ static void
 init64(void)
 {
 	int c, i;
+        uchar cTmp;
 
 	memset(t64d, 255, 256);
 	memset(t64e, '=', 64);
@@ -390,10 +391,12 @@ init64(void)
 		t64e[i] = c;
 		t64d[c] = i++;
 	}
-	t64e[i] = '+';
-	t64d['+'] = i++;
-	t64e[i] = '/';
-	t64d['/'] = i;
+	cTmp='+';
+	t64e[i] = cTmp;
+	t64d[cTmp] = i++;
+	cTmp='/';
+	t64e[i] = cTmp;
+	t64d[cTmp] = i;
 }
 
 int

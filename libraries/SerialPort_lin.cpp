@@ -54,11 +54,18 @@ int8_t setBaudRate (BaudRateType_e eBaudRate,
     case (BAUD460800):
       //pPosix_CommConfig->c_cflag &= (~CBAUD);
       //pPosix_CommConfig->c_cflag |= B460800;
+      
+      #if defined(__APPLE__)
+      #define B460800 0010004
+      #endif
       cfsetspeed(pPosix_CommConfig, B460800);
       break;      
     case (BAUD921600):
       //pPosix_CommConfig->c_cflag &= (~CBAUD);
       //pPosix_CommConfig->c_cflag |= B921600;
+      #if defined(__APPLE__)
+      #define B921600 0010007
+      #endif
       cfsetspeed(pPosix_CommConfig, B921600);
       break;
     default:
@@ -281,6 +288,7 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
 {
   struct termios Posix_CommConfig;
   int fd;
+  
   if (cSerialArrayCount >= (MAX_PORTS - 1)) {
     return -1;
   }
@@ -291,7 +299,6 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   if (fd == -1) {
     return -2;
   }
-  printf("Opened %s\n",spSerialSettings->cPCComPortName);
   
   tcgetattr (fd, &Posix_CommConfig);
   cfmakeraw (&Posix_CommConfig);
@@ -301,7 +308,7 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   Posix_CommConfig.c_iflag &=
     (~(INPCK | IGNPAR | PARMRK | ISTRIP | ICRNL | IXANY));
   Posix_CommConfig.c_oflag &= (~OPOST);
-  Posix_CommConfig.c_cc[VMIN] = 0;
+
 
 #ifdef _POSIX_VDISABLE
   const long vdisable = fpathconf (fd, _PC_VDISABLE);
@@ -311,25 +318,23 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   Posix_CommConfig.c_cc[VSTOP] = vdisable;
   Posix_CommConfig.c_cc[VSUSP] = vdisable;
 #endif
-  setBaudRate (spSerialSettings->eBaudRate,
+  setBaudRate (spSerialSettings->eBaudRate,&Posix_CommConfig);
+  setDataBits (spSerialSettings->eDataBits,spSerialSettings->eStopBits,
                &Posix_CommConfig);
-  setDataBits (spSerialSettings->eDataBits,
-               spSerialSettings->eStopBits,
-               &Posix_CommConfig);
-  setStopBits (spSerialSettings->eStopBits,
-               &Posix_CommConfig);
-  setParity (spSerialSettings->eParity,
-             &Posix_CommConfig);
-  setFlowControl (spSerialSettings->eFLowType,
-                  &Posix_CommConfig);
-  if (spSerialSettings->cTimeout == 0) {
+  setStopBits (spSerialSettings->eStopBits,&Posix_CommConfig);
+  setParity (spSerialSettings->eParity,&Posix_CommConfig);
+  setFlowControl (spSerialSettings->eFLowType,&Posix_CommConfig);
+  if (spSerialSettings->eFLowType==FLOW_OFF)
+  {
     fcntl (fd, F_SETFL, O_NDELAY);
+    Posix_CommConfig.c_cc[VMIN] = 0; //no block
   }
-  else {
+  else
+  {
     fcntl (fd, F_SETFL, O_SYNC);
+    Posix_CommConfig.c_cc[VMIN] = 1;  //block
   }
-  Posix_CommConfig.c_cc[VTIME] =
-    spSerialSettings->cTimeout / 100;
+  Posix_CommConfig.c_cc[VTIME] = spSerialSettings->cTimeout; //VTIME in units of 100ms
   tcsetattr (fd, TCSAFLUSH, &Posix_CommConfig);
 
   
@@ -341,7 +346,6 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
 
   sSerialArray[cSerialArrayCount].bStatus_PortIsOpen = TRUE;
   *pcSerialPortHandle = cSerialArrayCount;
-  //printf("Copies to local: %s\n",sSerialArray[cSerialArrayCount].sPortSettings.cPCComPortName);
   
   cSerialArrayCount++;
   return 0;
@@ -382,15 +386,16 @@ int8_t SP_ClosePort (uint8_t * pcSerialPortHandle)
     return -2;
   }
   
-  //sSerialArray[*pcSerialPortHandle].bCloseThread = TRUE;
-  //sleep (1);
-  bReturnCode = close (sSerialArray[*pcSerialPortHandle].hComPort);
+  bReturnCode = close(sSerialArray[*pcSerialPortHandle].hComPort);
   if (bReturnCode != 0) 
   {
     return -4;
   }
   sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen = FALSE;  
   *pcSerialPortHandle=255;
+
+  //Give OS time to release the file descriptor. Immediate open() after close() fails otherwise
+  sleep(1); 
   return 0;
 }
 
@@ -501,6 +506,7 @@ int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount
   }
   if (iRemainder!=0)
   {
+    
     iReturnCode = write (sSerialArray[*pcSerialPortHandle].hComPort, &pcBuffer[iPosition], iRemainder);
     iTotal+=iReturnCode;
     if (iReturnCode != iRemainder)

@@ -6,6 +6,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++11
 CONFIG += debug
 
+
 QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -34,8 +35,14 @@ FORMS += \
     mainwindow.ui
 
 # Project base path is referenced with $$PWD
-LIBS += -L$$PWD/libraries -ldl -lcrypto
-
+unix:!macx {
+	LIBS += -L$$PWD/libraries -L/usr/local/lib -ldl -lcrypto
+        ICON = images/pirate.ico
+}
+macx: {
+	LIBS += -L$$PWD/libraries -L/opt/local/lib -dl -lcrypto
+        ICON = images/pirate.icns
+}
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -46,3 +53,12 @@ RESOURCES += \
   pictures.qrc
 
 DISTFILES +=
+
+unix:!macx {
+	INCLUDEPATH += /usr/local/include
+}
+
+# Apple: Expect openssl (from MacPorts) in /opt/local
+macx: { 
+	INCLUDEPATH += /opt/local/include
+}

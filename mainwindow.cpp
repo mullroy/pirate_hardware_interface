@@ -437,7 +437,10 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
               //Retrieve the address for the current value of the spinbox
               //(if the value can be obtained)
               uint16_t iIndex = (uint16_t)ui->sbRetrieveAddress_Index->value();
-              btRetrieveAddress_clicked();
+              if (iIndex<=255)
+              {
+                btRetrieveAddress_clicked();
+              }
             }
             catch(...)
             {
@@ -2210,7 +2213,13 @@ void MainWindow::btSign_Sign_clicked()
     {
         if (llFee > ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE)  // Per comment above: (network fee <= nDefaultFee)
         {                                                   // Conclusion: If (TotalOut < defaultFee) then (fee must also be <= defaultFee)
-          sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %lu has fee %lu that is greater than the default fee %d", llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
+#if defined(__APPLE__)
+          sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %llu has fee %lu that is greater than the default fee %d",
+                               llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
+#else
+          sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %lu has fee %lu that is greater than the default fee %d",
+                               llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
+#endif          
           ui->teSign_Output->setText(sTmp);
           return;
         }
@@ -2230,7 +2239,13 @@ void MainWindow::btSign_Sign_clicked()
     //were send to an output:
     if (llTotalIn != (llTotalOut+llFee))
     {
-      sTmp = sTmp.asprintf("Transaction error: The outputs (%lu) + fee (%lu) doesn't add up to all the inputs (%lu)", llTotalOut, llFee, llTotalIn);
+#if defined(__APPLE__)    
+      sTmp = sTmp.asprintf("Transaction error: The outputs (%llu) + fee (%lu) doesn't add up to all the inputs (%llu)",
+                           llTotalOut, llFee, llTotalIn);
+#else
+      sTmp = sTmp.asprintf("Transaction error: The outputs (%lu) + fee (%lu) doesn't add up to all the inputs (%lu)",
+                           llTotalOut, llFee, llTotalIn);
+#endif      
       ui->teSign_Output->setText(sTmp);
       return;
     }
@@ -2879,10 +2894,9 @@ void MainWindow::btSetupMnemonic3_clicked()
 
 void MainWindow::btSetupMnemonic4_Previous_clicked()
 {
-  char cChar;
-  uint8_t cByte;
-  int8_t cReturnCode;
-//  int32_t iI;
+  char cChar=0;
+  uint8_t cByte=0;
+  int8_t cReturnCode=0;
 
   try
   {
@@ -2927,10 +2941,9 @@ void MainWindow::btSetupMnemonic4_Previous_clicked()
 
 void MainWindow::btSetupMnemonic4_Next_clicked()
 {
-  char cChar;
-  uint8_t cByte;
-  int8_t cReturnCode;
-//  int32_t iI;
+  char cChar=0;
+  uint8_t cByte=0;
+  int8_t cReturnCode=0;
 
   try
   {

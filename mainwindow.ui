@@ -4159,7 +4159,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="toolTip">
-         <string>This is the adres that you share with people to make payments to you.</string>
+         <string>Treasure chest use the viewing key to create transactions for this address.</string>
         </property>
         <property name="autoFillBackground">
          <bool>true</bool>

@@ -1,3 +1,10 @@
+## [2.6] - 2023-09-16
+Communication version 2, GUI application version 6<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
+Changes:<br>
+Added Apple Mac OS X support. See INSTALL_mac.md for instructions to build
+the application.<br>
+<br>
 ## [2.5] - 2023-06-28
 Communication version 2, GUI application version 5<br>
 <b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>

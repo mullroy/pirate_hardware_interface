@@ -15,7 +15,7 @@ QT_END_NAMESPACE
 
 #define TRANSACTION_VERSION 0x01
 #define COMMUNICATION_VERSION 0x02
-#define APPLICATION_VERSION   0x05
+#define APPLICATION_VERSION   0x06
 
 class Worker : public QObject
 {
@@ -73,7 +73,7 @@ class MainWindow : public QMainWindow
 public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
-  void paintEvent(QPaintEvent *event);
+  void paintEvent(QPaintEvent *event) override;
   void SetupMnemonicDisplay();
   //void populate_password_on_gui(uint8_t *pcaData);
   void SetupMenu();

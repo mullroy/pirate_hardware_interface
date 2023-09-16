@@ -522,12 +522,12 @@ int8_t MsgFrame_Widget::Handshake ( )
   int16_t iCount;
   uint8_t cI;
 
-  for (cI=0;cI<10;cI++)
+  for (cI=0;cI<5;cI++)
   {
     caData[0]='\n';
     iCount = SP_Write (&cSerialPortHandle, &caData[0], 1);
     //Delay for the unit to respond
-    usleep(100000); //100ms
+    usleep(200000); //200ms
 
     iCount = SP_Read( &cSerialPortHandle, &caData[0], 50);
     if (iCount>=4)

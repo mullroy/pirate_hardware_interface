@@ -65,14 +65,14 @@ extern "C"
 /*--[ TYPES ]----------------------------------------------------------------*/ 
   typedef struct
   {
-    char cPCComPortName[20];
+    char cPCComPortName[30];
 
-    BaudRateType_e eBaudRate;   
-    DataBitsType_e eDataBits;   
-    StopBitsType_e eStopBits;   
-    ParityType_e eParity;       
-    FlowType_e eFLowType;       
-    uint8_t cTimeout;           
+    BaudRateType_e eBaudRate;
+    DataBitsType_e eDataBits;
+    StopBitsType_e eStopBits;
+    ParityType_e eParity;
+    FlowType_e eFLowType;
+    uint8_t cTimeout;
   } SerialSettings_s;
 
 /*--[ FUNCTION PROTOTYPES ]--------------------------------------------------*/
