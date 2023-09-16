@@ -104,13 +104,24 @@ uint8_t cWorker_error=0;      //cError: 0 - No error
 void MainWindow::stylesheet()
 {
 
-
+#if defined(__APPLE__)
+  QString sButton="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 14pt \"Courier\";";
+  QString sLineEdit="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
+  QString sTextEdit   ="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 11pt \"Arial\";";
+  QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 13pt \"Arial\";";
+  QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
+  QString sLabel = "font: 13pt;";
+#else
   QString sButton="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Courier\";";
   QString sLineEdit="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
   QString sTextEdit   ="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 11pt \"Arial\";";
   QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 11pt \"Arial\";";
   QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
-  
+  QString sLabel = "font: 11pt;";
+#endif 
+  ui->lbSign_Detail->setStyleSheet(sLabel);
+  ui->lbSign_OTP->setStyleSheet(sLabel); 
+
   ui->sbRetrieveAddress_Index->setStyleSheet(sSpinBox);
   ui->sbRestoreMnemonic_1->setStyleSheet(sSpinBox);
   ui->sbRestoreMnemonic_2->setStyleSheet(sSpinBox);
@@ -634,6 +645,9 @@ void MainWindow::filetx_complete(uint8_t cStatus)
 
 void MainWindow::btConnect_clicked()
 {
+  //ui->stackedWidget->setCurrentWidget(ui->pageSign);
+  //ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_OTP);
+  //return;
   try
   {
     int8_t cReturnCode=10;
@@ -967,8 +981,6 @@ void MainWindow::ResolveSerialPorts()
 
       ui->statusbar->showMessage("The hardware wallet responded to the handshake");
 
-//  ui->stackedWidget->setCurrentWidget(ui->pageSign);
-//  ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
       return;
     }
     oMsgFrame->CloseSerialConnection();
