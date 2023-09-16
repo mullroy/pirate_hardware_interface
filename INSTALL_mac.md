@@ -1,48 +1,46 @@
 # Serial/USB driver
 Navigate with a web browser to https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers<br>
+Select the 'DOWNLOADS' tab. Select: CP210x VCP Mac OSX driver to start the download of the driver.<br>
 **![Silabs home page](screenshots/01_silabs.jpg?raw=true "Silabs home page")**
-Select the 'DOWNLOADS' tab<br>
-  Select: CP210x VCP Mac OSX driverr<br>
 
-Launch Finder and navigate to the Downloads directory. Click on the ZIP file to extract it<br>
+Launch Finder and navigate to the Downloads directory. Click on the ZIP file to extract it.<br>
 **![Archive](screenshots/mac/02_driver_install.jpg?raw=true "Driver archive")**
 
-Enter the directory to reveal the dmg archive. Click on SiLabsUSBDriverDisk.dmg to open the installer<br>
+Enter the new directory to reveal the dmg archive. Click on SiLabsUSBDriverDisk.dmg to open the installer.<br>
 **![Archive](screenshots/mac/03_driver_install.jpg?raw=true "Driver archive2")**
 
-Click 'Install CP210x VCP Driver' to launch the installer<br>
+Click 'Install CP210x VCP Driver' to launch the installer.<br>
 **![Install driver](screenshots/mac/04_driver_install.jpg?raw=true "Install driver")**
 
-Accept all the prompts that are presented for steps: Introduction, License, Info and Install<br>
+Accept all the prompts that are presented for steps: Introduction, License, Info and Install.<br>
 **![Install driver](screenshots/mac/05_driver_install.jpg?raw=true "Install driver")**
 
-On the Guidance page, Mac OSX will inform you: 'System Extension Blocked'.
-Click the 'Open Security Preferences' button
+On the Guidance page, Mac OSX will inform you: 'System Extension Blocked'. Click the 'Open Security Preferences' button.<br>
 **![System Extension](screenshots/mac/06_driver_install.jpg?raw=true "System extension")**
 
-On the Security&Privacy page, click the 'Allow' button to install system
-software from: Silicon Laboratories Inc. Close the Security&Privacy window.
+On the Security&Privacy page, click the 'Allow' button to install system software from: Silicon Laboratories Inc. Afterward, close the Security&Privacy window to return to the driver installer.<br>
 **![System Extension](screenshots/mac/07_driver_install.jpg?raw=true "System extension")**
 
-Wait for the driver cache to be rebuild
+Wait for the driver cache to be rebuild.<br>
 **![System Extension](screenshots/mac/08_driver_install.jpg?raw=true "Driver cache")**
 
-The driver installation is complete.
+The driver installation is complete.<br>
 **![System Extension](screenshots/mac/09_driver_install.jpg?raw=true "Complete")**
-<br><br>
-Attach the Pirate Hardware wallet via a micro USB cable to your Mac machine<br>
 <br>
-Launch the terminal emulator from LaunchPad->Other->Terminal
+Verify that the device handles to the serial ports are registered:<br>
+Attach the Pirate Hardware wallet via the micro USB cable to your Mac machine. Launch the terminal emulator from LaunchPad->Other->Terminal<br>
 **![Terminal](screenshots/mac/10_driver_install.jpg?raw=true "Menu system")**<br>
 
-Verify that the device handles to the serial ports are registered:
-Enter in the terminal: ls /dev/tty.S*
-There should be two entries, with filenames like /dev/tty.SLAB_USBtoUART
+Enter at the terminal prompt:<br>
+&nbsp;&nbsp;&nbsp;$<b>ls /dev/tty.S*</b><br>
+There should be two entries, with filenames like /dev/tty.SLAB_USBtoUART:<br>
 **![Serial ports](screenshots/mac/11_driver_install.jpg?raw=true "Serial ports")**
+
+If the two ports are present your machine has detected the hardware wallet successfully.<br>
 
 # Development tools
 # XCode
-Note: OS X plus the development environment takes up approx 44GB of hard drive space<br>
+Note: OS X plus the development environment takes up approx 44GB of hard drive space. Make sure you have enough space available on your hard drive before continueing with the installation.<br>
 
 XCode:
 For this development OSX Mojave (10.14.6) was used. The latest version of
