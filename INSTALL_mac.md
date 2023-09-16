@@ -18,7 +18,8 @@ Accept all the prompts that are presented for steps: Introduction, License, Info
 On the Guidance page, Mac OSX will inform you: 'System Extension Blocked'. Click the 'Open Security Preferences' button.<br>
 **![System Extension](screenshots/mac/06_driver_install.jpg?raw=true "System extension")**
 
-On the Security&Privacy page, click the 'Allow' button to install system software from: Silicon Laboratories Inc. Afterward, close the Security&Privacy window to return to the driver installer.<br>
+On the Security&Privacy page, click the 'Allow' button to install system software from: Silicon Laboratories Inc. 
+Afterward, close the Security&Privacy window to return to the driver installer.<br>
 **![System Extension](screenshots/mac/07_driver_install.jpg?raw=true "System extension")**
 
 Wait for the driver cache to be rebuild.<br>
@@ -28,11 +29,12 @@ The driver installation is complete.<br>
 **![System Extension](screenshots/mac/09_driver_install.jpg?raw=true "Complete")**
 <br>
 Verify that the device handles to the serial ports are registered:<br>
-Attach the Pirate Hardware wallet via the micro USB cable to your Mac machine. Launch the terminal emulator from LaunchPad->Other->Terminal<br>
+Attach the Pirate Hardware wallet via the micro USB cable to your Mac machine. Launch the terminal emulator from<br>
+LaunchPad->Other->Terminal<br>
 **![Terminal](screenshots/mac/10_driver_install.jpg?raw=true "Menu system")**<br>
 
 Enter at the terminal prompt:<br>
-&nbsp;&nbsp;&nbsp;$<b>ls /dev/tty.S*</b><br>
+&nbsp;&nbsp;&nbsp;$<b> ls /dev/tty.S*</b><br>
 There should be two entries, with filenames like /dev/tty.SLAB_USBtoUART:<br>
 **![Serial ports](screenshots/mac/11_driver_install.jpg?raw=true "Serial ports")**
 
@@ -42,161 +44,122 @@ If the two ports are present your machine has detected the hardware wallet succe
 # XCode
 Note: OS X plus the development environment takes up approx 44GB of hard drive space. Make sure you have enough space available on your hard drive before continueing with the installation.<br>
 
-XCode:
-For this development OSX Mojave (10.14.6) was used. The latest version of
-the XCode development environment for Apple Mac OSX Mojave was 11.3.1.
-You'll need an Apple ID to download content from the Apple developer
-website. The original URL for the Xcode 11.3.1 is:
-https://download.developer.apple.com/Developer_Tools/Xcode_11.3.1/Xcode_11.3.1.xip 
+For this development OSX Mojave (10.14.6) was used. The last version of XCode released for Mac OSX Mojave was 11.3.1. You'll need an Apple ID to download content from the Apple developer website. The original URL for the Xcode 11.3.1 is: https://download.developer.apple.com/Developer_Tools/Xcode_11.3.1/Xcode_11.3.1.xip 
 
-Alternatively, this version of XCode is available on The Wayback Machine at archive.org. 
-Browse to archive.org. In the search windows, search for: xcode 11.3.1.
+Alternatively, Xcode 11.3.1 is available on The Wayback Machine at archive.org. Browse to archive.org. In the search windows enter: xcode 11.3.1.<br>
 **![Xcode](screenshots/mac/12_xcode.jpg?raw=true "Xcode")**
 
-Select the archived entry. Download the torrent file. Use a torrent
-application to download XCode 11.3.1, using the torrent definition file.
+Select the archived entry. Download the torrent file. Use a torrent application to download XCode 11.3.1, using the torrent definition file obtained from archive.org. The size of the install file is 7.4GB<br>
 **![Xcode](screenshots/mac/13_xcode.jpg?raw=true "Xcode")**
 
-Launch Finder. Navigate to where you've downloaded XCode. Click on Xcode_11.3.1.xip
-to extract it. XCode will extract in the current directory as Xcode.app, sized approx. 8.4GB
+After the download is complete, launch Finder. Navigate to where you've downloaded XCode. Click on Xcode_11.3.1.xip to extract it. XCode will extract in the current directory as Xcode.app, sized approx. 8.4GB<br>
 **![Xcode](screenshots/mac/14_xcode.jpg?raw=true "Xcode")**
 
-Move Xcode.app into your 'Documents' directory. Click on the Xcode icon to launch it.
-The license agreement is shown. Accept it. Enter your account password to continue with the installation.
-The installation is finished when the 'Welcome to Xcode' screen is displayed.
+Move Xcode.app into your 'Documents' directory. Click on the Xcode icon to launch it. The license agreement is shown. Accept it. Enter your account password to continue with the installation. The installation is finished when the 'Welcome to Xcode' screen is displayed.<br>
 **![Xcode](screenshots/mac/15_xcode.jpg?raw=true "Xcode")**
      
-4) Make a symlink to the 'Applications' directory, so XCode is visible in the menu system:
-Launch the terminal emulator
-$ cd /Applications
-$ ln -s /Users/<your_username>/Documents/Xcode.app .
-If your 'Launchpad' application page is very full, you may need to swipe left/right to 
-see more of your installed applications.
-
-Make the system aware where Xcode can be located:
-$ sudo xcode-select -switch /Applications/Xcode.app
-Verify the path: 
-$ xcode-select -p
-  /Applications/Xcode.app/Contents/Developer
-
-Install the Xcode command line tools:
+Make a symlink to the 'Applications' directory, so XCode is visible in the Launchpad menu system:<br>
+Launch the terminal emulator.<br>
+&nbsp;&nbsp;$<b> cd Documents</b><br>
+&nbsp;&nbsp;$<b> ln -s $PWD/Xcode.app /Applications/Xcode.app</b><br>
+If your 'Launchpad' application page is very full, you may need to swipe left/right to see more of your installed applications.<br>
+Make the system aware where Xcode can be located:<br>
+&nbsp;&nbsp;$<b> sudo xcode-select -switch /Applications/Xcode.app</b><br>
+Verify the path: <br>
+&nbsp;&nbsp;$<b> xcode-select -p</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;/Applications/Xcode.app/Contents/Developer<br>
+<br>
+Install the Xcode command line tools:<br>
 **![Xcode](screenshots/mac/16_xcode.jpg?raw=true "Xcode")**
-$ sudo xcode-select --install
-  Select 'Install' in the popup window
-  Accept the license agreement
+&nbsp;&nbsp;$<b> sudo xcode-select --install</b><br>
+&nbsp;&nbsp;Select 'Install' in the popup window<br>
+&nbsp;&nbsp;Accept the license agreement<br>
 
-MacPorts:
-MacPorts are ports of popular projects to Apple/Mac. We're using some
-of the tools for convenience, while others install required dependencies.
+# MacPorts
+MacPorts contain popular projects from other operating systems that were adapted to run on Apple/Mac. We're using some of the tools for convenience, while other install required dependencies.<br>
+With Safari, browse to macports.org<br>
 **![Xcode](screenshots/mac/17_macports.jpg?raw=true "Xcode")**
-
-With Safari, browse to macports.org
-Select 'Installing MacPorts' tab. 
-From the menu, select Older OS. Select Mojave. This will download MacPorts-2.8.1-10.14-Mojave.pkg
-    
-Use Finder to navigate to where you've downloaded the archive.
-Click on the filename to start the installer
-From the installer, continue through the prompts
-
-The project installs into /opt/local
-The main application is: /opt/local/bin/port
-
-Install ports:
-The ports are installed system wide. Use your 'root' account to install them. Launch terminal. 
-$ sudo /opt/local/bin/port install wget
-$ sudo /opt/local/bin/port install joe
-$ sudo /opt/local/bin/port install git
-$ sudo /opt/local/bin/port install minicom
-
-Qt:
+Select 'Installing MacPorts' tab. From the menu, select Older OS. Select Mojave. This will download MacPorts-2.8.1-10.14-Mojave.pkg<br>  
+Use Finder to navigate to where you've downloaded the archive. Click on the filename to start the installer. From the installer, continue through the prompts.<br>
+The project installs into <b>/opt/local</b>. The main application is: <b>/opt/local/bin/port</b>
+<br>
+Install ports:<br>
+The ports are installed system wide. Use your 'root' account to install them.<br>
+Launch the terminal emulator.<br>
+&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install wget</b><br>
+&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install joe</b><br>
+&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install git</b><br>
+&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install minicom</b><br>
+<br>
+# Qt development environment
+Qt is a cross platform graphic development environment.<br>
+With Safari, browse to https://www.qt.io/offline-installers<br>
 **![Xcode](screenshots/mac/18_qt.jpg?raw=true "Xcode")**
-Qt is a cross platform graphic development environment.
+Select '5.12.x Offline installers' from the menu. Select 'Qt 5.12.12 for macOS' to start the download of the archive. This will download qt-opensource-mac-x64-5.12.12.dmg. The size of the archive is approx. 2.7GB<br>
+Launch Finder and navigate to where you've downloaded the archive. Click on qt-opensource-mac-x64-5.12.12.dmg to start the installer.
+From the installer, continue through the prompts.<br>
+<b>Login:</b> The installer expects you to open a Qt developer account. If you don't want to provide personal information, create a Protonmail or Skiff.com account first. Use the annonymous e-mail account to register a Qt developer account.<br>
+<b>Installation Folder:</b> Specify the installation directory: /Users/<your account>/Documents/Qt5<br>
+<b>Select components:</b><br>
+Qt->Qt 5.12.12->macOS<br>
+Developer and Designer Tools->Qt Creator 5.0.2<br>
+**![Xcode](screenshots/mac/19_qt.jpg?raw=true "Xcode")**<br>
+Accept license and start the installation.<br>
+**![Xcode](screenshots/mac/20_qt.jpg?raw=true "Xcode")**<br>
 
-With Safari, browse to https://www.qt.io/offline-installers
-Select '5.12.x Offline installers' from the menu. Select 
-Qt 5.12.12 fro macOS to start the download of the archive.
-This will download qt-opensource-mac-x64-5.12.12.dmg
-
-**![Xcode](screenshots/mac/19_qt.jpg?raw=true "Xcode")**
-Use Finder to navigate to where you've downloaded the archive.
-Click on qt-opensource-mac-x64-5.12.12.dmg to start the installer.
-From the installer, continue through the prompts.
-
-The installer expects you to open a Qt developer account. Use protonmail
-or skiff.com to set up an annonymous e-mail account.
-
-Specify the installation directory: /Users/<your account>/Documents/Qt5
-
-**![Xcode](screenshots/mac/20_qt.jpg?raw=true "Xcode")**
-Components: Qt->Qt 5.12.12->macOS
-Developer and Designer Tools
-  Qt Creator 5.0.2
-
-Accept license
-Start the installation
-
-**![Xcode](screenshots/mac/21_qt.jpg?raw=true "Xcode")**
-Make a symlink to the 'Applications' directory, so Qt Creator is visible in the menu system:
-Launch the terminal emulator
-$ cd /Applications
-$ ln -s /Users/<your account>/Documents/Qt5/Qt\ Creator.app /Applications/QtCreator.app
-
+Make a symlink to the 'Applications' directory, so that Qt Creator is visible in the Launchpad menu system:<br>
+Launch the terminal emulator.<br>
+&nbsp;&nbsp;$<b> cd Documents/Qt5</b><br>
+&nbsp;&nbsp;$<b> ln -s $PWD/Qt\ Creator.app /Applications/QtCreator.app</b><br>
 
 # Environmental variables
-The path to the development tools are not set up automatically in your environmental variables.<br>
-**![Path](screenshots/mac/22_qt.jpg?raw=true "path")**
-Launch the terminal emulator from LaunchPad->Other->Terminal
-
-<br>
+The path to the development tools are not set up automatically in your environmental variables. You have to edit the 'profile' of your account and add it there.<br>
+Launch the terminal emulator.<br>
 Make a backup copy of the file:<br>
-$ cp .profile .profile.O<br>
-  To restore the backup, you do the opposite: cp .profile.O .profile<br>
+&nbsp;&nbsp;$<b> cp .profile .profile.O</b><br>
+To restore the backup, you do the opposite: cp .profile.O .profile<br>
 <br>
 Edit the file with the joe editor.<br>
-$ joe .profile<br>
-  Use the arrow keys to navigate all the way to the bottom of the file, or jump there <br>
-  with the command: ctrl+k followed by v <br>
-  To jump to the top of the file, press: ctrl+k followed by u<br>
-  <br>
-  At the bottom of the file, add the updated PATH. <br>
-  <br>
-  export PATH="/opt/local/bin:/opt/local/sbin:$PATH"<br>
-  export PATH="/Users/<your account>/Documents/Qt5/5.12.12/clang_64/bin:$PATH"<br>
-  <br>
-  Save the file by pressing: ctrl+k followed by x<br>
-  If you want to exit the file without saving, simply press: ctrl+c to return to the shell<br>
-  <br>
-The config file needs to be reread. There is a command called 'source' to do this:<br>
-$ source .profile<br>
-The easiest way is to log out of the desktop session and to log back in.<br>
-
-# Verify the environment
+&nbsp;&nbsp;$<b> joe .profile</b><br>
+**![Path](screenshots/mac/21_path.jpg?raw=true "path")**<br>
+Use the arrow keys to navigate all the way to the bottom of the file, or jump there with the command: ctrl+k followed by v <br>
+To jump to the top of the file, press: ctrl+k followed by u<br> 
+At the bottom of the file, add the updated PATH. <br>
+<b>export PATH="/opt/local/bin:/opt/local/sbin:$PATH"</b><br>
+<b>export PATH="/Users/&lt;your account&gt;/Documents/Qt5/5.12.12/clang_64/bin:$PATH"</b><br>
+<br>
+Save the file by pressing: ctrl+k followed by x If you want to exit the file without saving, simply press: ctrl+c to return to the shell<br>
+<br>
+The config file needs to be reread by the system to make it active. There is a command called 'source' to do this:<br>
+&nbsp;&nbsp;$<b> source .profile</b><br>
+Another way is to log out of the desktop session and to log back in. The config file is read during login<br>
+<br>
+Verify the environment<br>
 All these outputs must be detected, otherwise the build steps for the control software will not work.<br>
 **![Environment](screenshots/08_environment.jpg?raw=true "Environment")**<br>
- $ which qmake<br>
-     /Users/<your account>/Documents/Qt5/5.12.12/clang_64/bin/qmake
- $ which clang<br>
-     /usr/bin/clang<br>
-
-
-# Obtain Pirate hardware wallet control software
-Git repository:<br>
-$ cd<br>
-    -- Change directory back to your home directory<br>
-$ cd Documents    
-$ git clone https://github.com/mullroy/pirate_hardware_interface.git<br>
-   -- Clone the repository into pirate_hardware_interface<br>
+&nbsp;&nbsp;$<b> which qmake</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;/Users/&lt;your account&gt;/Documents/Qt5/5.12.12/clang_64/bin/qmake<br>
+&nbsp;&nbsp;$<b>which clang</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;/usr/bin/clang<br>
+<b>
+# Pirate hardware wallet control software
+Download the GIT source repository:<br>
+&nbsp;&nbsp;$<b> cd</b><br>
+&nbsp;&nbsp;-- Change directory back to your home directory<br>
+&nbsp;&nbsp;$<b> cd Documents</b>
+&nbsp;&nbsp;$<b> git clone https://github.com/mullroy/pirate_hardware_interface.git</b><br>
+&nbsp;&nbsp;-- Clone the repository into pirate_hardware_interface<br>
 **![GIT clone](screenshots/10.jpg?raw=true "GIT clone")**<br>   
 <br>
 If there are new software updates published, you can incorporate it into your source tree copy by running:<br>
-$ cd ~/pirate_hardware_interface<br>
-$ git pull<br>
-You will have to rebuild the project again after a source code update
-
-# Build the software
-$ cd pirate_hardware_interface<br>
-$ qmake -makefile<br>
-   -- Let Qt create a Makefile for the project<br>
+&nbsp;&nbsp;$<b> cd ~/pirate_hardware_interface</b><br>
+&nbsp;&nbsp;$<b> git pull</b><br>
+You will have to rebuild the project again after a source code update<b>
+<b>
+<b>Build the software</b><br>
+&nbsp;&nbsp;$<b>cd pirate_hardware_interface</b><br>
+&nbsp;&nbsp;$<b> qmake -makefile</b><br>
+&nbsp;&nbsp;-- Qt creates a Makefile for the project<br>
 $ make -j 2<br>
    -- Compile the project, using 2 processor cores. You can increse the number, but the resources<br>
       used will also increase. Do not overload your machine by specifying a number higher than twice <br>
