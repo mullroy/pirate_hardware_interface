@@ -42,9 +42,13 @@ If the two ports are present your machine has detected the hardware wallet succe
 
 # Development tools
 # XCode
-Note: OS X plus the development environment takes up approx 44GB of hard drive space. Make sure you have enough space available on your hard drive before continueing with the installation.<br>
+<b>Note:</b> OS X plus the development environment takes up approx 44GB of hard drive space. Make sure you have enough space available on your hard drive before continueing with the installation.<br>
 
-For this development OSX Mojave (10.14.6) was used. The last version of XCode released for Mac OSX Mojave was 11.3.1. You'll need an Apple ID to download content from the Apple developer website. The original URL for the Xcode 11.3.1 is: https://download.developer.apple.com/Developer_Tools/Xcode_11.3.1/Xcode_11.3.1.xip 
+For this development OSX Mojave (10.14.6) was used. The last version of XCode released for Mac OSX Mojave was 11.3.1. <br>
+<b>Note:</b> If you're using a new vervion of XCode there was an incompatibility detected with XCode 15 & QT 5. A patched file
+is provided inside the Qt5_patch directory.
+
+You'll need an Apple ID to download content from the Apple developer website. The original URL for the Xcode 11.3.1 is: https://download.developer.apple.com/Developer_Tools/Xcode_11.3.1/Xcode_11.3.1.xip 
 
 Alternatively, Xcode 11.3.1 is available on The Wayback Machine at archive.org. Browse to archive.org. In the search windows enter: xcode 11.3.1.<br>
 **![Xcode](screenshots/mac/12_xcode.jpg?raw=true "Xcode")**
@@ -90,6 +94,7 @@ Launch the terminal emulator.<br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install joe</b><br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install git</b><br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install minicom</b><br>
+&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install openssl</b><br>
 <br>
 # Qt development environment
 Qt is a cross platform graphic development environment.<br>
@@ -111,6 +116,11 @@ Make a symlink to the 'Applications' directory, so that Qt Creator is visible in
 Launch the terminal emulator.<br>
 &nbsp;&nbsp;$<b> cd Documents/Qt5</b><br>
 &nbsp;&nbsp;$<b> ln -s $PWD/Qt\ Creator.app /Applications/QtCreator.app</b><br>
+
+# Patch
+If you're using a new versions than XCode 11, incompatibilities with Qt may be introduced. A bug (https://bugreports.qt.io/browse/QTBUG-117225) was logged on 19 September 2023 regarding an incompatibility with XCode 15 with QT 5 & QT 6. This causes qmake (Qt build script) to fail. A patched version of the file is included in the <b>Qt5_patch</b> directory. This updated file isn't required to be deployed if you're running XCode 11 to 14. For XCode 15 (and beyound?) please navigate to your Qt5 directory (Suggested /Users/<your account>/Documents/Qt5 above) and lower into the sub directories: 5.12.12/clang_64/mkspecs/features<br>
+Make a backup copy of your file: cp toolchain.prf toolchain.prf.O<br>
+Overwrite toolchain.prf with the copy located under the Qt5_patch directory.<br>
 
 # Environmental variables
 The path to the development tools are not set up automatically in your environmental variables. You have to edit the 'profile' of your account and add it there.<br>
