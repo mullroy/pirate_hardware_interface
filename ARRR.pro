@@ -39,8 +39,13 @@ unix:!macx {
 	LIBS += -L$$PWD/libraries -L/usr/local/lib -ldl -lcrypto
         ICON = images/pirate.ico
 }
+
+# Apple: Expect openssl (from source) in /usr/local
+#        MacPorts installs in /opt/local - However, MacPorts only installs
+#        the Intel libraries. If you have an ARM CPU it will not work.
+#        Rather use openssl build from source to cover both architectures
 macx: {
-	LIBS += -L$$PWD/libraries -L/opt/local/lib -dl -lcrypto
+	LIBS += -L$$PWD/libraries -L/usr/local/lib -dl -lcrypto
         ICON = images/pirate.icns
 }
 # Default rules for deployment.
@@ -58,7 +63,7 @@ unix:!macx {
 	INCLUDEPATH += /usr/local/include
 }
 
-# Apple: Expect openssl (from MacPorts) in /opt/local
+
 macx: { 
-	INCLUDEPATH += /opt/local/include
+	INCLUDEPATH += /usr/local/include
 }
