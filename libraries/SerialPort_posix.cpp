@@ -1,7 +1,7 @@
 #define _SERIALPORT_CPP_
 /*--[ INCLUDE FILES ]--------------------------------------------------------*/
 #include "SerialPort.h"
-#include "SerialPort_lin_i.h"
+#include "SerialPort_posix_i.h"
 #include "stdio.h"
 
 /*--[ FUNCTION ]***************************************************************
@@ -295,7 +295,15 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   if (sSerialArray[cSerialArrayCount].bStatus_PortIsOpen != FALSE) {
     return -3;
   }
-  fd = open(spSerialSettings->cPCComPortName, O_RDWR | O_NOCTTY | O_NDELAY );
+  
+  if (spSerialSettings->eFLowType==FLOW_OFF)
+  {
+    fd = open(spSerialSettings->cPCComPortName, O_RDWR | O_NOCTTY | O_NDELAY | O_NONBLOCK);
+  }
+  else
+  {
+    fd = open(spSerialSettings->cPCComPortName, O_RDWR | O_NOCTTY | O_SYNC);
+  }
   if (fd == -1) {
     return -2;
   }
@@ -308,7 +316,6 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   Posix_CommConfig.c_iflag &=
     (~(INPCK | IGNPAR | PARMRK | ISTRIP | ICRNL | IXANY));
   Posix_CommConfig.c_oflag &= (~OPOST);
-
 
 #ifdef _POSIX_VDISABLE
   const long vdisable = fpathconf (fd, _PC_VDISABLE);
@@ -326,12 +333,10 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   setFlowControl (spSerialSettings->eFLowType,&Posix_CommConfig);
   if (spSerialSettings->eFLowType==FLOW_OFF)
   {
-    fcntl (fd, F_SETFL, O_NDELAY);
     Posix_CommConfig.c_cc[VMIN] = 0; //no block
   }
   else
   {
-    fcntl (fd, F_SETFL, O_SYNC);
     Posix_CommConfig.c_cc[VMIN] = 1;  //block
   }
   Posix_CommConfig.c_cc[VTIME] = spSerialSettings->cTimeout; //VTIME in units of 100ms

@@ -891,7 +891,11 @@ void MainWindow::ResolveSerialPorts()
   //Get the serial ports
   printf("MAC OSX\n");
 
-  sResult = exec("ls /dev/tty.SLAB_USBtoUART* 2>/dev/null");
+  // Note: on Mac OSX the /dev/tty* ports are blocking (flow control) while the
+  //       /dev/cu* counterparts do not have flow control. This is a deviation 
+  //       from the norm where a single port (/dev/tty*) can do both functions
+  //       on Linux
+  sResult = exec("ls /dev/cu.SLAB_USBtoUART* 2>/dev/null");
   if (sResult.length()==0)
   {
     ui->statusbar->showMessage("Could not detect the serial ports of the unit.");

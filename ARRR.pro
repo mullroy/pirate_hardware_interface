@@ -15,7 +15,7 @@ QMAKE_CXXFLAGS += -Wno-deprecated-declarations
 
 SOURCES += \
     communication/comms_filetx.cpp \
-    libraries/SerialPort_lin.cpp \
+    libraries/SerialPort_posix.cpp \
     libraries/md5sum.cpp \
     main.cpp \
     mainwindow.cpp \

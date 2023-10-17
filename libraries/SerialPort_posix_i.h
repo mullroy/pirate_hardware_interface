@@ -2,7 +2,7 @@
 #define _SERIALPORT_I_H_
 
 #ifndef _SERIALPORT_CPP_
-#error This file is private to SerialPort_lin.c
+#error This file is private to SerialPort_posix.c
 #endif
   
 #ifdef __cplusplus

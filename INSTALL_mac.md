@@ -78,28 +78,41 @@ Install the Xcode command line tools:<br>
 &nbsp;&nbsp;$<b> sudo xcode-select --install</b><br>
 &nbsp;&nbsp;Select 'Install' in the popup window<br>
 &nbsp;&nbsp;Accept the license agreement<br>
-
+<br>
 # MacPorts
 MacPorts contain popular projects from other operating systems that were adapted to run on Apple/Mac. We're using some of the tools for convenience, while other install required dependencies.<br>
 With Safari, browse to macports.org<br>
-**![Xcode](screenshots/mac/17_macports.jpg?raw=true "Xcode")**
+**![Xcode](screenshots/mac/17_macports.jpg?raw=true "MacPorts")**
 Select 'Installing MacPorts' tab. From the menu, select Older OS. Select Mojave. This will download MacPorts-2.8.1-10.14-Mojave.pkg<br>  
 Use Finder to navigate to where you've downloaded the archive. Click on the filename to start the installer. From the installer, continue through the prompts.<br>
 The project installs into <b>/opt/local</b>. The main application is: <b>/opt/local/bin/port</b>
 <br>
 Install ports:<br>
-The ports are installed system wide. Use your 'root' account to install them.<br>
+The ports are installed system wide. Use your 'root' account via the 'sudo' command to install them.<br>
+OpenSSL is available as part of the ports, but if you're running an ARM CPU in your Mac machine, then there is an issue with Intel x86 cross compiled libraries. It's better to build openssl from source and sidestep the dependency issues.<br>
 Launch the terminal emulator.<br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install wget</b><br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install joe</b><br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install git</b><br>
 &nbsp;&nbsp;$<b> sudo /opt/local/bin/port install minicom</b><br>
-&nbsp;&nbsp;$<b> sudo /opt/local/bin/port install openssl</b><br>
+<br>
+# OpenSSL
+A precompiled openssl is available via MacPorts. However, if you have an ARM CPU in your machine there are incompatibilities where Qt still references the Intel x86 variant of the libraries, which are not installed as part of MacPorts. In the quest to have a uniform installation on all hardware, build OpenSSL from source and install it in the default /usr/local location.<br>
+With Safari, browse to openssl.org<br>
+**![Xcode](screenshots/mac/23_openssl.jpg?raw=true "OpenSSL")**
+Select 'Download' tabl. From the list, select openssl-1.1.1w.tar.gz<br>
+Use Finder to navigate to where you've downloaded the archive. Click on the filename to extract the archive.<br>
+Launch the terminal emulator. Navigate with the terminal emulator to the location where you've downloaded and extracted the archive.<br>
+&nbsp;&nbsp;<b>cd Downloads</b><br>
+&nbsp;&nbsp;<b>cd openssl-1.1.1w</b><br>
+&nbsp;&nbsp;<b>perl Configure darwin64-x86_64-cc</b><br>
+&nbsp;&nbsp;<b>make -j 8</b><br>
+&nbsp;&nbsp;<b>sudo make install<b><br>
 <br>
 # Qt development environment
 Qt is a cross platform graphic development environment.<br>
 With Safari, browse to https://www.qt.io/offline-installers<br>
-**![Xcode](screenshots/mac/18_qt.jpg?raw=true "Xcode")**
+**![Xcode](screenshots/mac/18_qt.jpg?raw=true "Qt")**
 Select '5.12.x Offline installers' from the menu. Select 'Qt 5.12.12 for macOS' to start the download of the archive. This will download qt-opensource-mac-x64-5.12.12.dmg. The size of the archive is approx. 2.7GB<br>
 Launch Finder and navigate to where you've downloaded the archive. Click on qt-opensource-mac-x64-5.12.12.dmg to start the installer.
 From the installer, continue through the prompts.<br>
@@ -108,9 +121,9 @@ From the installer, continue through the prompts.<br>
 <b>Select components:</b><br>
 Qt->Qt 5.12.12->macOS<br>
 Developer and Designer Tools->Qt Creator 5.0.2<br>
-**![Xcode](screenshots/mac/19_qt.jpg?raw=true "Xcode")**<br>
+**![Xcode](screenshots/mac/19_qt.jpg?raw=true "install options")**<br>
 Accept license and start the installation.<br>
-**![Xcode](screenshots/mac/20_qt.jpg?raw=true "Xcode")**<br>
+**![Xcode](screenshots/mac/20_qt.jpg?raw=true "install options")**<br>
 
 Make a symlink to the 'Applications' directory, so that Qt Creator is visible in the Launchpad menu system:<br>
 Launch the terminal emulator.<br>

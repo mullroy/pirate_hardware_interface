@@ -1,3 +1,11 @@
+## [2.7] - 2023-1017
+Communication version 2, GUI application version 7<br>
+<b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
+Changes:<br>
+Fix issues with the serial communication on newer Mac OSX release.<br>
+On Mac hardware running an ARM CPU, fix build instructions to build openssl from source rather than using the version from 'ports'<br>
+The build instructions for Mac uses XCode 11. A bug was introduced with XCode 15. In order to build a Qt application, like this one, we've created a patch, located inside: Qt5_patch. Follow the instructions in Qt5_patch/readme.txt on how to deploy the patch.<br>
+<br>
 ## [2.6] - 2023-09-16
 Communication version 2, GUI application version 6<br>
 <b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
