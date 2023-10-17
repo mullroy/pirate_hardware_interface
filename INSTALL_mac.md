@@ -105,9 +105,12 @@ Use Finder to navigate to where you've downloaded the archive. Click on the file
 Launch the terminal emulator. Navigate with the terminal emulator to the location where you've downloaded and extracted the archive.<br>
 &nbsp;&nbsp;<b>cd Downloads</b><br>
 &nbsp;&nbsp;<b>cd openssl-1.1.1w</b><br>
+Setup the code for your environment: MacOSX 64-bit:<br>
 &nbsp;&nbsp;<b>perl Configure darwin64-x86_64-cc</b><br>
+Build openssl:<br>
 &nbsp;&nbsp;<b>make -j 8</b><br>
-&nbsp;&nbsp;<b>sudo make install<b><br>
+Install openssl:<br>
+&nbsp;&nbsp;<b>sudo make install</b><br>
 <br>
 # Qt development environment
 Qt is a cross platform graphic development environment.<br>
@@ -192,10 +195,10 @@ Make a symlink to the 'Applications' directory, so that ARRR is visible in the L
 From Launchpad, select ARRR<br>
 **![ARRR](screenshots/12.jpg?raw=true "ARRR")**<br>
 <br>
-The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/tty.SLAB_USBtoUARTx) will already be filled in when the application is launched.<br>
+The application will try to automatically detect the serial port where the hardware unit is attached. The port (/dev/cu.SLAB_USBtoUARTx) will already be filled in when the application is launched.<br>
 Troubleshooting:<br>
 1. If the serial port cannot be detected, make sure the hardware wallet is powered up and LCD display shows that it is ready to accept a connection.<br>
 2. See if the operating system detected the ports:<br>
 Launch the terminal emulator<br>
-&nbsp;&nbsp;$<b> ls -sal /dev/tty.S*</b><br>
-&nbsp;&nbsp;&nbsp;&nbsp;/dev/tty.SLAB_USBtoUART /dev/tty.SLAB_USBtoUARTx<br>
+&nbsp;&nbsp;$<b> ls -sal /dev/cu.S*</b><br>
+&nbsp;&nbsp;&nbsp;&nbsp;/dev/cu.SLAB_USBtoUART /dev/cu.SLAB_USBtoUARTx<br>
