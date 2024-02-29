@@ -13,12 +13,12 @@ H/w wallet: 3 (3.5)
 Treasure Chest: 5.8.0
 
 Qt GUI: 2 (2.3-2.7)
-H/w wallet: 3 (2.3-2.4)
-Treasure Chest: 5.7
+H/w wallet: 2 (2.3-2.4)
+Treasure Chest: 5.6-5.7
 
 Qt GUI: 1 (1.1-1.2)
-H/w wallet: 3 (1.1-1.2)
-Treasure Chest: 5.7
+H/w wallet: 1 (1.1-1.2)
+Treasure Chest: 5.6-5.7
 
-View UPGRADE.md for instructions on how to upgrade the hardware wallet, or alternatively, to downgrade the GUI down to version 1.2
+View UPGRADE.md for instructions on how to upgrade the hardware wallet, or alternatively, to downgrade the GUI down to version 2.7
 
