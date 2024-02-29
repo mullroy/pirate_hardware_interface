@@ -1,4 +1,10 @@
-## [2.7] - 2023-1017
+## [3.8] - 2024-02-29
+Communication version 3, GUI application version 8<br>
+<b>Note:</b> This version requires a hardware wallet running v3.x firmware.<br>
+Changes:<br>
+Treasure Chest 5.8.0 introduced a new way that the transactions are compiled. This update supports the new transaction format.<br>
+This upgrade requires that Treasure Chest, this control GUI and your wallet software are upgraded. See UPGRADE.md to request new firmware for your hardware wallet.<br>
+## [2.7] - 2023-10-17
 Communication version 2, GUI application version 7<br>
 <b>Note:</b> This version requires a hardware wallet running v2.x firmware.<br>
 Changes:<br>
