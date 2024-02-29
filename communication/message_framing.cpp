@@ -274,8 +274,8 @@ void MsgFrame_Widget::Frameing (void)
            (cInternalMsgID==MSGID_SESSIONKEY)  ||
            (cInternalMsgID==MSGID_PINGPONG)    ||
            (cInternalMsgID==MSGID_LOGIN_ACK)   ||
-           (cInternalMsgID==MSGID_LOGIN_ACK)   ||
            (cInternalMsgID==MSGID_LOGOUT)      ||
+           (cInternalMsgID==MSGID_SELECT_PROJECT_ACK) ||
 
            (cInternalMsgID==MSGID_GEN_MNEMONIC)||
            (cInternalMsgID==MSGID_GEN_MNEMONIC_PREVIOUS)||

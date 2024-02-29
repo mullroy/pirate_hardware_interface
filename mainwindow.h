@@ -13,9 +13,19 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-#define TRANSACTION_VERSION 0x01
-#define COMMUNICATION_VERSION 0x02
-#define APPLICATION_VERSION   0x07
+#define COMMUNICATION_VERSION 0x03
+#define APPLICATION_VERSION   0x08
+
+// GUI:   2.3 - 2.7
+// Wallet 2.4
+//   Pirate  ver 1
+
+// Treasure chest: 5.8.0
+// GUI:   3.8
+// Wallet 3.5
+//   Pirate  ver 2
+//   Dero    ver 1
+//   Radiant ver 1
 
 class Worker : public QObject
 {

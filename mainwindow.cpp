@@ -112,12 +112,12 @@ void MainWindow::stylesheet()
   QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
   QString sLabel = "font: 13pt;";
 #else
-  QString sButton="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Courier\";";
+  QString sButton="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Noto Sans\";";
   QString sLineEdit="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
   QString sTextEdit   ="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 11pt \"Arial\";";
   QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 11pt \"Arial\";";
   QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
-  QString sLabel = "font: 11pt;";
+  QString sLabel = "font: 11pt; color: rgb(255, 255, 255);";
 #endif 
   ui->lbSign_Detail->setStyleSheet(sLabel);
   ui->lbSign_OTP->setStyleSheet(sLabel); 
@@ -244,7 +244,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     stylesheet();
      
-    _pixmapBg.load(":/images/piratemap.png");
+    _pixmapBg.load(":/images/night.png");
     setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
     this->setFixedSize(QSize(800, 525));
 
@@ -806,7 +806,6 @@ int8_t MainWindow::CloseSerialPort()
     cEmojiPosition=0;
 
     ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
-
 
     ui->leConnect->clear();
     ui->btConnect->setText("Connect");
@@ -1634,7 +1633,12 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
                 {
                   //Password accepted. Enter the application
                   bLoggedIn=TRUE;
-                  Switchto_pageSign();
+                  pcaData[0]=1; //Pirate
+                  cReturnCode = oMsgFrame->Pack(MSGID_SELECT_PROJECT, &pcaData[0], 1 );
+                  if (cReturnCode!=0)
+                  {
+                    ui->statusbar->showMessage("Could not send the command to the hardware unit");
+                  }
                 }
                 else
                 {
@@ -1716,6 +1720,16 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         CloseSerialPort();
         break;
 
+      case MSGID_SELECT_PROJECT_ACK:
+        if (pcaData[0]==1) //Pirate
+        {
+          Switchto_pageSign();
+        }
+        else
+        {
+          ui->statusbar->showMessage("Requested project and wallet response doesn't match");
+        }
+        break;
 
       case MSGID_PINGPONG:
         iPeriodicCounter=0;
@@ -1752,21 +1766,27 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           break;
         }
 
-        iIndex  = (uint16_t) (pcaData[0]    & 0x00FF);
-        iIndex |= (uint16_t) (pcaData[1]<<8 & 0xFF00);
+        if (pcaData[0] != 1) //Pirate
+        {
+          ui->teSign_Output->setText("Mismatch between the selected project and what the hardware wallet responded with");
+          break;
+        }
+
+        iIndex  = (uint16_t) (pcaData[1]    & 0x00FF);
+        iIndex |= (uint16_t) (pcaData[2]<<8 & 0xFF00);
         qsIndex = qsIndex.asprintf("%u",iIndex);
 
         //sSaplingPaymentAddress length
-        iSaplingPaymentAddress_len  = (uint16_t) (pcaData[2]    & 0x00FF);
-        iSaplingPaymentAddress_len |= (uint16_t) (pcaData[3]<<8 & 0xFF00);
+        iSaplingPaymentAddress_len  = (uint16_t) (pcaData[3]    & 0x00FF);
+        iSaplingPaymentAddress_len |= (uint16_t) (pcaData[4]<<8 & 0xFF00);
         //sSaplingPaymentAddress:
-        memcpy( (char *)&caData[0], (char *)&pcaData[6], iSaplingPaymentAddress_len);
+        memcpy( (char *)&caData[0], (char *)&pcaData[7], iSaplingPaymentAddress_len);
         caData[iSaplingPaymentAddress_len]=0;
         qsSaplingPaymentAddress = qsSaplingPaymentAddress.asprintf("%s", (char *)&caData[0] );
 
         //sSaplingExtendedFullViewingKey length
-        iSaplingExtendedFullViewingKey_len  = (uint16_t) (pcaData[4]    & 0x00FF);
-        iSaplingExtendedFullViewingKey_len |= (uint16_t) (pcaData[5]<<8 & 0xFF00);
+        iSaplingExtendedFullViewingKey_len  = (uint16_t) (pcaData[5]    & 0x00FF);
+        iSaplingExtendedFullViewingKey_len |= (uint16_t) (pcaData[6]<<8 & 0xFF00);
         //sSaplingExtendedFullViewingKey:
         memcpy( (char *)&caData[0], (char *)&pcaData[6+iSaplingPaymentAddress_len], iSaplingExtendedFullViewingKey_len);
         caData[iSaplingExtendedFullViewingKey_len]=0;
@@ -2018,6 +2038,8 @@ uint16_t Hex2Array(QString sInput, uint8_t *pcaOutput, uint16_t iSize)
 void MainWindow::btSign_Sign_clicked()
 {
   QString sVersion;
+  int iVersion;
+  QString sSpendType;
   QString sTmp;
   int iTmp;
   bool bOK;
@@ -2047,7 +2069,8 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
 
-    //Version 1 protocol:
+    //Pirate
+    //Version 2 protocol:
     //Parameter   [0]: Project - Expect 'arrr'
     //            [1]: Version - Layout of the command fields
     //            [2] Pay from address
@@ -2055,6 +2078,11 @@ void MainWindow::btSign_Sign_clicked()
     //            [4] Array of recipient: address, amount, memo
     //            [5]..[14] Blockchain parameters
     //            [15] Checksum of all the characters in the command.
+
+    // Difference between version 1 & 2:
+    // 'Witness' was replaced by 'MerklePath'. The serialised data structure is identical to version 1, except for
+    // 'witnesspath' & 'witnessposition' that were replaced by 'merklepath' & 'merkleposition'
+    // The version number is increased to indicate this difference
 
     QStringList slParts = sTransaction.split(" ");
     if (slParts.count() < 3)
@@ -2076,40 +2104,39 @@ void MainWindow::btSign_Sign_clicked()
     sChecksumInput=slParts[1]+" ";
 
     sVersion=slParts[2];
-    iTmp = sVersion.toInt(&bOK);
+    iVersion = sVersion.toInt(&bOK);
     if (bOK==false)
     {
       ui->teSign_Output->setText("Transaction format error: Could not extract the protocol version");
       return;
     }
 
-    //Version check:
-    //Communication version 1 & 2 has the same transaction format:
+    //Communication Version check:
+    if (iVersion != 2)
+    {
+      //Arrr: Only version 2 supported
+      ui->teSign_Output->setText("Transaction format error: Only transaction version 2 supported. Please upgrade Treasure Chest to 5.8 or newer");
+      return;
+    }
+
+    if (slParts.count() != 17)
+    {
+      ui->teSign_Output->setText("Transaction format error: Invalid nr of parts detected in the data");
+      return;
+    }
+
+    //Is the supplied transaction compatible with your hardware?
+    //ARRR communication version 1 : Hardware 2.3-2.4
+    //ARRR communication version 2 : Hardware 3.5
     if (
-       (iTmp!=1)                    &&
-       (iTmp!=COMMUNICATION_VERSION)
+       (cWalletVersionCommunication!=3) ||
+       (cWalletVersionApplication<5)
        )
     {
-      sTmp = sTmp.asprintf("Transaction format error: Version mismatch. Only supporting %u",COMMUNICATION_VERSION);
-      ui->teSign_Output->setText(sTmp);
+      ui->teSign_Output->setText("Version error: Pirate transaction version 2 requires that the h/w wallet runs version 3.5 or newer");
       return;
     }
-    sChecksumInput+=sVersion+" ";
-
-    if (TRANSACTION_VERSION==1)
-    {
-      if (slParts.count() != 17)
-      {
-        ui->teSign_Output->setText("Transaction format error: Invalid nr of parts for the specified version");
-        return;
-      }
-    }
-    else
-    {
-      //At the moment only version 1 supported
-      ui->teSign_Output->setText("Transaction format error: Only transaction version 1 supported at the moment.");
-      return;
-    }
+    sChecksumInput+=slParts[2]+" ";
 
 
     //From address
@@ -2129,7 +2156,7 @@ void MainWindow::btSign_Sign_clicked()
 
     QString sMsg;
     sMsg = sMsg.asprintf("Witnessed: %s\n",sInputs.toStdString().c_str() );
-//ui->teSign_Output->append(sMsg);
+    //ui->teSign_Output->append(sMsg);
 
     int iCount = slInputsParts.count()-1; //Last entry empty - Matching the last }
     if (iCount < 1)
@@ -2138,93 +2165,94 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
     sMsg = sMsg.asprintf("Inputs: %d\n",iCount );
-//ui->teSign_Output->append(sMsg);
+    //ui->teSign_Output->append(sMsg);
 
     sChecksumInput+="spending notes: ";
+    sSpendType="merkle"; //Version 2
+
     uint64_t llTotalIn=0;
     for (int iI=0;iI<iCount;iI++)
     {
       sMsg = slInputsParts[iI].replace(",{","");
-      QStringList slWitnessParts = sMsg.split(",");
+      QStringList slWitness_Merkle_Parts = sMsg.split(",");
 
-      if (slWitnessParts.count()!=7)
+      if (slWitness_Merkle_Parts.count()!=7)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      if (!(slWitnessParts[0].contains("witnessposition")))
+      //Version 2:
+      if (!(slWitness_Merkle_Parts[0].contains("merkleposition")))
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      try { sTmp = slWitnessParts[0].split(":")[1].replace("\"",""); }  catch (...)
+      try { sTmp = slWitness_Merkle_Parts[0].split(":")[1].replace("\"",""); }  catch (...)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+        return;
+      }
+      sChecksumInput+=sTmp+" ";
+
+      if (!(slWitness_Merkle_Parts[1].contains("merklepath")))
+      {
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+        return;
+      }
+      try { sTmp = slWitness_Merkle_Parts[1].split(":")[1].replace("\"",""); }  catch (...)
+      {
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+        return;
+      }
+      sChecksumInput+=sTmp+" ";
+
+      if (!(slWitness_Merkle_Parts[2].contains("note_d")))
+      {
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+        return;
+      }
+      try { sTmp = slWitness_Merkle_Parts[2].split(":")[1].replace("\"",""); }  catch (...)
+      {
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
       sChecksumInput+=sTmp+" ";
 
 
-      if (!(slWitnessParts[1].contains("witnesspath")))
+      if (!(slWitness_Merkle_Parts[3].contains("note_pkd")))
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      try { sTmp = slWitnessParts[1].split(":")[1].replace("\"",""); }  catch (...)
+      try { sTmp = slWitness_Merkle_Parts[3].split(":")[1].replace("\"",""); }  catch (...)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-
-      if (!(slWitnessParts[2].contains("note_d")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
-        return;
-      }
-      try { sTmp = slWitnessParts[2].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
       sChecksumInput+=sTmp+" ";
 
 
-      if (!(slWitnessParts[3].contains("note_pkd")))
+      if (!(slWitness_Merkle_Parts[4].contains("note_r")))
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      try { sTmp = slWitnessParts[3].split(":")[1].replace("\"",""); }  catch (...)
+      try { sTmp = slWitness_Merkle_Parts[4].split(":")[1].replace("\"",""); }  catch (...)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-
-      if (!(slWitnessParts[4].contains("note_r")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
-        return;
-      }
-      try { sTmp = slWitnessParts[4].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
       sChecksumInput+=sTmp+" ";
 
 
-      if (!(slWitnessParts[5].contains("value")))
+      if (!(slWitness_Merkle_Parts[5].contains("value")))
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      try { sAmount = slWitnessParts[5].split(":")[1].replace("\"",""); }  catch (...)
+      try { sAmount = slWitness_Merkle_Parts[5].split(":")[1].replace("\"",""); }  catch (...)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
       sChecksumInput+=sAmount+" ";
@@ -2237,15 +2265,15 @@ void MainWindow::btSign_Sign_clicked()
       }
       llTotalIn+=llAmount;
 
-      sTmp = slWitnessParts[6];
-      if (!(slWitnessParts[6].contains("zip212")))
+      sTmp = slWitness_Merkle_Parts[6];
+      if (!(slWitness_Merkle_Parts[6].contains("zip212")))
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
-      try { sTmp = slWitnessParts[6].split(":")[1].replace("\"",""); }  catch (...)
+      try { sTmp = slWitness_Merkle_Parts[6].split(":")[1].replace("\"",""); }  catch (...)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the witness parts");
+        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
         return;
       }
       sChecksumInput+=sTmp+" ";
@@ -2429,12 +2457,13 @@ void MainWindow::btSign_Sign_clicked()
     //Check here if its a valid transaction before submitting it to the hw unit. It will fail there if its not correct too.
     //This is just to catch it earlier for user convenience.
     //The fee will be taken out of the change. If 100% funds are spend the user will first have to decrease the send amount:
-    uint64_t llCommission = 6250; //Invalid number if directly assigning the calculation...
+
+    //Debug: verify that 6250 coin has commission of 15.625 coin (0.25%)
+    uint64_t llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
     llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
 
-    llCommission = llTotalOut;
-    llCommission = llCommission * 25/10000; //0.25%
-
+    //Calculate the actual calculation on the Total outputs:
+    llCommission = llTotalOut * 25/10000; //0.25%
     if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
     {
       //Cap maximum commission at 6250 coin.
@@ -2540,10 +2569,10 @@ void MainWindow::btSign_Sign_clicked()
     sChecksumInput+=sZipEnabled+" ";
 
 
-    //Parameter [15]: checksum
+    //Parameter [16]: checksum
     //A simple checksum of the full string, to detect copy/paste errors between the wallets
     //The checksum equals the sum of the ASCII values of all the characters in the string:
-    //printf("sChecksumInput:\n%s\n\n",sChecksumInput.c_str() );
+    printf("sChecksumInput:\n%s\n\n",sChecksumInput.toStdString().c_str());
 
     unsigned int iChecksum=0x01;
     for (int iI=0;iI<sChecksumInput.length();iI++)
@@ -2560,6 +2589,7 @@ void MainWindow::btSign_Sign_clicked()
        ui->teSign_Output->setText("Transaction format error: Parameter 15 not an integer");
        return;
     }
+    printf("Protocol checksum: %s, Calculated checksum: %u\n", sChecksum.toStdString().c_str(), iChecksum);
     if (llTmp != iChecksum)
     {
       ui->teSign_Output->setText("Transaction format error: The checksum in the message mismatches the calculated checksum");
@@ -3995,7 +4025,7 @@ void MainWindow::btRetrieveAddress_clicked()
   {
 //    bool bOK;
     int8_t cReturnCode;
-    uint8_t caData[2];
+    uint8_t caData[3];
 
     ui->teRetrieveAddress_SA->setText("");
     ui->teRetrieveAddress_EFVK->setText("");
@@ -4009,14 +4039,16 @@ void MainWindow::btRetrieveAddress_clicked()
     cMessageQueued=3;  //X seconds for a reply
 
     ui->statusbar->showMessage("Request address");
+
+    caData[0] = 1; //Pirate
+
     //Instruct the unit that we want to retrieve a spending & viewing key
     uint16_t iIndex = (uint16_t)ui->sbRetrieveAddress_Index->value();
     // 0..65535 is valid
+    caData[1] = (iIndex   ) & 0xFF;
+    caData[2] = (iIndex>>8) & 0xFF;
 
-    caData[0] = (iIndex   ) & 0xFF;
-    caData[1] = (iIndex>>8) & 0xFF;
-
-    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS, &caData[0], 2 );
+    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS, &caData[0], 3 );
     if (cReturnCode!=0)
     {
       ui->statusbar->showMessage("Could not send the command to the hardware unit");

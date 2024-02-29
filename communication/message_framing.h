@@ -21,6 +21,8 @@ QT_END_NAMESPACE
 #define MSGID_LOGIN 	                        0x11
 #define MSGID_LOGIN_ACK                       0x12
 #define MSGID_LOGOUT                          0x13
+#define MSGID_SELECT_PROJECT                  0x14
+#define MSGID_SELECT_PROJECT_ACK              0x15
 
 #define MSGID_SIGN                            0x20
 #define MSGID_SIGN_NAVIGATE                   0x21

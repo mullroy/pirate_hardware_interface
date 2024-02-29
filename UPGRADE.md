@@ -4,6 +4,10 @@ GUI you'll be taken to the upgrade screen too.<br>
 Note: The communication version between the hardware wallet and GUI must match to use the standard functions of the hardware wallet. The application versions may differ. The application version indicate cosmetic changes in the applications themselves, but will not cause an incompatibility between the GUI and hardware wallet.<br>
 <b>NOTE:</b> The upgrade procedure will erase the device configuration, i.e. your mnemonic seed phrase and password. Make sure you have your mnemonic seed phrase on hand, since you'll need to set up the wallet again after the upgrade.<br>
 
+# Compatible versions
+The version numbers of three applications must match for the system to work: Treasure chest, the Qt GUI control application and the hardware wallet software.<br>
+The list of version numbers are maintained in the main README.md file<br>
+
 # Revert GUI to earlier versions
 If you'd like to revert your GUI application to an earlier version, you can do so by checking out an earlier version in the GIT source repository.
 * To see the status of your local repository:<br>
@@ -13,6 +17,9 @@ If you'd like to revert your GUI application to an earlier version, you can do s
   
 * View the tags in the repository:<br>
 <i>$ git tag</i><br>
+&nbsp;&nbsp;v2.7<br>
+&nbsp;&nbsp;v2.6<br>
+&nbsp;&nbsp;v2.5<br>
 &nbsp;&nbsp;v2.3<br>
 &nbsp;&nbsp;v1.2<br>
   

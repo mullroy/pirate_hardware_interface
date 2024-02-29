@@ -81,5 +81,6 @@
         <file>emojis/70.png</file>
         <file>emojis/72.png</file>
         <file>emojis/73.png</file>
+        <file>images/night.png</file>
     </qresource>
 </RCC>
