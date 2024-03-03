@@ -958,7 +958,7 @@
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>13</number>
     </property>
     <widget class="QWidget" name="pageWelcomeScreen">
      <widget class="QLabel" name="lbConnect_Heading">
@@ -1184,7 +1184,7 @@
        <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
-       <string>Pirate (ARRR) hardware wallet control interface</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pirate&lt;span style=&quot; vertical-align:super;&quot;&gt;Plus&lt;/span&gt; Hardware wallet control interface&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -1397,7 +1397,7 @@ QRadioButton{ background-color : transparent; color : white; }
        </rect>
       </property>
       <property name="styleSheet">
-       <string/>
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -3681,7 +3681,7 @@ p, li { white-space: pre-wrap; }
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -5278,7 +5278,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="styleSheet">
-         <string/>
+         <string notr="true">color: rgb(255, 255, 255);</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -5690,13 +5690,12 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>50</x>
         <y>270</y>
-        <width>731</width>
+        <width>681</width>
         <height>91</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgba(0, 0, 0, 32);</string>
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -5730,13 +5729,12 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>50</x>
         <y>100</y>
-        <width>601</width>
+        <width>681</width>
         <height>141</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgba(0, 0, 0, 32);</string>
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -5953,39 +5951,6 @@ QRadioButton{ background-color : transparent; color : white; }
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QTextEdit" name="teMnemonicInstruction">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>90</y>
-        <width>711</width>
-        <height>341</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgba(0, 0, 0, 32);</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-      <property name="html">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;New mnemonic:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;The unit will generate a new master seed and display it on the LCD in the form of a mnemonic. The mnemonic is a way to present the seed in human readable form. The full dictionary consist of 2048 words of which 24 are used to represent the the seed. The words are not transferred over the communication interface for improved security. The order of the words are important. A number will be displayed next to each word. Record them on an index card with positions marked 1 to 24.  Do not record the mnemonic on a computer or take a photo with a digital camera or phone. Make sure a webcam or security camera doesn't record the mnemonic without your knowledge. Note: Malware in some printers even detect the mnemonics and send it off to hackers. &lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt; font-weight:600;&quot;&gt;The security of your funds depends upon you keeping this phrase secret from everyone&lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;. Save the mnemonic somewhere safe where fire and moisture will not damage it.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;Restore mnemonic:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;You will be prompted to enter a mnemonic into the hardware wallet. The wallet will accept 12, 18 and 24 word mnemonics.  It will regenerate the master seed from the entered words. Your adresses can then be regenerated from the seed, thereby restoring your addresses. The address are used to access your funds. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="textInteractionFlags">
-       <set>Qt::NoTextInteraction</set>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btDisconnect_4">
       <property name="geometry">
        <rect>
@@ -6054,6 +6019,38 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="text">
        <string>Continue</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="teMnemonicInstruction">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>90</y>
+        <width>741</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;New mnemonic:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;The unit will generate a new master seed and display it on the LCD in the form of a mnemonic. The mnemonic is a way to present the seed in human readable form. The full dictionary consist of 2048 words of which 24 are used to represent the the seed. The words are not transferred over the communication interface for improved security. The order of the words are important. A number will be displayed next to each word. Record them on an index card with positions marked 1 to 24.  Do not record the mnemonic on a computer or take a photo with a digital camera or phone. Make sure a webcam or security camera doesn't record the mnemonic without your knowledge. Note: Malware in some printers even detect the mnemonics and send it off to hackers. &lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt; font-weight:600;&quot;&gt;The security of your funds depends upon you keeping this phrase secret from everyone&lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;. Save the mnemonic somewhere safe where fire and moisture will not damage it.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;Restore mnemonic:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;You will be prompted to enter a mnemonic into the hardware wallet. The wallet will accept 12, 18 and 24 word mnemonics.  It will regenerate the master seed from the entered words. Your adresses can then be regenerated from the seed, thereby restoring your addresses. The address are used to access your funds. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
     </widget>
@@ -6189,7 +6186,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>70</x>
         <y>290</y>
-        <width>671</width>
+        <width>661</width>
         <height>141</height>
        </rect>
       </property>
@@ -6211,12 +6208,9 @@ background-color: rgba(0, 0, 0, 32);</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;All the words of your mnemonic must be entered in the correct order. The unit will&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;recognise a valid 12, 18 and 24 word mnemonic.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The characters are scrambled on the display of the unit. Enter the corresponding&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;number next to  each letter as it appears on the display of the unit.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The first 4 characters of the requested word must be entered. For a 3 letter word&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;set the last letter to '0'. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;All the words of your mnemonic must be entered in the correct order. The unit will recognise a valid 12, 18 and 24 word mnemonic.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The characters are scrambled on the display of the unit. Enter the corresponding number next to  each letter as it appears on the display of the unit.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The first 4 characters of the requested word must be entered. For a 3 letter word set the last letter to '0'. &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Arial'; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="textInteractionFlags">
@@ -6717,6 +6711,9 @@ p, li { white-space: pre-wrap; }
         <bold>true</bold>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Press Enter to advance to next word</string>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
@@ -7013,9 +7010,9 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>330</x>
-        <y>112</y>
+        <y>102</y>
         <width>61</width>
-        <height>21</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="font">
@@ -7039,7 +7036,7 @@ p, li { white-space: pre-wrap; }
         <x>50</x>
         <y>200</y>
         <width>711</width>
-        <height>251</height>
+        <height>221</height>
        </rect>
       </property>
       <property name="font">
@@ -7087,10 +7084,13 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>400</x>
-        <y>105</y>
+        <y>100</y>
         <width>41</width>
         <height>32</height>
        </rect>
+      </property>
+      <property name="toolTip">
+       <string>Press Enter to submit and advance to the next word</string>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255); color:rgb(255,0,0);</string>
@@ -12160,8 +12160,7 @@ password</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);
-background-color: rgba(0, 0, 0, 32);</string>
+       <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -12180,8 +12179,7 @@ background-color: rgba(0, 0, 0, 32);</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;Please use a GUI with a matching communication version of the hardware wallet, or load newer firmware on the hardware wallet. You can send a private message to the Pirate payment address you've used to purchase your wallet to request the latest firmware upgrade file for your unit. Only an upgrade file prapared specifically for your hardware wallet will be accepted by it.&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Arial'; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;Please use a GUI with a matching communication version of the hardware wallet, or load newer firmware on the hardware wallet. You can send a private message to the Pirate payment address you've used to purchase your wallet to request the latest firmware upgrade file for your unit. Only an upgrade file prapared specifically for your hardware wallet will be accepted by it.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbDownload_3">
@@ -12777,7 +12775,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>textBrowser_2</tabstop>
   <tabstop>rbMnemonicRestore</tabstop>
   <tabstop>rbMnemonicNew</tabstop>
-  <tabstop>teMnemonicInstruction</tabstop>
   <tabstop>btRestoreMnemonic_Next</tabstop>
   <tabstop>btRestoreMnemonic_Previous</tabstop>
   <tabstop>textBrowser_4</tabstop>

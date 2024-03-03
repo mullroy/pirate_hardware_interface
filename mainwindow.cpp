@@ -118,7 +118,8 @@ void MainWindow::stylesheet()
   QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 11pt \"Arial\";";
   QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
   QString sLabel = "font: 11pt; color: rgb(255, 255, 255);";
-#endif 
+#endif
+
   ui->lbSign_Detail->setStyleSheet(sLabel);
   ui->lbSign_OTP->setStyleSheet(sLabel); 
 
@@ -199,11 +200,8 @@ void MainWindow::stylesheet()
 #endif
 
 
-
-
-
-  ui->teMnemonicInstruction->setStyleSheet(sTextEdit);
   ui->teSetupMneumonic4->setStyleSheet(sTextEdit);
+  ui->teMnemonicInstruction->setStyleSheet(sTextBrowser);
   ui->teDownload_Mismatch->setStyleSheet(sTextEdit);
 
   ui->textConnect->setStyleSheet(sTextBrowser);
@@ -217,6 +215,9 @@ void MainWindow::stylesheet()
   ui->teSign_Input->setStyleSheet(sTextBrowser);
   ui->teRetrieveAddress_SA->setStyleSheet(sTextBrowser);
   ui->teRetrieveAddress_EFVK->setStyleSheet(sTextBrowser);
+  ui->teSetupMneumonic4->setStyleSheet(sTextBrowser);  
+  ui->teDownload_Mismatch->setStyleSheet(sTextBrowser);
+
 
 }
 void MainWindow::Exception()
@@ -587,6 +588,28 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
       }
     }
 
+    if (sName=="pageSetupMnemonic3")
+    {
+      switch(KeyEvent->key())
+      {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          btSetupMnemonic3_Next_clicked();
+          return true;
+      }
+    }
+
+    if (sName=="pageSetupMnemonic4")
+    {
+      switch(KeyEvent->key())
+      {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          btSetupMnemonic4_Next_clicked();
+          return true;
+      }
+    }
+
     if (sName=="pageRestoreMnemonic")
     {
       switch(KeyEvent->key())
@@ -806,6 +829,8 @@ int8_t MainWindow::CloseSerialPort()
     cEmojiPosition=0;
 
     ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
+    //ui->stackedWidget->setCurrentWidget(ui->pageSetupMnemonic3);
+
 
     ui->leConnect->clear();
     ui->btConnect->setText("Connect");
@@ -3113,8 +3138,6 @@ void MainWindow::btSetupMnemonic4_Previous_clicked()
     }
     cMessageQueued=3; //X seconds for a reply
 
-    ui->statusbar->showMessage("Request the previous mnemonic");
-
     QString sData = ui->leSetupMnemonic4->text();
     //With an empty value, proceed to previous mnemonic item
     //without processing the current item.
@@ -3130,6 +3153,7 @@ void MainWindow::btSetupMnemonic4_Previous_clicked()
       }
     }
 
+    ui->statusbar->showMessage("Request the previous mnemonic");
     cByte = (uint8_t)cChar;
     cReturnCode = oMsgFrame->Pack(MSGID_VERIFY_MNEMONIC_PREVIOUS, &cByte, 1 );
     if (cReturnCode!=0)
@@ -3160,8 +3184,6 @@ void MainWindow::btSetupMnemonic4_Next_clicked()
     }
     cMessageQueued=3; //X seconds for a reply
 
-    ui->statusbar->showMessage("Request the next mnemonic word");
-
     QString sData = ui->leSetupMnemonic4->text();
     //With an empty value, proceed to next mnemonic item
     //without processing the current item,
@@ -3177,6 +3199,7 @@ void MainWindow::btSetupMnemonic4_Next_clicked()
       }
     }
 
+    ui->statusbar->showMessage("Request the next mnemonic word");
     cByte = (uint8_t)cChar;
     cReturnCode = oMsgFrame->Pack(MSGID_VERIFY_MNEMONIC_NEXT, &cByte, 1 );
     if (cReturnCode!=0)
