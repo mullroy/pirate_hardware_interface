@@ -14,7 +14,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 #define COMMUNICATION_VERSION 0x03
-#define APPLICATION_VERSION   0x08
+#define APPLICATION_VERSION   0x09
 
 // GUI:   2.3 - 2.7
 // Wallet 2.4
@@ -23,6 +23,13 @@ QT_END_NAMESPACE
 // Treasure chest: 5.8.0
 // GUI:   3.8
 // Wallet 3.5
+//   Pirate  ver 2
+//   Dero    ver 1
+//   Radiant ver 1
+
+// Treasure chest: 5.8.0
+// GUI:   3.9
+// Wallet 3.6
 //   Pirate  ver 2
 //   Dero    ver 1
 //   Radiant ver 1
@@ -130,6 +137,9 @@ private:
   uint8_t    cWalletVersionCommunication;
   uint8_t    cUpgradeVersionApplication=0;
   uint8_t    cUpgradeVersionCommunication=0;
+
+  bool_t     bWalletSerialNrAvailable;
+  uint8_t    caWalletSerialNr[17]; //16 chars + 0 terminating string
 
   int8_t Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFileCommsVersion, uint8_t *pcFileAppVersion);
   int8_t Setup_GUI_for_upgrade();

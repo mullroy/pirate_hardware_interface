@@ -1,3 +1,10 @@
+## [3.9] - 2024-04-28
+Communication version 3, GUI application version 9<br>
+<b>Note:</b> This version requires a hardware wallet running v3.x firmware.<br>
+Changes:<br>
+Added support for hardware wallet version 3.6
+* The unit serial number is contained in the handshake message
+* Support for crypto project added: Radiant
 ## [3.8] - 2024-02-29
 Communication version 3, GUI application version 8<br>
 <b>Note:</b> This version requires a hardware wallet running v3.x firmware.<br>

@@ -1345,9 +1345,38 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
 
 
       case MSGID_SESSIONKEY:
-        if (iLength!=15)
+        //Packet format:
+        //[0]=0   : Session key (handshake) failed
+        //[1]     : Unit configured?
+        //          To force setup: Set pcaData[1]=0;
+        //[2]     : Communication version match: 0=No, 1=Yes
+        //[3]     : H/W wallet comms version
+        //[4]     : H/W wallet app version
+        //[5..14] : Session Key
+
+        // Ver 3.5 and newer:
+        //[15..30] : Unit serial nr (16 chars. For 15 char serial, last item always \0)
+
+        //wallet version 3.6 and newer
+        bWalletSerialNrAvailable=FALSE;
+        if (
+           (pcaData[3]>=3)&&
+           (pcaData[4]>=6)
+           )
         {
-          ui->statusbar->showMessage("Unexpected response from the unit.");
+          if (iLength!=31)
+          {
+            ui->statusbar->showMessage("Invalid length for handshake message");
+            return;
+          }
+
+          bWalletSerialNrAvailable=TRUE;
+          memset(&caWalletSerialNr[0],0,sizeof(caWalletSerialNr));
+          memcpy(&caWalletSerialNr[0], &pcaData[15], 16);
+        }
+        else if (iLength!=15) //wallet ver. >=2.4 or 3.5
+        {
+          ui->statusbar->showMessage("Invalid length for handshake message");
           return;
         }
 
@@ -1359,16 +1388,6 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           return;
         }
 
-        //Force setup:
-        //pcaData[1]=0; //FIXIT
-
-        //Packet format:
-        //[0]=0   : Session key (handshake) failed
-        //[1]     : Unit configured?
-        //[2]     : Communication version match: 0=No, 1=Yes
-        //[3]     : H/W wallet comms version
-        //[4]     : H/W wallet app version
-        //[5..14] : Session Key
         cWalletVersionCommunication=pcaData[3];
         cWalletVersionApplication=pcaData[4];
 
@@ -2152,7 +2171,7 @@ void MainWindow::btSign_Sign_clicked()
 
     //Is the supplied transaction compatible with your hardware?
     //ARRR communication version 1 : Hardware 2.3-2.4
-    //ARRR communication version 2 : Hardware 3.5
+    //ARRR communication version 2 : Hardware 3.5&newer
     if (
        (cWalletVersionCommunication!=3) ||
        (cWalletVersionApplication<5)
@@ -3769,6 +3788,8 @@ void MainWindow::btDownload_Start_clicked()
 //              -2 - File structure invalid
 //              -3 - Cannot access the signature file
 //              -4 - Signature invalid
+//              -5 - The serial nr of the unit is not available
+//              -6 - The serial nr of the file mismatches the hw unit
 int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFileCommsVersion, uint8_t *pcFileAppVersion)
 {
   size_t bytes = 0;
@@ -3781,8 +3802,13 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   size_t iSize;
   struct stat st;
 
+  uint8_t caSerial[17]; //16 chars + 0 terminating string
+  uint8_t cSerialIndex=0;
+
   *pcFileCommsVersion=0;
   *pcFileAppVersion=0;
+
+  memset(&caSerial,0,sizeof(caSerial));
 
   //Expected structure:
   // (encrypted data)[version1][version2][signature_1024]
@@ -3799,9 +3825,14 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
     //A file with only the version and signature?
     return -2;
   }
+  if (iSize<=1042)
+  {
+    //A file with only the device serial nr, version and signature?
+    return -2;
+  }
 
   //Calculate the hash of the payload (encrypted data), excluding the
-  //version string and the signature:
+  //signature:
 
   // Calculate SHA256 digest for datafile
   FILE* datafile = fopen(sUpgradeFile.toLocal8Bit().data() , "rb");
@@ -3818,6 +3849,20 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   {
       SHA256_Update(&ctx, buffer, bytes);      
 
+      if (
+         (iCounter>=(iSize-1024-18)) &&
+         (cSerialIndex<16)
+         )
+      {
+        //Assign serial nr (16 chars)
+        //For 15 char serial the 16th value is set to \0
+
+        //For 3.x the serial nr is in the file, otherwise,
+        //for 2.x these 16 bytes are actully part of the file data
+        caSerial[cSerialIndex] = (uint8_t)buffer[0];
+        cSerialIndex++;
+      }
+
       //Assign 2 bytes for the version code:
       if (iCounter == (iSize-1026))
       {
@@ -3832,6 +3877,12 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
       iCounter++;
   }
   SHA256_Final(digest, &ctx);
+
+  //Depending on CommsVersion, the serial nr is used:
+  if (*pcFileCommsVersion<3)
+  {
+    memset(&caSerial[0],0,sizeof(caSerial));
+  }
 
   //Read last 1024 bytes for the signature:
   memset(&cSignature[0],0x00,sizeof(cSignature));
@@ -3874,8 +3925,51 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   RSA_free(pRSA_pubkey);
 
   if(ret == 1)
-  {      
-    //Signature valid
+  {          
+    //Signature is valid
+
+    //Serial number:
+    if (cWalletVersionCommunication<3) //Wallet running 2.x
+    {
+      //Ignore the unit serial nr
+      memset(&caSerial[0],0,sizeof(caSerial));
+      return 0;
+    }
+
+    if (
+       (cWalletVersionCommunication==3) &&
+       (cWalletVersionApplication==5  )
+       )
+    {
+      //Ignore the unit serial nr
+      memset(&caSerial[0],0,sizeof(caSerial));
+      return 0;
+    }
+
+    //Wallet running 3.6 or newer, serial nr must be available:
+    if (bWalletSerialNrAvailable==false)
+    {
+      //The serial nr from the unit is not available
+      return -5;
+    }
+
+    if (*pcFileCommsVersion>=3)
+    {
+      //For wallet serial==15, last byte is set to \0
+      if(strncmp( (char *)&caSerial[0], (char *)&caWalletSerialNr[0],16)==0)
+      {
+        //The upgrade file matches the serial nr of the hw wallet
+        return 0;
+      }
+      else
+      {
+        //The serial numbers mismatch. Do not send the file to the hardware wallet.
+        //The decryption on the h/w wallet will fail, which wastes time in sending
+        //an invalid file in the first place. A file with a mismatching serial nr
+        //will not decrypt on the hw wallet.
+        return -6;
+      }
+    }
     return 0;
   }
   else
@@ -3983,6 +4077,15 @@ void MainWindow::btDownload_Browse_clicked()
           break;
         case -4:
           ui->lbDownload_Result->setText("Error: Signature failed");
+          break;
+        case -5:
+          //Wallet communication version>=3.6:
+          ui->lbDownload_Result->setText("The serial number of the wallet is not available");
+          break;
+        case -6:
+          //Serial nr of the upgrade file doesn't match that of the unit.
+          //This check is enforsed from ver3.6 onwards.
+          ui->lbDownload_Result->setText("Mismatch on the serial number of the wallet & upgrade file");
           break;
         default:
           ui->lbDownload_Result->setText("Error: Unknown error");
