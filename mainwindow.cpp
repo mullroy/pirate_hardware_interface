@@ -1832,7 +1832,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         iSaplingExtendedFullViewingKey_len  = (uint16_t) (pcaData[5]    & 0x00FF);
         iSaplingExtendedFullViewingKey_len |= (uint16_t) (pcaData[6]<<8 & 0xFF00);
         //sSaplingExtendedFullViewingKey:
-        memcpy( (char *)&caData[0], (char *)&pcaData[6+iSaplingPaymentAddress_len], iSaplingExtendedFullViewingKey_len);
+        memcpy( (char *)&caData[0], (char *)&pcaData[7+iSaplingPaymentAddress_len], iSaplingExtendedFullViewingKey_len);
         caData[iSaplingExtendedFullViewingKey_len]=0;
         qsSaplingExtendedFullViewingKey = qsSaplingExtendedFullViewingKey.asprintf("%s", (char *)&caData[0] );
 
