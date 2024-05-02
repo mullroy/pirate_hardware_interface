@@ -27,7 +27,7 @@ QT_END_NAMESPACE
 //   Dero    ver 1
 //   Radiant ver 1
 
-// Treasure chest: 5.8.0
+// Treasure chest: 5.8.1
 // GUI:   3.9
 // Wallet 3.6
 //   Pirate  ver 2
@@ -99,6 +99,11 @@ public:
   int8_t getRow(QString sRow);
 
 private:
+  //Project:
+  #define PROJECT_PIRATE 1
+  #define PROJECT_RADIANT 2
+  #define PROJECT_DERO 3
+
   Ui::MainWindow *ui;
   int32_t   wTimerConnectCount;
   bool_t    bConnectionCancel;
@@ -141,6 +146,12 @@ private:
   bool_t     bWalletSerialNrAvailable;
   uint8_t    caWalletSerialNr[17]; //16 chars + 0 terminating string
 
+  uint8_t cProject=0;  //1-Pirate, 2-Electrum_Radiants, 3-Dero
+  uint8_t cOTP_type=0; //0-Address, 1-Registration transaction, 2-Sign transaction
+
+  bool_t bDero_scan_online_wallet=FALSE;
+
+
   int8_t Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFileCommsVersion, uint8_t *pcFileAppVersion);
   int8_t Setup_GUI_for_upgrade();
   int8_t CloseSerialPort();
@@ -149,7 +160,11 @@ private:
   bool   eventFilter(QObject *Object, QEvent *Event) override;
   void   close_connection();
   void   stylesheet();
-  
+
+  int8_t Dero_evaluate_balance(QString sOutputs, QString sBalance);
+  void   Dero_scan_files();
+  void   Dero_save_response(uint8_t *pcaInput, uint16_t iLength);
+
   QString exec(const char* cmd);
   MyController *poMyController=nullptr;
 
@@ -166,6 +181,7 @@ private slots:
   void Switchto_pageAddress();
   void btDownload_Browse_clicked();
   void btDownload_Start_clicked();
+  void btSign_Dero_Browse_clicked();
 
 
   void timerConnect_timeout(void);
@@ -217,9 +233,13 @@ private slots:
 
 //  void btLogin_Clear_clicked();
 //  void btLogin_Select_clicked();
+  void btSelectProject_clicked();
 
-  void btRetrieveAddress_clicked();
-  void btRetrieveAddressOTP_clicked();
+  void btRetrieveAddressPirate_clicked();
+  void btRetrieveAddressElectrum_clicked();
+  void btSetupDero_ViewingKey();
+  void btSetupDero_RegistrationTransaction_clicked();
+  void btSetupOTP_clicked();
 
 
 };

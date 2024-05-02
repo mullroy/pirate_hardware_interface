@@ -10,7 +10,8 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
+#include "libraries/crc16.h"
+#include <string.h>
 
 #include <QFileDialog> // Executing the QFileDialog causes a sig32
                        // to trigger in gdb when the application exits.
@@ -77,29 +78,28 @@
 
 
 //FIXIT: Restructure variables to prevent the worker thread variables from being globals
-bool_t  bCancelTransfer=false;
-bool_t  bTick=FALSE;
-bool_t  bComplete=FALSE;
-int     iWorker_PacketNr;     //Current packet nr
-int     iWorker_PacketsTotal; //Total nr of packets
-int     iWorker_Retries;      //Nr of resyncs
-int     iFileSize;
-bool_t  bWorker_Success;
-uint8_t cWorker_error=0;      //cError: 0 - No error
-                              //        1 - File doesn't exist
-                              //        2 - Not a regular file
-                              //        3 - File name too long
-                              //        4 - Serial port string too long
-                              //        5 - Serial port string too long
-                              //        6 - Could not open the serial port.
-                              //        7 - Could not open the file
-                              //        8 - Could not send the data to the unit
-                              //        9 - Unexpected response from the unit
-                              //       10 - Timeout waiting for response from the unit
-                              //       11 - Requested packet nr exceeds the filesize
-                              //       12 - Could not seek or read within the file
-                              //       13 - Checksum failed
-
+static bool_t  bCancelTransfer=false;
+static bool_t  bTick=FALSE;
+static bool_t  bComplete=FALSE;
+static int     iWorker_PacketNr;     //Current packet nr
+static int     iWorker_PacketsTotal; //Total nr of packets
+static int     iWorker_Retries;      //Nr of resyncs
+static int     iFileSize;
+static bool_t  bWorker_Success;
+static uint8_t cWorker_error=0;      //cError: 0 - No error
+                                     //        1 - File doesn't exist
+                                     //        2 - Not a regular file
+                                     //        3 - File name too long
+                                     //        4 - Serial port string too long
+                                     //        5 - Serial port string too long
+                                     //        6 - Could not open the serial port.
+                                     //        7 - Could not open the file
+                                     //        8 - Could not send the data to the unit
+                                     //        9 - Unexpected response from the unit
+                                     //       10 - Timeout waiting for response from the unit
+                                     //       11 - Requested packet nr exceeds the filesize
+                                     //       12 - Could not seek or read within the file
+                                     //       13 - Checksum failed
 
 void MainWindow::stylesheet()
 {
@@ -123,7 +123,7 @@ void MainWindow::stylesheet()
   ui->lbSign_Detail->setStyleSheet(sLabel);
   ui->lbSign_OTP->setStyleSheet(sLabel); 
 
-  ui->sbRetrieveAddress_Index->setStyleSheet(sSpinBox);
+  ui->sbRetrieveAddressPirate_Index->setStyleSheet(sSpinBox);
   ui->sbRestoreMnemonic_1->setStyleSheet(sSpinBox);
   ui->sbRestoreMnemonic_2->setStyleSheet(sSpinBox);
   ui->sbRestoreMnemonic_3->setStyleSheet(sSpinBox);
@@ -139,10 +139,14 @@ void MainWindow::stylesheet()
   ui->btLogin_Up->setStyleSheet(sButton);
   ui->btLogin_Disconnect->setStyleSheet(sButton);
   ui->btLogin_Continue->setStyleSheet(sButton);
-  ui->btRetrieveAddress_Disconnect->setStyleSheet(sButton);
-  ui->btRetrieveAddress_Sign->setStyleSheet(sButton);
-  ui->btRetrieveAddress->setStyleSheet(sButton);
-  ui->btRetrieveAddress_OTP->setStyleSheet(sButton);
+  ui->btRetrieveAddressPirate_Disconnect->setStyleSheet(sButton);
+  ui->btRetrieveAddressPirate_Sign->setStyleSheet(sButton);
+  ui->btRetrieveAddressPirate->setStyleSheet(sButton);
+  ui->btRetrieveAddressPirate_OTP->setStyleSheet(sButton);
+  ui->btRetrieveAddressElectrum_Disconnect->setStyleSheet(sButton);
+  ui->btRetrieveAddressElectrum_Sign->setStyleSheet(sButton);
+  ui->btRetrieveAddressElectrum->setStyleSheet(sButton);
+  ui->btRetrieveAddressElectrum_OTP->setStyleSheet(sButton);
   ui->btSign_Disconnect->setStyleSheet(sButton);
   ui->btSign_RetrieveAddress->setStyleSheet(sButton);
   ui->btSign_Sign->setStyleSheet(sButton);
@@ -188,7 +192,8 @@ void MainWindow::stylesheet()
   ui->btDownload_Start->setStyleSheet(sButton);
   
   ui->leConnect->setStyleSheet(sLineEdit);
-  ui->leRetrieveAddress_OTP->setStyleSheet(sLineEdit);
+  ui->leRetrieveAddressPirate_OTP->setStyleSheet(sLineEdit);
+  ui->leRetrieveAddressElectrum_OTP->setStyleSheet(sLineEdit);
   ui->leSign_OTP->setStyleSheet(sLineEdit);
   ui->leSetupMnemonic4->setStyleSheet(sLineEdit);
   ui->leDownload_Filename->setStyleSheet(sLineEdit);
@@ -205,16 +210,18 @@ void MainWindow::stylesheet()
   ui->teDownload_Mismatch->setStyleSheet(sTextEdit);
 
   ui->textConnect->setStyleSheet(sTextBrowser);
-  ui->tbRetrieveAddress_Heading->setStyleSheet(sTextBrowser);
+  ui->textConnect_2->setStyleSheet(sTextBrowser);
   ui->textConnect_3->setStyleSheet(sTextBrowser);
+  ui->textConnect_4->setStyleSheet(sTextBrowser);
   ui->textBrowser->setStyleSheet(sTextBrowser);
   ui->textBrowser_2->setStyleSheet(sTextBrowser);
   ui->textBrowser_4->setStyleSheet(sTextBrowser);
   
   ui->teSign_Output->setStyleSheet(sTextBrowser);
   ui->teSign_Input->setStyleSheet(sTextBrowser);
-  ui->teRetrieveAddress_SA->setStyleSheet(sTextBrowser);
-  ui->teRetrieveAddress_EFVK->setStyleSheet(sTextBrowser);
+  ui->teRetrieveAddressPirate_SA->setStyleSheet(sTextBrowser);
+  ui->teRetrieveAddressPirate_EFVK->setStyleSheet(sTextBrowser);
+  ui->teRetrieveAddressElectrum_XPUB->setStyleSheet(sTextBrowser);
   ui->teSetupMneumonic4->setStyleSheet(sTextBrowser);  
   ui->teDownload_Mismatch->setStyleSheet(sTextBrowser);
 
@@ -268,7 +275,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btLogin_Reset,      &QPushButton::released, this, &MainWindow::btPassword_Reset_clicked);
     connect(ui->btLogin_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
 
-
+    //Select project
+    connect(ui->btSelectCoin_Pirate, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectCoin_Dero,   &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectCoin_Radiant,&QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectCoin_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
+    connect(ui->btSelectProject1, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject2, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject3, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject4, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject5, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject6, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
+    connect(ui->btSelectProject7, &QPushButton::released, this, &MainWindow::btSelectProject_clicked);
 
     connect(ui->btSetup,                    &QPushButton::released, this, &MainWindow::btSetup_clicked);
     connect(ui->btSetupMnemonic2,           &QPushButton::released, this, &MainWindow::btSetupMnemonic2_clicked);
@@ -319,10 +337,24 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btSign_RetrieveAddress, &QPushButton::released, this, &MainWindow::Switchto_pageAddress);
     connect(ui->btSign_Disconnect,      &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
 
-    connect(ui->btRetrieveAddress,            &QPushButton::released, this, &MainWindow::btRetrieveAddress_clicked);
-    connect(ui->btRetrieveAddress_OTP,        &QPushButton::released, this, &MainWindow::btRetrieveAddressOTP_clicked);
-    connect(ui->btRetrieveAddress_Sign,       &QPushButton::released, this, &MainWindow::Switchto_pageSign);
-    connect(ui->btRetrieveAddress_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
+    connect(ui->btSign_Dero_Browse, &QPushButton::released, this, &MainWindow::btSign_Dero_Browse_clicked);
+
+    connect(ui->btRetrieveAddressPirate,            &QPushButton::released, this, &MainWindow::btRetrieveAddressPirate_clicked);
+    connect(ui->btRetrieveAddressPirate_OTP,        &QPushButton::released, this, &MainWindow::btSetupOTP_clicked);
+    connect(ui->btRetrieveAddressPirate_Sign,       &QPushButton::released, this, &MainWindow::Switchto_pageSign);
+    connect(ui->btRetrieveAddressPirate_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
+
+    connect(ui->btRetrieveAddressElectrum,           &QPushButton::released, this, &MainWindow::btRetrieveAddressElectrum_clicked);
+    connect(ui->btRetrieveAddressElectrum_OTP,       &QPushButton::released, this, &MainWindow::btSetupOTP_clicked);
+    connect(ui->btRetrieveAddressElectrum_Sign,      &QPushButton::released, this, &MainWindow::Switchto_pageSign);
+    connect(ui->btRetrieveAddressElectrum_Disconnect,&QPushButton::released, this, &MainWindow::btDisconnect_clicked);
+
+    connect(ui->btSetupDero_ViewingKey,              &QPushButton::released, this, &MainWindow::btSetupDero_ViewingKey);
+    connect(ui->btSetupDero_RegistrationTransaction, &QPushButton::released, this, &MainWindow::btSetupDero_RegistrationTransaction_clicked);
+    connect(ui->btSetupDero_OTP,        &QPushButton::released, this, &MainWindow::btSetupOTP_clicked);
+    connect(ui->btSetupDero_Sign,       &QPushButton::released, this, &MainWindow::Switchto_pageSign);
+    connect(ui->btSetupDero_Disconnect, &QPushButton::released, this, &MainWindow::btDisconnect_clicked);
+
 
     connect(ui->btDownload_Browse, &QPushButton::released, this, &MainWindow::btDownload_Browse_clicked);
     connect(ui->btDownload_Start,  &QPushButton::released, this, &MainWindow::btDownload_Start_clicked);
@@ -544,11 +576,11 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
     }
 
 
-    if (sName=="pageAddress")
+    if (sName=="pageAddressPirate")
     {
-      QWidget *oWidget = ui->stackwidget_RetrieveAddress->currentWidget();
+      QWidget *oWidget = ui->stackwidget_RetrieveAddressPirate->currentWidget();
       sName = oWidget->objectName();
-      if (sName=="pageRetrieveAddress_MainControl")
+      if (sName=="pageRetrieveAddressPirate_MainControl")
       {
         switch(KeyEvent->key())
         {
@@ -559,10 +591,10 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
             {
               //Retrieve the address for the current value of the spinbox
               //(if the value can be obtained)
-              uint16_t iIndex = (uint16_t)ui->sbRetrieveAddress_Index->value();
+              uint16_t iIndex = (uint16_t)ui->sbRetrieveAddressPirate_Index->value();
               if (iIndex<=255)
               {
-                btRetrieveAddress_clicked();
+                btRetrieveAddressPirate_clicked();
               }
             }
             catch(...)
@@ -572,16 +604,16 @@ bool MainWindow::eventFilter(QObject *, QEvent *Event)
             return true;
         }
       }
-      if (sName=="pageRetrieveAddress_OTP")
+      if (sName=="pageRetrieveAddressPirate_OTP")
       {
         switch(KeyEvent->key())
         {
           //Submit the OTP if Enter is pressed
           case Qt::Key_Return:
           case Qt::Key_Enter:
-            if (ui->leRetrieveAddress_OTP->text().length()>0) //Anything filled in?
+            if (ui->leRetrieveAddressPirate_OTP->text().length()>0) //Anything filled in?
             {
-              btRetrieveAddressOTP_clicked();
+              btSetupOTP_clicked();
             }
             return true;
         }
@@ -668,9 +700,6 @@ void MainWindow::filetx_complete(uint8_t cStatus)
 
 void MainWindow::btConnect_clicked()
 {
-  //ui->stackedWidget->setCurrentWidget(ui->pageSign);
-  //ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_OTP);
-  //return;
   try
   {
     int8_t cReturnCode=10;
@@ -829,7 +858,6 @@ int8_t MainWindow::CloseSerialPort()
     cEmojiPosition=0;
 
     ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
-    //ui->stackedWidget->setCurrentWidget(ui->pageSetupMnemonic3);
 
 
     ui->leConnect->clear();
@@ -956,6 +984,16 @@ void MainWindow::ResolveSerialPorts()
   if (sResult.length()==0)
   {
     ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
+
+    ui->stackedWidget->setCurrentWidget(ui->pageSign);
+    if (cProject==PROJECT_DERO)
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
+    }
+    else
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+    }
     return;
   }
   QStringList lstPorts = sResult.trimmed().split("\n");
@@ -1052,6 +1090,8 @@ void MainWindow::close_connection()
   {
     poMyController->CancelTransfer();
   }
+
+  bDero_scan_online_wallet=false;
 }
 
 void MainWindow::btDisconnect_clicked()
@@ -1209,6 +1249,14 @@ void MainWindow::timerSendPeriodicMsgs_timeout()
       ui->statusbar->showMessage("No response from the unit after 20 seconds. Connection closed.");
       close_connection();
     }
+
+    if (cProject==PROJECT_DERO)
+    {
+      if (bDero_scan_online_wallet==true)
+      {
+        Dero_scan_files();
+      }
+    }
   }
   catch (...)
   {
@@ -1296,6 +1344,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
     QStringList sParts;
     //uint8_t cPosition=0;
     uint8_t cI,cJ;
+    uint64_t llTmp;
 
     uint16_t iIndex;
     uint16_t iSaplingPaymentAddress_len;
@@ -1304,6 +1353,10 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
     QString qsIndex;
     QString qsSaplingPaymentAddress;
     QString qsSaplingExtendedFullViewingKey;
+    bool bOK;
+    uint16_t iTmp;
+
+    QString qsXPUBAddress;
 
     pcaData[iLength]=0;
 
@@ -1382,12 +1435,24 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
 
         if (pcaData[0]==0) //Session key failed
         {
+          printf("Session key failed\n");
+
           timerSendPeriodicMsgs->stop();
           ui->statusbar->showMessage("Entered invalid session key");
           close_connection();
           return;
         }
 
+        //Force setup:
+        //pcaData[1]=0; //FIXIT
+
+        //Packet format:
+        //[0]=0   : Session key (handshake) failed
+        //[1]     : Unit configured?
+        //[2]     : Communication version match: 0=No, 1=Yes
+        //[3]     : H/W wallet comms version
+        //[4]     : H/W wallet app version
+        //[5..14] : Session Key
         cWalletVersionCommunication=pcaData[3];
         cWalletVersionApplication=pcaData[4];
 
@@ -1677,12 +1742,11 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
                 {
                   //Password accepted. Enter the application
                   bLoggedIn=TRUE;
-                  pcaData[0]=1; //Pirate
-                  cReturnCode = oMsgFrame->Pack(MSGID_SELECT_PROJECT, &pcaData[0], 1 );
-                  if (cReturnCode!=0)
-                  {
-                    ui->statusbar->showMessage("Could not send the command to the hardware unit");
-                  }
+
+                  ui->btSelectCoin_Dero->setVisible(false);
+                  ui->lbSelectCoin_Heading2_7->setVisible(false);
+                  //Select project:
+                  ui->stackedWidget->setCurrentWidget(ui->pageSelectCoin);
                 }
                 else
                 {
@@ -1765,25 +1829,53 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         break;
 
       case MSGID_SELECT_PROJECT_ACK:
-        if (pcaData[0]==1) //Pirate
+        //Which project is activate on the H/W wallet:
+        if (
+           (pcaData[0]==PROJECT_PIRATE) ||
+           (pcaData[0]==PROJECT_RADIANT) ||
+           (pcaData[0]==PROJECT_DERO)
+           )
         {
-          Switchto_pageSign();
+          if (cProject == pcaData[0])
+          {
+            Switchto_pageSign();
+          }
+          else
+          {
+            //Selected one project, hw wallet reported with a different
+            ui->stackedWidget->setCurrentWidget(ui->pageSelectCoin);
+            ui->statusbar->showMessage("Requested project and wallet response doesn't match");
+          }
         }
         else
         {
-          ui->statusbar->showMessage("Requested project and wallet response doesn't match");
+          //Unknown project reported by hw wallet
+          ui->stackedWidget->setCurrentWidget(ui->pageSelectCoin);
+          ui->statusbar->showMessage("Wallet responded with an unknown project");
         }
         break;
 
+      case MSGID_DECRYPT_ACK:
+        if (cProject == PROJECT_DERO)
+        {
+          Dero_save_response(&pcaData[0], iLength);
+        }
+        break;
       case MSGID_PINGPONG:
         iPeriodicCounter=0;
         break;
 
-      case MSGID_RETRIEVE_ADDRESS_OTP:
+      case MSGID_REGISTRATION_OTP:
+        cOTP_type=1; //registration transaction
         //Switch to the OTP page:
-        ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_OTP);
-        ui->leRetrieveAddress_OTP->clear();
-        ui->leRetrieveAddress_OTP->setFocus();
+        if (cProject != PROJECT_DERO)
+        {
+          ui->statusbar->showMessage("Internal error: Only Dero uses the registration transaction.");
+          return;
+        }
+        ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_OTP);
+        ui->leSetupDero_OTP->clear();
+        ui->leSetupDero_OTP->setFocus();
 
         //If the message length>0, then it contains an error message about the OTP:
         if (iLength>0)
@@ -1794,15 +1886,13 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           ui->statusbar->showMessage(sData);
 
           //On error an OTP input will not be processed again. Revert back to the address page:
-          ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
-          ui->sbRetrieveAddress_Index->setFocus();
+          ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_MainControl);
         }
         break;
 
-      case MSGID_RETRIEVE_ADDRESS:
-        //OTP accepted. Process the retrieved address details:
-        ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
-        ui->sbRetrieveAddress_Index->setFocus();
+      case MSGID_REGISTRATION_ACK:
+        //OTP accepted. Process the generate registration transaction details:
+        ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_MainControl);
 
         if (iLength > COMMS_RX_BUFFER_SIZE)
         {
@@ -1810,40 +1900,204 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           break;
         }
 
-        if (pcaData[0] != 1) //Pirate
+        if (cProject!=PROJECT_DERO)
+        {
+          ui->statusbar->showMessage("Internal error: Only Dero uses the registration transaction.");
+          return;
+        }
+
+        //[0] Message length low
+        //[1] Message length high
+        //[2..length+2] - Message
+        iTmp=iLength;
+        iTmp  = (uint16_t) (pcaData[0]    & 0x00FF);
+        iTmp |= (uint16_t) (pcaData[1]<<8 & 0xFF00);
+
+        if (iTmp<COMMS_RX_BUFFER_SIZE) //Maximum size limit inside the h/w wallet
+        {
+          //Messae from the wallet:
+          pcaData[iTmp+2]=0;
+          sTmp = sTmp.asprintf("%s", (char *)&pcaData[2] );
+
+          //Is the string contents representing an integer:
+          sTmp.toInt(&bOK);
+          if (bOK==true)
+          {
+            ui->teSetupDero_Response->setText("Searched "+sTmp+" hashes");
+          }
+          else
+          {
+            ui->teSetupDero_Response->setText(sTmp);
+          }
+
+          ui->statusbar->showMessage("Received Dero generate registration transaction message");
+        }
+        else
+        {
+          ui->statusbar->showMessage("Internal error: Length of message exceeded maximum size");
+        }
+        break;
+
+      case MSGID_RETRIEVE_ADDRESS_OTP:
+        cOTP_type=0; //address
+
+        //Switch to the OTP page:
+        if (cProject == PROJECT_PIRATE)
+        {
+          ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_OTP);
+          ui->leRetrieveAddressPirate_OTP->clear();
+          ui->leRetrieveAddressPirate_OTP->setFocus();
+        }
+        else if (cProject == PROJECT_RADIANT)
+        {
+          ui->stackwidget_RetrieveAddressElectrum->setCurrentWidget(ui->pageRetrieveAddressElectrum_OTP);
+          ui->leRetrieveAddressElectrum_OTP->clear();
+          ui->leRetrieveAddressElectrum_OTP->setFocus();
+        }
+        else if (cProject == PROJECT_DERO)
+        {
+          ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_OTP);
+          ui->leSetupDero_OTP->clear();
+          ui->leSetupDero_OTP->setFocus();
+        }
+        else
+        {
+          ui->statusbar->showMessage("Internal error: Unknown project requested");
+          return;
+        }
+
+        //If the message length>0, then it contains an error message about the OTP:
+        if (iLength>0)
+        {
+          memcpy( &caData[0], (char *)pcaData, iLength );
+          caData[iLength]=0;
+          sData = sTmp.asprintf("%s",&caData[0]);
+          ui->statusbar->showMessage(sData);
+
+          //On error an OTP input will not be processed again. Revert back to the address page:
+          if (cProject == PROJECT_PIRATE)
+          {
+            ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_MainControl);
+            ui->sbRetrieveAddressPirate_Index->setFocus();
+          }
+          else if (cProject== PROJECT_RADIANT)
+          {
+            ui->stackwidget_RetrieveAddressElectrum->setCurrentWidget(ui->pageRetrieveAddressElectrum_MainControl);
+          }
+          else if (cProject== PROJECT_DERO)
+          {
+            ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_MainControl);
+          }
+          else
+          {
+            return;
+          }
+        }
+        break;
+
+      case MSGID_RETRIEVE_ADDRESS:
+        //OTP accepted. Process the retrieved address details:
+        ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_MainControl);
+        ui->sbRetrieveAddressPirate_Index->setFocus();
+
+        if (iLength > COMMS_RX_BUFFER_SIZE)
+        {
+          ui->teSign_Output->setText("Length of the response message is invalid");
+          break;
+        }
+
+        if (pcaData[0] != cProject)
         {
           ui->teSign_Output->setText("Mismatch between the selected project and what the hardware wallet responded with");
           break;
         }
 
-        iIndex  = (uint16_t) (pcaData[1]    & 0x00FF);
-        iIndex |= (uint16_t) (pcaData[2]<<8 & 0xFF00);
-        qsIndex = qsIndex.asprintf("%u",iIndex);
+        if (cProject == PROJECT_PIRATE)
+        {
+          iIndex  = (uint16_t) (pcaData[1]    & 0x00FF);
+          iIndex |= (uint16_t) (pcaData[2]<<8 & 0xFF00);
+          qsIndex = qsIndex.asprintf("%u",iIndex);
 
-        //sSaplingPaymentAddress length
-        iSaplingPaymentAddress_len  = (uint16_t) (pcaData[3]    & 0x00FF);
-        iSaplingPaymentAddress_len |= (uint16_t) (pcaData[4]<<8 & 0xFF00);
-        //sSaplingPaymentAddress:
-        memcpy( (char *)&caData[0], (char *)&pcaData[7], iSaplingPaymentAddress_len);
-        caData[iSaplingPaymentAddress_len]=0;
-        qsSaplingPaymentAddress = qsSaplingPaymentAddress.asprintf("%s", (char *)&caData[0] );
+          //sSaplingPaymentAddress length
+          iSaplingPaymentAddress_len  = (uint16_t) (pcaData[3]    & 0x00FF);
+          iSaplingPaymentAddress_len |= (uint16_t) (pcaData[4]<<8 & 0xFF00);
+          //sSaplingPaymentAddress:
+          memcpy( (char *)&caData[0], (char *)&pcaData[7], iSaplingPaymentAddress_len);
+          caData[iSaplingPaymentAddress_len]=0;
+          qsSaplingPaymentAddress = qsSaplingPaymentAddress.asprintf("%s", (char *)&caData[0] );
 
-        //sSaplingExtendedFullViewingKey length
-        iSaplingExtendedFullViewingKey_len  = (uint16_t) (pcaData[5]    & 0x00FF);
-        iSaplingExtendedFullViewingKey_len |= (uint16_t) (pcaData[6]<<8 & 0xFF00);
-        //sSaplingExtendedFullViewingKey:
-        memcpy( (char *)&caData[0], (char *)&pcaData[7+iSaplingPaymentAddress_len], iSaplingExtendedFullViewingKey_len);
-        caData[iSaplingExtendedFullViewingKey_len]=0;
-        qsSaplingExtendedFullViewingKey = qsSaplingExtendedFullViewingKey.asprintf("%s", (char *)&caData[0] );
+          //sSaplingExtendedFullViewingKey length
+          iSaplingExtendedFullViewingKey_len  = (uint16_t) (pcaData[5]    & 0x00FF);
+          iSaplingExtendedFullViewingKey_len |= (uint16_t) (pcaData[6]<<8 & 0xFF00);
+          //sSaplingExtendedFullViewingKey:
+          memcpy( (char *)&caData[0], (char *)&pcaData[7+iSaplingPaymentAddress_len], iSaplingExtendedFullViewingKey_len);
+          caData[iSaplingExtendedFullViewingKey_len]=0;
+          qsSaplingExtendedFullViewingKey = qsSaplingExtendedFullViewingKey.asprintf("%s", (char *)&caData[0] );
 
-        ui->lbRetrieveAddress_Index->setText(qsIndex);
-        ui->teRetrieveAddress_SA->setText(qsSaplingPaymentAddress);
-        ui->teRetrieveAddress_EFVK->setText(qsSaplingExtendedFullViewingKey);
+          ui->lbRetrieveAddressPirate_Index->setText(qsIndex);
+          ui->teRetrieveAddressPirate_SA->setText(qsSaplingPaymentAddress);
+          ui->teRetrieveAddressPirate_EFVK->setText(qsSaplingExtendedFullViewingKey);
 
-        ui->statusbar->showMessage("Received spending key & extended full viewing key");
+          ui->statusbar->showMessage("Received spending key & extended full viewing key");
+        }
+        else if (cProject==PROJECT_RADIANT)
+        {
+          //[0] Project (repreat as a sanity check)
+          //[1] XPUB size low
+          //[2] XPUB size high
+
+          //XPUB address length
+          iTmp  = (uint16_t) (pcaData[1]    & 0x00FF);
+          iTmp |= (uint16_t) (pcaData[2]<<8 & 0xFF00);
+          if (iTmp<500) //Maximum size limit inside the h/w wallet
+          {
+            //sXPUBAddress:
+            memcpy( (char *)&caData[0], (char *)&pcaData[3], iTmp);
+            caData[iTmp]=0;
+            sTmp = sTmp.asprintf("%s", (char *)&caData[0] );
+
+            ui->teRetrieveAddressElectrum_XPUB->setText(sTmp);
+            ui->statusbar->showMessage("Received Radiant extended public key (xpub)");
+          }
+          else
+          {
+            ui->statusbar->showMessage("Internal error: Length of the address exceeded maximum expected size");
+          }
+        }
+        else if (cProject==PROJECT_DERO)
+        {
+          //[0] Project (repreat as a sanity check)
+          //[1] PUB size low
+          //[2] PUB size high
+
+          //Public key length
+          iTmp =iLength;
+          iTmp  = (uint16_t) (pcaData[1]    & 0x00FF);
+          iTmp |= (uint16_t) (pcaData[2]<<8 & 0xFF00);
+          if (iTmp<400) //Maximum size limit inside the h/w wallet
+          {
+            //Public viewing key
+            memcpy( (char *)&caData[0], (char *)&pcaData[3], iLength);
+            caData[iLength]=0;
+            sTmp = sTmp.asprintf("%s", (char *)&caData[0] );
+
+            ui->teSetupDero_Response->setText(sTmp);
+            ui->statusbar->showMessage("Received Dero public viewing key");
+          }
+          else
+          {
+            ui->statusbar->showMessage("Internal error: Length of the address exceeded maximum expected size");
+          }
+        }
+        else
+        {
+          ui->statusbar->showMessage("Internal error: Selected project unknown");
+        }
         break;
 
       case MSGID_SIGN_OTP:
+        cOTP_type=2; //sign transaction
+
         //Switch to the OTP page:
         ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_OTP);
         ui->leSign_OTP->clear();
@@ -1858,7 +2112,14 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
           ui->statusbar->showMessage(sData);
 
           //On error an OTP inpu will not be processed again. Revert back to the sign page:
-          ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+          if (cProject==PROJECT_DERO)
+          {
+            ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
+          }
+          else
+          {
+            ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+          }
         }
         break;
       case MSGID_SIGN_NAVIGATE:
@@ -1884,20 +2145,73 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         }
 
         //OTP accepted. Process the signed transaction details:
-        ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
-
-        //FIXIT: Add extra markers to verify that the contents are valid, like a checksum on the payload level?
-        if (iLength > COMMS_RX_BUFFER_SIZE)
+        if (cProject==PROJECT_DERO)
         {
-          ui->teSign_Output->setText("Length of the response message is invalid");
-          break;
+          ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
+          Dero_save_response(&pcaData[0], iLength);
         }
+        else if (cProject==PROJECT_RADIANT)
+        {
+          ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
 
-        memcpy(&caData[0], pcaData, iLength);
-        caData[iLength]=0;
+          if (iLength > COMMS_RX_BUFFER_SIZE)
+          {
+            ui->teSign_Output->setText("Length of the response message is invalid");
+            break;
+          }
 
-        sData = sData.asprintf("%s",&caData[0]);
-        ui->teSign_Output->setText("sendrawtransaction "+sData);
+          memcpy(&caData[0], pcaData, iLength);
+          caData[iLength]=0;
+          sData = sData.asprintf("%s",&caData[0]);
+
+          QStringList slParts = sData.split(";");
+          if (slParts.length()!=2)
+          {
+            ui->statusbar->showMessage("Response does not have 2 fields");
+          }
+          else
+          {
+            uint16_t iChecksum = CalcCrc16( (void *)slParts[0].toStdString().c_str(), slParts[0].length(), 0x1D0F);
+            //Have to swap the 2 bytes of the incoming message to match our crc calculation:
+            sTmp[0] = slParts[1][2];
+            sTmp[1] = slParts[1][3];
+            sTmp[2] = slParts[1][0];
+            sTmp[3] = slParts[1][1];
+            llTmp = sTmp.toUShort(&bOK,16);
+            if (bOK==false)
+            {
+              sTmp="Could not convert the checksum to a value";
+              ui->statusbar->showMessage(sTmp);
+              return;
+            }
+            if (llTmp != iChecksum)
+            {
+              sTmp="The checksum of the transaction is invalid";
+              ui->statusbar->showMessage(sTmp);
+              return;
+            }
+            //Print full message: Transaction & checksum.
+            //The Electrum-Radiant wallet expects the checksum too.
+            ui->teSign_Output->setText(sData);
+          }
+        }
+        else //Pirate
+        {
+          ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+
+          //FIXIT: Add extra markers to verify that the contents are valid, like a checksum on the payload level?
+          if (iLength > COMMS_RX_BUFFER_SIZE)
+          {
+            ui->teSign_Output->setText("Length of the response message is invalid");
+            break;
+          }
+
+          memcpy(&caData[0], pcaData, iLength);
+          caData[iLength]=0;
+
+          sData = sData.asprintf("%s",&caData[0]);
+          ui->teSign_Output->setText("sendrawtransaction "+sData);
+        }
         break;
 
       case MSGID_UPGRADE_STATUS:
@@ -2091,6 +2405,8 @@ void MainWindow::btSign_Sign_clicked()
   QString sChecksumInput;
   uint64_t llTmp;
   
+  uint32_t  iChecksum;
+
   try
   {
     uint8_t caTransaction[COMMS_RX_BUFFER_SIZE+1];
@@ -2113,527 +2429,571 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
 
-    //Pirate
-    //Version 2 protocol:
-    //Parameter   [0]: Project - Expect 'arrr'
-    //            [1]: Version - Layout of the command fields
-    //            [2] Pay from address
-    //            [3] Array of spending notes, which contains the funds of the 'pay from address'. Zip212 supported
-    //            [4] Array of recipient: address, amount, memo
-    //            [5]..[14] Blockchain parameters
-    //            [15] Checksum of all the characters in the command.
-
-    // Difference between version 1 & 2:
-    // 'Witness' was replaced by 'MerklePath'. The serialised data structure is identical to version 1, except for
-    // 'witnesspath' & 'witnessposition' that were replaced by 'merklepath' & 'merkleposition'
-    // The version number is increased to indicate this difference
-
-    QStringList slParts = sTransaction.split(" ");
-    if (slParts.count() < 3)
+    if (cProject==PROJECT_PIRATE)
     {
-      ui->statusbar->showMessage("Transaction format error: Too few parts");
-      return;
-    }
+      //Pirate
+      //Version 2 protocol:
+      //Parameter   [0]: Project - Expect 'arrr'
+      //            [1]: Version - Layout of the command fields
+      //            [2] Pay from address
+      //            [3] Array of spending notes, which contains the funds of the 'pay from address'. Zip212 supported
+      //            [4] Array of recipient: address, amount, memo
+      //            [5]..[14] Blockchain parameters
+      //            [15] Checksum of all the characters in the command.
 
-    if (slParts[0] != "z_sign_offline")
-    {
-      ui->teSign_Output->setText("Transaction format error: Not starting with z_sign_offline");
-      return;
-    }
-    if (slParts[1] != "arrr")
-    {
-      ui->teSign_Output->setText("Transaction format error: Expected a PirateChain (arrr) transaction");
-      return;
-    }
-    sChecksumInput=slParts[1]+" ";
+      // Difference between version 1 & 2:
+      // 'Witness' was replaced by 'MerklePath'. The serialised data structure is identical to version 1, except for
+      // 'witnesspath' & 'witnessposition' that were replaced by 'merklepath' & 'merkleposition'
+      // The version number is increased to indicate this difference
 
-    sVersion=slParts[2];
-    iVersion = sVersion.toInt(&bOK);
-    if (bOK==false)
-    {
-      ui->teSign_Output->setText("Transaction format error: Could not extract the protocol version");
-      return;
-    }
-
-    //Communication Version check:
-    if (iVersion != 2)
-    {
-      //Arrr: Only version 2 supported
-      ui->teSign_Output->setText("Transaction format error: Only transaction version 2 supported. Please upgrade Treasure Chest to 5.8 or newer");
-      return;
-    }
-
-    if (slParts.count() != 17)
-    {
-      ui->teSign_Output->setText("Transaction format error: Invalid nr of parts detected in the data");
-      return;
-    }
-
-    //Is the supplied transaction compatible with your hardware?
-    //ARRR communication version 1 : Hardware 2.3-2.4
-    //ARRR communication version 2 : Hardware 3.5&newer
-    if (
-       (cWalletVersionCommunication!=3) ||
-       (cWalletVersionApplication<5)
-       )
-    {
-      ui->teSign_Output->setText("Version error: Pirate transaction version 2 requires that the h/w wallet runs version 3.5 or newer");
-      return;
-    }
-    sChecksumInput+=slParts[2]+" ";
-
-
-    //From address
-    QString sFromAddress = slParts[3].replace("\"", "");
-    if (sFromAddress.length() != 78)
-    {
-      ui->teSign_Output->setText("Transaction format error: Length of from address invalid");
-      return;
-    }
-    sChecksumInput+=sFromAddress+" ";
-
-    //Inputs to spend:
-    QString sInputs = slParts[4].replace("[","");
-    sInputs = sInputs.replace("]","");
-    sInputs = sInputs.replace("'","");
-    QStringList slInputsParts = sInputs.split("}");
-
-    QString sMsg;
-    sMsg = sMsg.asprintf("Witnessed: %s\n",sInputs.toStdString().c_str() );
-    //ui->teSign_Output->append(sMsg);
-
-    int iCount = slInputsParts.count()-1; //Last entry empty - Matching the last }
-    if (iCount < 1)
-    {
-      ui->teSign_Output->setText("Transaction format error: Could not detect the Witnesses");      
-      return;
-    }
-    sMsg = sMsg.asprintf("Inputs: %d\n",iCount );
-    //ui->teSign_Output->append(sMsg);
-
-    sChecksumInput+="spending notes: ";
-    sSpendType="merkle"; //Version 2
-
-    uint64_t llTotalIn=0;
-    for (int iI=0;iI<iCount;iI++)
-    {
-      sMsg = slInputsParts[iI].replace(",{","");
-      QStringList slWitness_Merkle_Parts = sMsg.split(",");
-
-      if (slWitness_Merkle_Parts.count()!=7)
+      QStringList slParts = sTransaction.split(" ");
+      if (slParts.count() < 3)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      //Version 2:
-      if (!(slWitness_Merkle_Parts[0].contains("merkleposition")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[0].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-      if (!(slWitness_Merkle_Parts[1].contains("merklepath")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[1].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-      if (!(slWitness_Merkle_Parts[2].contains("note_d")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[2].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-
-      if (!(slWitness_Merkle_Parts[3].contains("note_pkd")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[3].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-
-      if (!(slWitness_Merkle_Parts[4].contains("note_r")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[4].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-
-
-      if (!(slWitness_Merkle_Parts[5].contains("value")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sAmount = slWitness_Merkle_Parts[5].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sAmount+" ";
-
-      unsigned long llAmount = sAmount.toULong(&bOK);
-      if (bOK!=true)
-      {
-         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-         return;
-      }
-      llTotalIn+=llAmount;
-
-      sTmp = slWitness_Merkle_Parts[6];
-      if (!(slWitness_Merkle_Parts[6].contains("zip212")))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      try { sTmp = slWitness_Merkle_Parts[6].split(":")[1].replace("\"",""); }  catch (...)
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
-        return;
-      }
-      sChecksumInput+=sTmp+" ";
-    }
-
-
-    //Outputs
-    QString sOutputs = slParts[5].replace("[","");
-    sOutputs = sOutputs.replace("]","");
-    sOutputs = sOutputs.replace("'","");
-    QStringList slOutputsParts = sOutputs.split("}");
-    if (slOutputsParts.count() < 2)  //Last entry empty - Matching the last }
-    {
-      ui->teSign_Output->setText("Transaction format error: Could not detect the outputs");
-    }
-    uint64_t llChangeAmount=0;
-    sChecksumInput+="outputs: ";
-    uint64_t llTotalOut=0;
-    for (int iI=0;iI<slOutputsParts.count()-1;iI++)
-    {
-      QString sOutput = slOutputsParts[iI].replace(",{","");
-      sOutput = sOutput.replace("{","");
-      sOutput = sOutput.replace("},","");
-      sOutput = sOutput.replace("}","");
-
-      QStringList slComponents = sOutput.split(",");
-      if ((slComponents.count()<2) || (slComponents.count()>3))
-      {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        ui->statusbar->showMessage("Transaction format error: Too few parts");
         return;
       }
 
-      QStringList slSubComponents = slComponents[0].split(":");
-      if (slSubComponents.length()!=2)
+      if (slParts[0] != "z_sign_offline")
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        ui->teSign_Output->setText("Transaction format error: Not starting with z_sign_offline");
         return;
       }
-      if (!(slSubComponents[0].contains("address")))
+      if (slParts[1] != "arrr")
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        ui->teSign_Output->setText("Transaction format error: Expected a PirateChain (arrr) transaction");
         return;
       }
-      QString sAddress = slSubComponents[1].replace("\"","");
-      if (sAddress.length()!=78)
+      sChecksumInput=slParts[1]+" ";
+
+      sVersion=slParts[2];
+      iVersion = sVersion.toInt(&bOK);
+      if (bOK==false)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        ui->teSign_Output->setText("Transaction format error: Could not extract the protocol version");
         return;
       }
-      sChecksumInput+=sAddress+" ";
 
-      slSubComponents = slComponents[1].split(":");
-      if (slSubComponents.length()!=2)
+      //Communication Version check:
+      if (iVersion != 2)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        //Arrr: Only version 2 supported
+        ui->teSign_Output->setText("Transaction format error: Only transaction version 2 supported. Please upgrade Treasure Chest to 5.8 or newer");
         return;
       }
-      if (!(slSubComponents[0].contains("amount")))
+
+      if (slParts.count() != 17)
       {
-        ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+        ui->teSign_Output->setText("Transaction format error: Invalid nr of parts detected in the data");
         return;
       }
-      sAmount = slSubComponents[1].replace("\"","");
-      unsigned long llAmount = sAmount.toULong(&bOK);
-      if (bOK!=true)
+
+      //Is the supplied transaction compatible with your hardware?
+      //ARRR communication version 1 : Hardware 2.3-2.4
+      //ARRR communication version 2 : Hardware 3.5&newer
+      if (
+         (cWalletVersionCommunication!=3) ||
+         (cWalletVersionApplication<5)
+         )
       {
-         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-         return;
+        ui->teSign_Output->setText("Version error: Pirate transaction version 2 requires that the h/w wallet runs version 3.5 or newer");
+        return;
       }
-      sChecksumInput+=sAmount+" ";
+      sChecksumInput+=slParts[2]+" ";
 
-      //Have to identify the (small) 'change' address:
-      if (sFromAddress==sAddress)
+
+      //From address
+      QString sFromAddress = slParts[3].replace("\"", "");
+      if (sFromAddress.length() != 78)
       {
-        llChangeAmount = llAmount;
+        ui->teSign_Output->setText("Transaction format error: Length of from address invalid");
+        return;
+      }
+      sChecksumInput+=sFromAddress+" ";
+
+      //Inputs to spend:
+      QString sInputs = slParts[4].replace("[","");
+      sInputs = sInputs.replace("]","");
+      sInputs = sInputs.replace("'","");
+      QStringList slInputsParts = sInputs.split("}");
+
+      QString sMsg;
+      sMsg = sMsg.asprintf("Witnessed: %s\n",sInputs.toStdString().c_str() );
+      //ui->teSign_Output->append(sMsg);
+
+      int iCount = slInputsParts.count()-1; //Last entry empty - Matching the last }
+      if (iCount < 1)
+      {
+        ui->teSign_Output->setText("Transaction format error: Could not detect the Witnesses");
+        return;
+      }
+      sMsg = sMsg.asprintf("Inputs: %d\n",iCount );
+      //ui->teSign_Output->append(sMsg);
+
+      sChecksumInput+="spending notes: ";
+      sSpendType="merkle"; //Version 2
+
+      uint64_t llTotalIn=0;
+      for (int iI=0;iI<iCount;iI++)
+      {
+        sMsg = slInputsParts[iI].replace(",{","");
+        QStringList slWitness_Merkle_Parts = sMsg.split(",");
+
+        if (slWitness_Merkle_Parts.count()!=7)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        //Version 2:
+        if (!(slWitness_Merkle_Parts[0].contains("merkleposition")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[0].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
+
+        if (!(slWitness_Merkle_Parts[1].contains("merklepath")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[1].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
+
+        if (!(slWitness_Merkle_Parts[2].contains("note_d")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[2].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
+
+
+        if (!(slWitness_Merkle_Parts[3].contains("note_pkd")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[3].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
+
+
+        if (!(slWitness_Merkle_Parts[4].contains("note_r")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[4].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
+
+
+        if (!(slWitness_Merkle_Parts[5].contains("value")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sAmount = slWitness_Merkle_Parts[5].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sAmount+" ";
+
+        unsigned long llAmount = sAmount.toULong(&bOK);
+        if (bOK!=true)
+        {
+           ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+           return;
+        }
+        llTotalIn+=llAmount;
+
+        sTmp = slWitness_Merkle_Parts[6];
+        if (!(slWitness_Merkle_Parts[6].contains("zip212")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        try { sTmp = slWitness_Merkle_Parts[6].split(":")[1].replace("\"",""); }  catch (...)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the "+sSpendType+" parts");
+          return;
+        }
+        sChecksumInput+=sTmp+" ";
       }
 
 
-
-      QString sMemo = "";
-      if (slComponents.count()==3)
+      //Outputs
+      QString sOutputs = slParts[5].replace("[","");
+      sOutputs = sOutputs.replace("]","");
+      sOutputs = sOutputs.replace("'","");
+      QStringList slOutputsParts = sOutputs.split("}");
+      if (slOutputsParts.count() < 2)  //Last entry empty - Matching the last }
       {
-        slSubComponents = slComponents[2].split(":");
+        ui->teSign_Output->setText("Transaction format error: Could not detect the outputs");
+      }
+      uint64_t llChangeAmount=0;
+      sChecksumInput+="outputs: ";
+      uint64_t llTotalOut=0;
+      for (int iI=0;iI<slOutputsParts.count()-1;iI++)
+      {
+        QString sOutput = slOutputsParts[iI].replace(",{","");
+        sOutput = sOutput.replace("{","");
+        sOutput = sOutput.replace("},","");
+        sOutput = sOutput.replace("}","");
+
+        QStringList slComponents = sOutput.split(",");
+        if ((slComponents.count()<2) || (slComponents.count()>3))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+          return;
+        }
+
+        QStringList slSubComponents = slComponents[0].split(":");
         if (slSubComponents.length()!=2)
         {
           ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
           return;
         }
-        if (!(slSubComponents[0].contains("memo")))
+        if (!(slSubComponents[0].contains("address")))
         {
           ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
           return;
         }
-        sMemo = slSubComponents[1].replace("\"","");
-        if (sMemo.length()>1024) //512x2
+        QString sAddress = slSubComponents[1].replace("\"","");
+        if (sAddress.length()!=78)
         {
-          ui->teSign_Output->setText("Transaction format error: Memo too long");
+          ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
           return;
+        }
+        sChecksumInput+=sAddress+" ";
+
+        slSubComponents = slComponents[1].split(":");
+        if (slSubComponents.length()!=2)
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+          return;
+        }
+        if (!(slSubComponents[0].contains("amount")))
+        {
+          ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+          return;
+        }
+        sAmount = slSubComponents[1].replace("\"","");
+        unsigned long llAmount = sAmount.toULong(&bOK);
+        if (bOK!=true)
+        {
+           ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+           return;
+        }
+        sChecksumInput+=sAmount+" ";
+
+        //Have to identify the (small) 'change' address:
+        if (sFromAddress==sAddress)
+        {
+          llChangeAmount = llAmount;
         }
 
-        uint8_t cMemo[512];
-        uint16_t iMemoLength;
-        iMemoLength = Hex2Array(sMemo, &cMemo[0], 512);
-        if (iMemoLength!=sMemo.length()/2)
+
+
+        QString sMemo = "";
+        if (slComponents.count()==3)
         {
-          ui->teSign_Output->setText("Transaction format error: Memo convertion failed");
-          return;
+          slSubComponents = slComponents[2].split(":");
+          if (slSubComponents.length()!=2)
+          {
+            ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+            return;
+          }
+          if (!(slSubComponents[0].contains("memo")))
+          {
+            ui->teSign_Output->setText("Transaction format error: Could not find all the output parts");
+            return;
+          }
+          sMemo = slSubComponents[1].replace("\"","");
+          if (sMemo.length()>1024) //512x2
+          {
+            ui->teSign_Output->setText("Transaction format error: Memo too long");
+            return;
+          }
+
+          uint8_t cMemo[512];
+          uint16_t iMemoLength;
+          iMemoLength = Hex2Array(sMemo, &cMemo[0], 512);
+          if (iMemoLength!=sMemo.length()/2)
+          {
+            ui->teSign_Output->setText("Transaction format error: Memo convertion failed");
+            return;
+          }
         }
+        sChecksumInput+=sMemo+" ";
+        llTotalOut += llAmount;
       }
-      sChecksumInput+=sMemo+" ";
-      llTotalOut += llAmount;
-    }
 
 
-    //Further network parameters
-    QString sMinconf = slParts[6];
-    llTmp = sMinconf.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-       return;
-    }
-    sChecksumInput+=sMinconf+" ";
+      //Further network parameters
+      QString sMinconf = slParts[6];
+      llTmp = sMinconf.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+         return;
+      }
+      sChecksumInput+=sMinconf+" ";
 
 
-    QString sFee = slParts[7];
-    unsigned long llFee = sFee.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-       return;
-    }
+      QString sFee = slParts[7];
+      unsigned long llFee = sFee.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+         return;
+      }
 
-    // Check that the user specified fee is not absurd.
-    // This allows amount=0 (and all amount < nDefaultFee) transactions to use the default network fee
-    // or anything less than nDefaultFee instead of being forced to use a custom fee and leak metadata
-    // -->>The original comment seems to indicate that as long as the fee is set to nDefaultFee then
-    //     any amount is allowed.
-    if (llTotalOut < ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE) // Per comment above: (all amount < nDefaultFee)
-    {
-        if (llFee > ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE)  // Per comment above: (network fee <= nDefaultFee)
-        {                                                   // Conclusion: If (TotalOut < defaultFee) then (fee must also be <= defaultFee)
-#if defined(__APPLE__)
-          sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %llu has fee %lu that is greater than the default fee %d",
-                               llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
-#else
-          sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %lu has fee %lu that is greater than the default fee %d",
-                               llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
-#endif          
+      // Check that the user specified fee is not absurd.
+      // This allows amount=0 (and all amount < nDefaultFee) transactions to use the default network fee
+      // or anything less than nDefaultFee instead of being forced to use a custom fee and leak metadata
+      // -->>The original comment seems to indicate that as long as the fee is set to nDefaultFee then
+      //     any amount is allowed.
+      if (llTotalOut < ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE) // Per comment above: (all amount < nDefaultFee)
+      {
+          if (llFee > ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE)  // Per comment above: (network fee <= nDefaultFee)
+          {                                                   // Conclusion: If (TotalOut < defaultFee) then (fee must also be <= defaultFee)
+  #if defined(__APPLE__)
+            sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %llu has fee %lu that is greater than the default fee %d",
+                                 llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
+  #else
+            sTmp = sTmp.asprintf("Transaction format error: Small transaction amount %lu has fee %lu that is greater than the default fee %d",
+                                 llTotalOut, llFee, ASYNC_RPC_OPERATION_DEFAULT_MINERS_FEE);
+  #endif
+            ui->teSign_Output->setText(sTmp);
+            return;
+          }
+      }
+      else
+      {
+        if (llFee > llTotalOut)
+        {
+          sTmp = sTmp.asprintf("Transaction format error: The fee is greater than the transaction amount");
           ui->teSign_Output->setText(sTmp);
           return;
         }
-    }
-    else
-    {
-      if (llFee > llTotalOut)
+      }
+      sChecksumInput+=sFee+" ";
+
+      //TreasureChest already added the change back to itself. Check if all the inputs
+      //were send to an output:
+      if (llTotalIn != (llTotalOut+llFee))
       {
-        sTmp = sTmp.asprintf("Transaction format error: The fee is greater than the transaction amount");
+  #if defined(__APPLE__)
+        sTmp = sTmp.asprintf("Transaction error: The outputs (%llu) + fee (%lu) doesn't add up to all the inputs (%llu)",
+                             llTotalOut, llFee, llTotalIn);
+  #else
+        sTmp = sTmp.asprintf("Transaction error: The outputs (%lu) + fee (%lu) doesn't add up to all the inputs (%lu)",
+                             llTotalOut, llFee, llTotalIn);
+  #endif
         ui->teSign_Output->setText(sTmp);
         return;
       }
-    }
-    sChecksumInput+=sFee+" ";
 
-    //TreasureChest already added the change back to itself. Check if all the inputs
-    //were send to an output:
-    if (llTotalIn != (llTotalOut+llFee))
+      //For the hardware wallet a 0.25% commission/tax/developer/maintenance fee is charged
+      //Check here if its a valid transaction before submitting it to the hw unit. It will fail there if its not correct too.
+      //This is just to catch it earlier for user convenience.
+      //The fee will be taken out of the change. If 100% funds are spend the user will first have to decrease the send amount:
+
+      //Debug: verify that 6250 coin has commission of 15.625 coin (0.25%)
+      uint64_t llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
+      llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
+
+      //Calculate the actual calculation on the Total outputs:
+      llCommission = llTotalOut * 25/10000; //0.25%
+      if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
+      {
+        //Cap maximum commission at 6250 coin.
+        llCommission = 1562500000;
+      }
+
+      //Converted to Satoshi's: Compare avaialbe change vs the commission to be paid
+      if (llChangeAmount < llCommission)
+      {
+        double fCommission = (double)llCommission / 100000000;
+        double fmCommission = (double)llCommission / 100000;
+        double fuCommission = (double)llCommission / 100;
+        sTmp = sTmp.asprintf("Transaction error: Insufficient change left for the 0.25%% commission of %0.4f Arrr, %0.4f mArrr, %0.4f uARRR. Please decrease the sending amount",fCommission , fmCommission, fuCommission);
+        ui->teSign_Output->setText(sTmp);
+        return;
+      }
+
+
+      QString sNextBlockHeight = slParts[8];
+      llTmp = sNextBlockHeight.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+         return;
+      }
+      sChecksumInput+=sNextBlockHeight+" ";
+
+
+      QString sBranchID = slParts[9];
+      llTmp = sBranchID.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
+         return;
+      }
+      sChecksumInput+=sBranchID+" ";
+
+
+      QString sAnchor   = slParts[10].replace("\"","");
+      if (sAnchor.length()!=64)
+      {
+        ui->teSign_Output->setText("Transaction format error: Anchor length invalid");
+        return;
+      }
+      uint8_t cAnchor[32];
+      uint16_t iAnchorLength;
+      iAnchorLength = Hex2Array(sAnchor, &cAnchor[0], 32);
+      if (iAnchorLength!=32)
+      {
+        ui->teSign_Output->setText("Transaction format error: Anchor length invalid");
+        return;
+      }
+      sChecksumInput+=sAnchor+" ";
+
+
+      QString sOverwintered = slParts[11];
+      llTmp = sOverwintered.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 11 not an integer");
+         return;
+      }
+      sChecksumInput+=sOverwintered+" ";
+
+
+      QString sExpiryHeight = slParts[12];
+      llTmp = sExpiryHeight.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 12 not an integer");
+         return;
+      }
+      sChecksumInput+=sExpiryHeight+" ";
+
+
+      QString sVersionGroupID = slParts[13];
+      llTmp = sVersionGroupID.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 13 not an integer");
+         return;
+      }
+      sChecksumInput+=sVersionGroupID+" ";
+
+
+      QString sVersion = slParts[14];
+      llTmp = sVersion.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 14 not an integer");
+         return;
+      }
+      sChecksumInput+=sVersion+" ";
+
+
+      QString sZipEnabled = slParts[15];
+      llTmp = sZipEnabled.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 15 not an integer");
+         return;
+      }
+      sChecksumInput+=sZipEnabled+" ";
+
+
+      //Parameter [16]: checksum
+      //A simple checksum of the full string, to detect copy/paste errors between the wallets
+      //The checksum equals the sum of the ASCII values of all the characters in the string:
+      printf("sChecksumInput:\n%s\n\n",sChecksumInput.toStdString().c_str());
+      iChecksum=0x01;
+      for (int iI=0;iI<sChecksumInput.length();iI++)
+      {
+        QChar oChar = sChecksumInput.at(iI);
+        unsigned int iVal = (unsigned int)oChar.toLatin1();
+        iChecksum = iChecksum + iVal;
+      }
+
+      QString sChecksum = slParts[16];
+      llTmp = sChecksum.toULong(&bOK);
+      if (bOK!=true)
+      {
+         ui->teSign_Output->setText("Transaction format error: Parameter 16 not an integer");
+         return;
+      }
+      printf("Protocol checksum: %s, Calculated checksum: %u\n", sChecksum.toStdString().c_str(), iChecksum);
+
+
+    } //PIRATE
+    else if (cProject==PROJECT_RADIANT)
     {
-#if defined(__APPLE__)    
-      sTmp = sTmp.asprintf("Transaction error: The outputs (%llu) + fee (%lu) doesn't add up to all the inputs (%llu)",
-                           llTotalOut, llFee, llTotalIn);
-#else
-      sTmp = sTmp.asprintf("Transaction error: The outputs (%lu) + fee (%lu) doesn't add up to all the inputs (%lu)",
-                           llTotalOut, llFee, llTotalIn);
-#endif      
-      ui->teSign_Output->setText(sTmp);
+      QStringList slParts = sTransaction.split(";");
+      if (
+         (slParts.count()!=5)    ||
+         (slParts[4].length()==0)
+         )
+      {
+        ui->statusbar->showMessage("Transaction format error: Expecting 5 parts");
+        return;
+      }
+
+      sChecksumInput=slParts[0]+";"+slParts[1]+";"+slParts[2]+";"+slParts[3];
+
+      //The endianess from the electrum wallet mismatches our calculated value. Swap bytes:
+      if (slParts[4].length() != 4)
+      {
+        ui->statusbar->showMessage("Transaction format error: Expecting checksum to be 4 characters");
+        return;
+      }
+      sTmp[0] = slParts[4][2];
+      sTmp[1] = slParts[4][3];
+      sTmp[2] = slParts[4][0];
+      sTmp[3] = slParts[4][1];
+      llTmp = sTmp.toUShort(&bOK,16);
+      if (bOK==false)
+      {
+        sTmp="Could not convert the checksum to a value";
+        ui->statusbar->showMessage(sTmp);
+        return;
+      }
+      //Calculate the checksum:
+      iChecksum = CalcCrc16( (void *)sChecksumInput.toStdString().c_str(), sChecksumInput.length(), 0x1D0F);
+    }
+    else
+    {
+      ui->teSign_Output->setText("Internal error: Unknown project");
       return;
     }
 
-    //For the hardware wallet a 0.25% commission/tax/developer/maintenance fee is charged
-    //Check here if its a valid transaction before submitting it to the hw unit. It will fail there if its not correct too.
-    //This is just to catch it earlier for user convenience.
-    //The fee will be taken out of the change. If 100% funds are spend the user will first have to decrease the send amount:
-
-    //Debug: verify that 6250 coin has commission of 15.625 coin (0.25%)
-    uint64_t llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
-    llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
-
-    //Calculate the actual calculation on the Total outputs:
-    llCommission = llTotalOut * 25/10000; //0.25%
-    if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
-    {
-      //Cap maximum commission at 6250 coin.
-      llCommission = 1562500000;
-    }
-
-    //Converted to Satoshi's: Compare avaialbe change vs the commission to be paid
-    if (llChangeAmount < llCommission)
-    {
-      double fCommission = (double)llCommission / 100000000;
-      double fmCommission = (double)llCommission / 100000;
-      double fuCommission = (double)llCommission / 100;
-      sTmp = sTmp.asprintf("Transaction error: Insufficient change left for the 0.25%% commission of %0.4f Arrr, %0.4f mArrr, %0.4f uARRR. Please decrease the sending amount",fCommission , fmCommission, fuCommission);
-      ui->teSign_Output->setText(sTmp);
-      return;
-    }
-
-
-    QString sNextBlockHeight = slParts[8];
-    llTmp = sNextBlockHeight.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-       return;
-    }
-    sChecksumInput+=sNextBlockHeight+" ";
-
-
-    QString sBranchID = slParts[9];
-    llTmp = sBranchID.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter not an integer");
-       return;
-    }
-    sChecksumInput+=sBranchID+" ";
-
-
-    QString sAnchor   = slParts[10].replace("\"","");
-    if (sAnchor.length()!=64)
-    {
-      ui->teSign_Output->setText("Transaction format error: Anchor length invalid");
-      return;
-    }
-    uint8_t cAnchor[32];
-    uint16_t iAnchorLength;
-    iAnchorLength = Hex2Array(sAnchor, &cAnchor[0], 32);
-    if (iAnchorLength!=32)
-    {
-      ui->teSign_Output->setText("Transaction format error: Anchor length invalid");
-      return;
-    }
-    sChecksumInput+=sAnchor+" ";
-
-
-    QString sOverwintered = slParts[11];
-    llTmp = sOverwintered.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 10 not an integer");
-       return;
-    }
-    sChecksumInput+=sOverwintered+" ";
-
-
-    QString sExpiryHeight = slParts[12];
-    llTmp = sExpiryHeight.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 11 not an integer");
-       return;
-    }
-    sChecksumInput+=sExpiryHeight+" ";
-
-
-    QString sVersionGroupID = slParts[13];
-    llTmp = sVersionGroupID.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 12 not an integer");
-       return;
-    }
-    sChecksumInput+=sVersionGroupID+" ";
-
-
-    QString sVersion = slParts[14];
-    llTmp = sVersion.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 13 not an integer");
-       return;
-    }
-    sChecksumInput+=sVersion+" ";
-
-
-    QString sZipEnabled = slParts[15];
-    llTmp = sZipEnabled.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 14 not an integer");
-       return;
-    }
-    sChecksumInput+=sZipEnabled+" ";
-
-
-    //Parameter [16]: checksum
-    //A simple checksum of the full string, to detect copy/paste errors between the wallets
-    //The checksum equals the sum of the ASCII values of all the characters in the string:
-    printf("sChecksumInput:\n%s\n\n",sChecksumInput.toStdString().c_str());
-
-    unsigned int iChecksum=0x01;
-    for (int iI=0;iI<sChecksumInput.length();iI++)
-    {
-      QChar oChar = sChecksumInput.at(iI);
-      unsigned int iVal = (unsigned int)oChar.toLatin1();
-      iChecksum = iChecksum + iVal;
-    }
-
-    QString sChecksum = slParts[16];
-    llTmp = sChecksum.toULong(&bOK);
-    if (bOK!=true)
-    {
-       ui->teSign_Output->setText("Transaction format error: Parameter 15 not an integer");
-       return;
-    }
-    printf("Protocol checksum: %s, Calculated checksum: %u\n", sChecksum.toStdString().c_str(), iChecksum);
     if (llTmp != iChecksum)
     {
       ui->teSign_Output->setText("Transaction format error: The checksum in the message mismatches the calculated checksum");
@@ -2658,8 +3018,6 @@ void MainWindow::btSign_Sign_clicked()
       return;
     }
 
-
-
     cMessageQueued=3;
     int8_t cReturnCode = oMsgFrame->Pack( MSGID_SIGN,
                                           (uint8_t *)&caTransaction[0],
@@ -2679,7 +3037,7 @@ void MainWindow::btSign_Sign_clicked()
      }
   }
   catch(...)
-  {   
+  {
     ui->teSign_Output->setText("Transaction format error: Exception");
     Exception();
   }
@@ -2798,7 +3156,14 @@ void MainWindow::btSign_OTP_clicked()
     //OTP send. Return to the sign details page.
     //Only 1 OTP/retrieve request. Have to initiate a new sign request to try again.    
     ui->teSign_Output->clear();
-    ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+    if (cProject==PROJECT_DERO)
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
+    }
+    else
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+    }
 
     cReturnCode = oMsgFrame->Pack(MSGID_SIGN_OTP, &caData[0], 4 );
     if (cReturnCode!=0)
@@ -3408,7 +3773,9 @@ void MainWindow::btPassword_Up_clicked()
       ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
       return;
     }
-    cMessageQueued=3;  //X seconds for a reply
+    cMessageQueued=2;  //X seconds for a reply
+
+    ui->statusbar->showMessage(" ");
 
     //[0]=0x33 [1]=0x01 : Up
     caData[0]=0x33;
@@ -3445,7 +3812,8 @@ void MainWindow::btPassword_Down_clicked()
       ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
       return;
     }
-    cMessageQueued=3;  //X seconds for a reply
+    cMessageQueued=2;  //X seconds for a reply
+    ui->statusbar->showMessage(" ");
 
     //[0]=0x33 [1]=0x02 : Down
     caData[0]=0x33;
@@ -3483,7 +3851,8 @@ void MainWindow::btPassword_Left_clicked()
       ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
       return;
     }
-    cMessageQueued=3;  //X seconds for a reply
+    cMessageQueued=2;  //X seconds for a reply
+    ui->statusbar->showMessage(" ");
 
     //[0]=0x33 [1]=0x03 : Left
     caData[0]=0x33;
@@ -3521,7 +3890,8 @@ void MainWindow::btPassword_Right_clicked()
       ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
       return;
     }
-    cMessageQueued=3;  //X seconds for a reply
+    cMessageQueued=2;  //X seconds for a reply
+    ui->statusbar->showMessage(" ");
 
     //[0]=0x33 [1]=0x04 : Right
     caData[0]=0x33;
@@ -3847,7 +4217,7 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   iCounter=0;
   while((bytes = fread(buffer, 1, 1, datafile)))
   {
-      SHA256_Update(&ctx, buffer, bytes);      
+      SHA256_Update(&ctx, buffer, bytes);
 
       if (
          (iCounter>=(iSize-1024-18)) &&
@@ -3925,7 +4295,7 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   RSA_free(pRSA_pubkey);
 
   if(ret == 1)
-  {          
+  {      
     //Signature is valid
 
     //Serial number:
@@ -3953,29 +4323,111 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
       return -5;
     }
 
-    if (*pcFileCommsVersion>=3)
+    //For wallet serial of 15 chars, the last byte is set to \0
+    if(strncmp( (char *)&caSerial[0], (char *)&caWalletSerialNr[0],16)==0)
     {
-      //For wallet serial==15, last byte is set to \0
-      if(strncmp( (char *)&caSerial[0], (char *)&caWalletSerialNr[0],16)==0)
-      {
-        //The upgrade file matches the serial nr of the hw wallet
-        return 0;
-      }
-      else
-      {
-        //The serial numbers mismatch. Do not send the file to the hardware wallet.
-        //The decryption on the h/w wallet will fail, which wastes time in sending
-        //an invalid file in the first place. A file with a mismatching serial nr
-        //will not decrypt on the hw wallet.
-        return -6;
-      }
+      //The upgrade file matches the serial nr of the hw wallet
+      return 0;
     }
+    else
+    {
+      //The serial numbers mismatch. Do not send the file to the hardware wallet.
+      //The decryption on the h/w wallet will fail, which wastes time in sending
+      //an invalid file in the first place. A file with a mismatching serial nr
+      //will not decrypt on the hw wallet.
+      return -6;
+    }
+
     return 0;
   }
   else
   {
     //Signature invalid
     return -4;
+  }
+}
+
+void MainWindow::btSign_Dero_Browse_clicked()
+{
+  try
+  {
+    int8_t cReturnCode;
+    QString sTmp;
+    QString sDirectory;
+    QString sFilename;
+    FILE *pFH;
+    char_t cData;
+    size_t iSize;
+
+    ui->leSign_Dero_Filename->clear();
+    ui->statusbar->showMessage(" ");
+
+//On Cygwin the windows default system file dialog is not availabe.
+//The Qt file dialog under Cygwin, however, does not correctly set the initial path.
+//The only way I could get the root path to be set already when the dialog opens was
+//to use '/'.
+
+//The file dialog inherits the stylesheet settings. In our case this causes the
+//background to be black, with black text.
+//A work around was to create a new, unused widget (pageDownloadNoStyle), and set
+//its background to white. The dialog appears correctly now
+#ifdef __CYGWIN__
+    printf("CYGWIN\n");
+    sDirectory = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
+                                                 "/",
+                                                 ("Data container (*.dat)"));
+#else
+    printf("LIN\n");
+    sDirectory = QFileDialog::getExistingDirectory(this, "Choose Folder", ".", QFileDialog::ShowDirsOnly);
+#endif
+    if (sDirectory.length()==0)
+    {      
+      return;
+    }
+
+    sFilename = sDirectory+"/pirateplus_test_file.txt";
+
+    //Test to see if we have read/write access to that directory:
+    pFH = fopen (sFilename.toStdString().c_str(), "w");
+    if (pFH==nullptr)
+    {
+        printf("Could not open file for writing");
+    }
+    cData='X';
+    iSize = fwrite(&cData,1,1,pFH);
+    if (iSize!=1)
+    {
+      ui->statusbar->showMessage("Could not write data to the file");
+    }
+    fclose(pFH);
+
+    //Test to see if we have read/write access to that directory:
+    pFH = fopen (sFilename.toStdString().c_str(), "r");
+    if (pFH==nullptr)
+    {
+        ui->statusbar->showMessage("Could not open file for reading");
+    }
+    iSize = fread(&cData,1,1,pFH);
+    if (iSize!=1)
+    {
+      ui->statusbar->showMessage("Could not write data to the file");
+    }
+    fclose(pFH);
+
+    if (cData!='X')
+    {
+      ui->statusbar->showMessage("Error reading back file contents");
+    }
+    unlink( sFilename.toStdString().c_str() );
+
+    ui->leSign_Dero_Filename->setText(sDirectory);
+    ui->statusbar->showMessage("Monitoring directory for input from the online (view only) wallet");
+
+    bDero_scan_online_wallet=true;
+  }
+  catch (...)
+  {
+    Exception();
   }
 }
 
@@ -4102,6 +4554,8 @@ void MainWindow::Switchto_pageSign()
 {
   try
   {
+    QIcon *poIcon;
+
     ui->teSign_Input->clear();
     ui->teSign_Output->clear();
 
@@ -4109,7 +4563,51 @@ void MainWindow::Switchto_pageSign()
 
     ui->btSign_Sign->setFocus();
     ui->stackedWidget->setCurrentWidget(ui->pageSign);
-    ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+    if (cProject==PROJECT_DERO)
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
+      ui->leSign_Dero_Filename->setText("");
+    }
+    else
+    {
+      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
+    }
+
+
+    if (cProject==PROJECT_PIRATE)
+    {
+      //Change picture on the 'sign' page, depending on the project:
+      // btSelectProject1 & btSelectProject2 on the 'address' pages.
+      poIcon = new QIcon(":/images/pirate.png");
+      ui->btSelectProject3->setIcon(*poIcon);
+      ui->btSelectProject4->setIcon(*poIcon);
+      ui->btSelectProject5->setIcon(*poIcon);
+      ui->btSelectProject6->setIcon(*poIcon);
+      ui->btSelectProject7->setIcon(*poIcon);
+    }
+    else if (cProject==PROJECT_RADIANT)
+    {
+      //Change picture on the 'sign' page, depending on the project:
+      // btSelectProject1 & btSelectProject2 on the 'address' pages.
+      poIcon = new QIcon(":/images/radiant.png");
+      ui->btSelectProject3->setIcon(*poIcon);
+      ui->btSelectProject4->setIcon(*poIcon);
+      ui->btSelectProject5->setIcon(*poIcon);
+      ui->btSelectProject6->setIcon(*poIcon);
+      ui->btSelectProject7->setIcon(*poIcon);
+    }
+    else if (cProject==PROJECT_DERO)
+    {
+      //Change picture on the 'sign' page, depending on the project:
+      poIcon = new QIcon(":/images/dero.png");
+      ui->btSelectProject3->setIcon(*poIcon);
+      ui->btSelectProject4->setIcon(*poIcon);
+      ui->btSelectProject5->setIcon(*poIcon);
+      ui->btSelectProject6->setIcon(*poIcon);
+      ui->btSelectProject7->setIcon(*poIcon);
+
+      bDero_scan_online_wallet=false;
+    }
   }
   catch (...)
   {
@@ -4129,13 +4627,40 @@ void MainWindow::Switchto_pageAddress()
       return;
     }
 
-    ui->teRetrieveAddress_SA->clear();
-    ui->teRetrieveAddress_EFVK->clear();
     ui->statusbar->showMessage(" ");
+    if (cProject==PROJECT_PIRATE)
+    {
+      ui->teRetrieveAddressPirate_SA->clear();
+      ui->teRetrieveAddressPirate_EFVK->clear();
 
-    ui->stackedWidget->setCurrentWidget(ui->pageAddress);
-    ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
-    ui->sbRetrieveAddress_Index->setFocus();
+      ui->stackedWidget->setCurrentWidget(ui->pageAddressPirate);
+      ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_MainControl);
+
+      ui->sbRetrieveAddressPirate_Index->setValue(0);
+      ui->sbRetrieveAddressPirate_Index->setFocus();
+    }
+    else if (cProject==PROJECT_RADIANT)
+    {
+      ui->teRetrieveAddressElectrum_XPUB->clear();
+
+      ui->sbRetrieveAddressElectrum_Account->setValue(0);
+      ui->sbRetrieveAddressElectrum_Account->setFocus();
+
+      ui->stackedWidget->setCurrentWidget(ui->pageAddressElectrum);
+      ui->stackwidget_RetrieveAddressElectrum->setCurrentWidget(ui->pageRetrieveAddressElectrum_MainControl);
+    }
+    else if (cProject==PROJECT_DERO)
+    {
+      ui->teSetupDero_Response->clear();
+
+      ui->stackedWidget->setCurrentWidget(ui->pageSetupDero);
+      ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_MainControl);
+    }
+    else
+    {
+      ui->statusbar->showMessage("Internal error: Unknown project");
+    }
+
   }
   catch (...)
   {
@@ -4144,17 +4669,14 @@ void MainWindow::Switchto_pageAddress()
   }
 }
 
-
-void MainWindow::btRetrieveAddress_clicked()
+void MainWindow::btRetrieveAddressElectrum_clicked()
 {
   try
   {
-//    bool bOK;
-    int8_t cReturnCode;
+    int8_t cReturnCode=0;
     uint8_t caData[3];
 
-    ui->teRetrieveAddress_SA->setText("");
-    ui->teRetrieveAddress_EFVK->setText("");
+    ui->teRetrieveAddressElectrum_XPUB->setText("");
 
     if (cMessageQueued>0)
     {
@@ -4166,11 +4688,123 @@ void MainWindow::btRetrieveAddress_clicked()
 
     ui->statusbar->showMessage("Request address");
 
-    caData[0] = 1; //Pirate
+    //Instruct the unit that we want to retrieve a xpub address for the specified derivative account: m/44'/0'/X'
+    uint16_t iIndex = (uint16_t)ui->sbRetrieveAddressElectrum_Account->value();
+    // 0..65535 is valid, only 0..255 used in the GUI to protect users from themselves
 
+    caData[0] = PROJECT_RADIANT; //Specify project
+    caData[1] = (iIndex   ) & 0xFF; //Account nr
+    caData[2] = (iIndex>>8) & 0xFF;
+
+    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS, &caData[0], 3 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+
+void MainWindow::btSetupDero_ViewingKey()
+{
+  try
+  {
+    int8_t cReturnCode=0;
+    uint8_t caData[3];
+
+    ui->teSetupDero_Response->setText("");
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3;  //X seconds for a reply
+
+    ui->statusbar->showMessage("Request address");
+
+    //Instruct the unit that we want to retrieve the public viewing key
+
+    caData[0] = PROJECT_DERO; //Specify project
+    caData[1] = 0; //Account field not used
+    caData[2] = 0;
+
+    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS, &caData[0], 3 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+
+void MainWindow::btSetupDero_RegistrationTransaction_clicked()
+{
+  try
+  {
+    int8_t cReturnCode=0;
+    uint8_t caData[3];
+
+    ui->teSetupDero_Response->setText("");
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3;  //X seconds for a reply
+
+    ui->statusbar->showMessage("Request address");
+
+    //Instruct the unit to generate the registration transaction
+    cReturnCode = oMsgFrame->Pack(MSGID_REGISTRATION, &caData[0], 0 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  catch (...)
+  {
+      ui->statusbar->showMessage("An error occurred.");
+      Exception();
+  }
+}
+
+void MainWindow::btRetrieveAddressPirate_clicked()
+{
+  try
+  {
+//    bool bOK;
+    int8_t cReturnCode;
+    uint8_t caData[3];
+
+    ui->teRetrieveAddressPirate_SA->setText("");
+    ui->teRetrieveAddressPirate_EFVK->setText("");
+
+    if (cMessageQueued>0)
+    {
+      //This should not happen...
+      ui->statusbar->showMessage("A message was already submitted to the unit. Please wait for the response.");
+      return;
+    }
+    cMessageQueued=3;  //X seconds for a reply
+
+    ui->statusbar->showMessage("Request address");
     //Instruct the unit that we want to retrieve a spending & viewing key
-    uint16_t iIndex = (uint16_t)ui->sbRetrieveAddress_Index->value();
-    // 0..65535 is valid
+    uint16_t iIndex = (uint16_t)ui->sbRetrieveAddressPirate_Index->value();
+    // 0..65535 is valid, only 0..255 used in the GUI to protect users from themselves
+
+    caData[0] = PROJECT_PIRATE; //Specify project
     caData[1] = (iIndex   ) & 0xFF;
     caData[2] = (iIndex>>8) & 0xFF;
 
@@ -4187,7 +4821,7 @@ void MainWindow::btRetrieveAddress_clicked()
   }
 }
 
-void MainWindow::btRetrieveAddressOTP_clicked()
+void MainWindow::btSetupOTP_clicked()
 {
   try
   {
@@ -4198,7 +4832,19 @@ void MainWindow::btRetrieveAddressOTP_clicked()
     int32_t iOTP;
 
     //Convert text input to OTP number:
-    sTmp = ui->leRetrieveAddress_OTP->text();
+    if (cProject==PROJECT_PIRATE)
+    {
+      sTmp = ui->leRetrieveAddressPirate_OTP->text();
+    }
+    else if(cProject==PROJECT_RADIANT)
+    {
+      sTmp = ui->leRetrieveAddressElectrum_OTP->text();
+    }
+    else if(cProject==PROJECT_DERO)
+    {
+      sTmp = ui->leSetupDero_OTP->text();
+    }
+
     if (sTmp.length()!=4)
     {
       ui->statusbar->showMessage("Please enter the 4 numbers of the OTP as it appears on the hardware wallet");
@@ -4231,7 +4877,15 @@ void MainWindow::btRetrieveAddressOTP_clicked()
     cMessageQueued=3;  //X seconds for a reply
     ui->statusbar->showMessage("Request address OTP");
 
-    cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS_OTP, &caData[0], 4 );
+    if ( (cProject==PROJECT_DERO) && (cOTP_type==1))
+    {
+      //Dero : generate registration transaction
+      cReturnCode = oMsgFrame->Pack(MSGID_REGISTRATION_OTP, &caData[0], 4 );
+    }
+    else
+    {
+      cReturnCode = oMsgFrame->Pack(MSGID_RETRIEVE_ADDRESS_OTP, &caData[0], 4 );
+    }
     if (cReturnCode!=0)
     {
       ui->statusbar->showMessage("Could not send the command to the hardware unit");
@@ -4239,14 +4893,472 @@ void MainWindow::btRetrieveAddressOTP_clicked()
 
     //OTP send. Return to the retrieved address details page.
     //Only 1 OTP/retrieve request. Have to initiate a new address retrieve to try again.
-    ui->stackwidget_RetrieveAddress->setCurrentWidget(ui->pageRetrieveAddress_MainControl);
-    ui->sbRetrieveAddress_Index->setFocus();
+    if (cProject==PROJECT_PIRATE)
+    {
+      ui->stackwidget_RetrieveAddressPirate->setCurrentWidget(ui->pageRetrieveAddressPirate_MainControl);
+      ui->sbRetrieveAddressPirate_Index->setFocus();
+    }
+    else if (cProject==PROJECT_RADIANT)
+    {
+      ui->stackwidget_RetrieveAddressElectrum->setCurrentWidget(ui->pageRetrieveAddressElectrum_MainControl);
+    }
+    else if (cProject==PROJECT_DERO)
+    {
+      ui->stackwidget_SetupDero->setCurrentWidget(ui->pageSetupDero_MainControl);
+    }
   }
   catch (...)
   {
       ui->statusbar->showMessage("An error occurred.");
       Exception();
   }
+}
+
+void MainWindow::btSelectProject_clicked()
+{
+  int8_t cReturnCode;
+  QObject *poSender = QObject::sender();
+
+  if (poSender == ui->btSelectCoin_Pirate)
+  {
+    ui->statusbar->showMessage("Selected: PirateChain");
+
+    cProject=PROJECT_PIRATE;
+    cReturnCode = oMsgFrame->Pack(MSGID_SELECT_PROJECT, &cProject, 1 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  else if (poSender == ui->btSelectCoin_Radiant)
+  {
+    ui->statusbar->showMessage("Selected: Radiant");
+
+    cProject=PROJECT_RADIANT;
+    cReturnCode = oMsgFrame->Pack(MSGID_SELECT_PROJECT, &cProject, 1 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  else if (poSender == ui->btSelectCoin_Dero)
+  {
+    ui->statusbar->showMessage("Selected: Dero");
+
+    cProject=PROJECT_DERO;
+    cReturnCode = oMsgFrame->Pack(MSGID_SELECT_PROJECT, &cProject, 1 );
+    if (cReturnCode!=0)
+    {
+      ui->statusbar->showMessage("Could not send the command to the hardware unit");
+    }
+  }
+  else if (
+          (poSender == ui->btSelectProject1) ||
+          (poSender == ui->btSelectProject2) ||
+          (poSender == ui->btSelectProject3) ||
+          (poSender == ui->btSelectProject4) ||
+          (poSender == ui->btSelectProject5) ||
+          (poSender == ui->btSelectProject6) ||
+          (poSender == ui->btSelectProject7)
+          )
+  {
+    ui->statusbar->showMessage(" ");
+    cProject=0; //No project selected
+
+    //Select project:
+    ui->stackedWidget->setCurrentWidget(ui->pageSelectCoin);
+  }
+}
+
+//Decrypted response from hw wallet -> online (view only) wallet
+void MainWindow::Dero_save_response(uint8_t *pcaInput, uint16_t iLength)
+{
+  uint8_t caData[1025];
+  uint8_t caTransaction[20002];
+  uint16_t iTxLength;
+  uint16_t iChecksumPosition;
+  uint8_t caCRC[10];
+
+  FILE *pFH;
+  uint16_t iSize=0;
+
+  uint16_t iCRC;
+  uint16_t iI, iK;
+  uint8_t  cJ;
+
+  QString sFilename;
+  QString sDirectory = ui->leSign_Dero_Filename->text();
+  if (sDirectory.length()==0)
+  {
+    return;
+  }
+
+  if (strncmp("dero 1 signed ", (char *)pcaInput, 14) == 0)
+  {
+    iCRC=1;
+    iK=0;
+
+    iChecksumPosition=0;
+    for (iI=0;iI<10;iI++)
+    {
+      if (pcaInput[iLength-iI] == ';')
+      {
+        iChecksumPosition=iLength-iI;
+        break;
+      }
+    }
+    if (iChecksumPosition==0)
+    {
+      ui->statusbar->showMessage("Could not find the checksum separator.");
+      return;
+    }
+
+    cJ=0;
+    for (iI=iChecksumPosition+1;iI<iLength;iI++)
+    {
+      caCRC[cJ]=pcaInput[iI];
+      cJ++;
+    }
+    caCRC[cJ]=0;
+
+    iCRC=1;
+    for (iI=0;iI<iChecksumPosition;iI++)
+    {
+//      sprintf( (char *)caData[0],"%02x", pcaInput[iI]);
+//      caTransaction[iI*2+0] = caData[0];
+//      caTransaction[iI*2+1] = caData[1];
+      QChar qChar = pcaInput[iI];
+      cJ = (uint8_t)qChar.toLatin1();
+      iCRC = iCRC + cJ;
+    }
+
+    QString sCRC = QString::asprintf("%u",iCRC);
+    QString sCRC2= QString::asprintf("%s",&caCRC[0]);
+    if (sCRC != sCRC2)
+    {
+      ui->statusbar->showMessage("CRC of the response from the hw wallet invalid");
+      return;
+    }
+
+    //Need to expand the response to use HEX instead of binary data:
+    memset( (char *)&caTransaction[0], 'U' , sizeof(caTransaction) );
+    iK=0;
+    sprintf( (char *)&caTransaction[0], "dero 1 signed ");
+    for (iI=14;iI<iChecksumPosition;iI++)
+    {
+      sprintf( (char *)&caData[0],"%02x", pcaInput[iI] );
+      caTransaction[14 + iK + 0] = caData[0];
+      caTransaction[14 + iK + 1] = caData[1];
+      iK+=2;
+    }
+    iK+=14;
+
+    //Recalculate CRC for the expanded hex data
+    iCRC=1;
+    for (iI=0;iI<iK;iI++)
+    {
+      QChar qChar = caTransaction[iI];
+      cJ = (uint8_t)qChar.toLatin1();
+      iCRC = iCRC + cJ;
+    }
+    sCRC = QString::asprintf("%u",iCRC);
+
+    caTransaction[iK]=';';
+    iK++;
+    for (iI=0;iI<sCRC.length();iI++)
+    {
+      caTransaction[iK]= (uint8_t)sCRC.at(iI).toLatin1();
+      iK++;
+    }
+
+    //Decryption request from online (view only) wallet?
+    sFilename = sDirectory+"/offline_response";
+
+    pFH = fopen (sFilename.toStdString().c_str(), "w");
+    if (pFH==nullptr)
+    {
+      ui->statusbar->showMessage("Could not open file for writing: "+sFilename);
+      return;
+    }
+    fwrite( &caTransaction[0],1,iK,pFH);
+    fclose(pFH);
+
+  }
+  else
+  {
+    //Null terminate input string
+    pcaInput[iLength] = 0;
+
+    QString sInput = QString::fromLatin1( (char_t *)&pcaInput[0]).trimmed().replace("\n","");
+    QStringList sParts = sInput.split(";");
+    if (sParts.length()!=2)
+    {
+      ui->statusbar->showMessage("Invalid nr of parts in the response from the hw wallet");
+      return;
+    }
+    iCRC=1;
+    for (iI=0;iI<sParts.at(0).length();iI++)
+    {
+      QChar qChar = sParts.at(0)[iI];
+      cJ = (uint8_t)qChar.toLatin1();
+      iCRC = iCRC + cJ;
+    }
+    QString sCRC = QString::asprintf("%u",iCRC);
+    if (sParts.at(1) != sCRC)
+    {
+      ui->statusbar->showMessage("CRC of the response from the hw wallet invalid");
+      return;
+    }
+
+
+    //Decryption request from online (view only) wallet?
+    sFilename = sDirectory+"/offline_response";
+
+    pFH = fopen (sFilename.toStdString().c_str(), "w");
+    if (pFH==nullptr)
+    {
+      ui->statusbar->showMessage("Could not open file for writing: "+sFilename);
+      return;
+    }
+    fwrite(&pcaInput[0],1,iLength,pFH);
+    fclose(pFH);
+  }
+  ui->statusbar->showMessage("Processed result from hw wallet send to the online (view only) wallet");
+  return;
+}
+
+//Dero: Evaluate wallet balance vs payment amount in the transaction
+// Return codes: -1 : Parse error
+//               -2 : String to int convertion error
+//               -3 : Not enough funds
+int8_t MainWindow::Dero_evaluate_balance(QString sOutputs, QString sBalance)
+{
+  int8_t cReturnCode;
+  uint8_t cI,cJ;
+  QStringList saTransfers = sOutputs.split("}");
+  uint64_t llValue=0;
+  uint64_t llTotal=0;
+  uint64_t llBalance=0;
+  uint64_t llCommission;
+  bool bOK;
+
+  llBalance = sBalance.toLongLong(&bOK,16);
+  if (bOK!=true)
+  {
+    //Value convertion error
+    return -2;
+  }
+
+  for (cI=0;cI<saTransfers.length();cI++)
+  {
+    QStringList saParts = saTransfers.at(cI).split(",");
+    for (cJ=0;cJ<saParts.length();cJ++)
+    {
+      if (
+         (saParts.at(cJ).contains("Amount")) ||
+         (saParts.at(cJ).contains("Burn"))
+         )
+      {
+        QStringList saPair = saParts.at(cJ).split(":");
+        if (saPair.length()!=2)
+        {
+          //Format error
+          return -1;
+        }
+        QString sValue = saPair.at(1);
+        llValue = sValue.toLongLong(&bOK,10);
+        if (bOK!=true)
+        {
+          //Value convertion error
+          return -2;
+        }
+        llTotal+=llValue;
+      }
+    }
+  }
+
+  //FIXIT : Calculate fees
+
+  //Add commission of 0.25%
+  llCommission= (uint64_t)((float)llTotal * 0.0025);
+  llTotal += llCommission;
+
+  if (llTotal>llBalance)
+  {
+    ui->statusbar->showMessage("Total spend amount is larger than your available balance.");
+    return -3;
+  }
+
+  return 0;
+}
+//Dero: Commands from online (view only) wallet -> hw wallet
+void MainWindow::Dero_scan_files()
+{
+  int8_t cReturnCode;
+  uint8_t caData[10001];
+
+  FILE *pFH;
+  uint16_t iSize=0;
+
+  uint16_t iCRC;
+  uint16_t iI;
+  uint8_t  cJ;
+
+  QString sFilename;
+  QString sDirectory = ui->leSign_Dero_Filename->text();
+  if (sDirectory.length()==0)
+  {
+    return;
+  }
+
+
+  //Decryption request from online (view only) wallet?
+  sFilename = sDirectory+"/offline_request";
+
+  iSize=0;
+  pFH = fopen (sFilename.toStdString().c_str(), "r");
+  if (pFH!=nullptr)
+  {
+
+    iSize = fread(&caData[0],1,10001,pFH);
+    fclose(pFH);
+
+    //unlink( sFilename.toStdString().c_str() );
+    QString sNewName = sFilename+".o";
+    rename (sFilename.toStdString().c_str(), sNewName.toStdString().c_str());
+  }
+
+  if (iSize>0)
+  {
+    //fread data not automatically null terminated. Set terminating null char:
+    caData[iSize]=0;
+
+    QString sInput = QString::fromLatin1( (char_t *)&caData[0]).trimmed().replace("\n","");
+    QStringList sParts = sInput.split(";");
+    if (sParts.length()!=2)
+    {
+      ui->statusbar->showMessage("Invalid nr of parts in the request from the online wallet");
+      return;
+    }
+    iCRC=1;
+    for (iI=0;iI<sParts.at(0).length();iI++)
+    {
+      QChar qChar = sParts.at(0)[iI];
+      cJ = (uint8_t)qChar.toLatin1();
+      iCRC = iCRC + cJ;
+    }
+    QString sCRC = QString::asprintf("%u",iCRC);
+    if (sParts.at(1) != sCRC)
+    {
+      ui->statusbar->showMessage("CRC of the request from the online wallet invalid");
+      return;
+    }
+
+    //Parameter   [0]: Project - 'dero'
+    //            [1]: Version - Layout of the command fields
+    //            [2]: header: scalar_mult, shared_secret, sign_offline
+    // Version 1:
+    //           scalar_mult & shared_secret:
+    //            [3] el.Right
+    //           sign_offline
+    //            [3]..[12]
+    //             ;  Checksum of all the characters in the data stream
+
+    QStringList saFields = sParts.at(0).split(" ");
+    if (saFields.length() < 4)
+    {
+      ui->statusbar->showMessage("Invalid number of parts in the online wallet request. Expected at least 4");
+      return;
+    }
+
+    if  (saFields.at(0) != "dero")
+    {
+      ui->statusbar->showMessage("Expected a Dero transaction, Found "+saFields.at(0));
+      return;
+    }
+
+    if (saFields.at(1) != "1")
+    {
+      ui->statusbar->showMessage("Only transaction version 1 supported. Found "+saFields.at(1));
+      return;
+    }
+
+    //FIXIT: 25 seconds to load wallet -- Need a copy to be permanently running.
+    cMessageQueued=40;
+
+    if (
+       (saFields.at(2) == "scalar_mult") ||
+       (saFields.at(2) == "shared_secret")
+       )
+    {
+      if (saFields.length() != 4)
+      {
+        ui->statusbar->showMessage("Invalid number of parts in the transaction");
+        return;
+      }
+
+      cReturnCode = oMsgFrame->Pack( MSGID_DECRYPT,
+                                     (uint8_t *)sInput.toStdString().c_str(),
+                                     sInput.length() );
+
+    }
+    else if (saFields.at(2) == "sign_offline")
+    {
+      if (saFields.length() != 13)
+      {
+        ui->statusbar->showMessage("Invalid number of parts in the transaction");
+        return;
+      }
+
+      cReturnCode = Dero_evaluate_balance(saFields.at(3), saFields.at(12));
+      if (cReturnCode != 0)
+      {
+        switch (cReturnCode)
+        {
+          case -1:
+            ui->statusbar->showMessage("Could not parse the transaction data");
+            break;
+          case -2:
+            ui->statusbar->showMessage("Error converting string to integer");
+            break;
+          case -3:
+            ui->statusbar->showMessage("Total spend is more than your available balance");
+            break;
+          default:
+            ui->statusbar->showMessage("Unknown error while parsing the transaction");
+            break;
+        }
+        return;
+      }
+
+
+      cReturnCode = oMsgFrame->Pack( MSGID_SIGN,
+                                     (uint8_t *)sInput.toStdString().c_str(),
+                                     sInput.length() );
+
+    }
+    else
+    {
+      ui->statusbar->showMessage("Transaction doesn't start with 'scalar_mult', 'shared_secret' or 'sign_offline");
+      return;
+    }
+
+    switch (cReturnCode)
+    {
+//FIXIT : Use dedicated status label on the page
+      case 0:
+        ui->statusbar->showMessage("Decrypt request from online (view only) wallet send to hw wallet");
+        timerSendPeriodicMsgs->stop();
+        break;
+      case -1:
+        ui->statusbar->showMessage("Input error. Could not queue the decrypt message for transmission.");
+        break;
+      case -2:
+        ui->statusbar->showMessage("Could not queue the decrypt message for transmission.");
+        break;
+     }
+  }
+  return;
 }
 
 
@@ -4349,9 +5461,9 @@ void Worker::doWork()
   uint16_t iSyncCount=0;
   uint16_t iPacketNr=0;
 
-  size_t tRead=0;;
-  int16_t iReturnCode=0;;
-  int8_t cReturnCode=0;;
+  size_t tRead=0;
+  int16_t iReturnCode=0;
+  int8_t cReturnCode=0;
   char_t caPort[255];
 //    char_t caPort[20]="vmodem1";
   uint8_t caData[ COMMS_BUFFER_SIZE+20 ];
@@ -4664,3 +5776,4 @@ void MyController::timerThread_timeout()
     bCancelTransfer=FALSE;
   }
 }
+

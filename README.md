@@ -10,7 +10,7 @@ Make sure your hardware wallet, Control GUI and Treasure Chest applications have
 
 Qt GUI: 3 (3.9)
 H/w wallet: 3 (3.6)
-Treasure Chest: 5.8.0
+Treasure Chest: 5.8.1
 
 Qt GUI: 3 (3.8)
 H/w wallet: 3 (3.5)

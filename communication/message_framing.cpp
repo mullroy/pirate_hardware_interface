@@ -293,11 +293,17 @@ void MsgFrame_Widget::Frameing (void)
            (cInternalMsgID==MSGID_APPLY_CONFIG)     ||
            (cInternalMsgID==MSGID_REG_STATUS)       ||
 
-           (cInternalMsgID==MSGID_RETRIEVE_ADDRESS)      ||
+           (cInternalMsgID==MSGID_RETRIEVE_ADDRESS)     ||
            (cInternalMsgID==MSGID_RETRIEVE_ADDRESS_OTP) ||
-           (cInternalMsgID==MSGID_SIGN_ACK) ||
+
+           (cInternalMsgID==MSGID_REGISTRATION)      ||
+           (cInternalMsgID==MSGID_REGISTRATION_OTP)  ||
+           (cInternalMsgID==MSGID_REGISTRATION_ACK)  ||
+
+           (cInternalMsgID==MSGID_SIGN_ACK)      ||
            (cInternalMsgID==MSGID_SIGN_NAVIGATE) ||
-           (cInternalMsgID==MSGID_SIGN_OTP) ||
+           (cInternalMsgID==MSGID_SIGN_OTP)      ||
+           (cInternalMsgID==MSGID_DECRYPT_ACK)   ||
            (cInternalMsgID==MSGID_ERROR)
            )
         {

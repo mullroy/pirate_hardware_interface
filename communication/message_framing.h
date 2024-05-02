@@ -24,6 +24,9 @@ QT_END_NAMESPACE
 #define MSGID_SELECT_PROJECT                  0x14
 #define MSGID_SELECT_PROJECT_ACK              0x15
 
+#define MSGID_DECRYPT                         0x16 //Dero: balance decrypt
+#define MSGID_DECRYPT_ACK                     0x17
+
 #define MSGID_SIGN                            0x20
 #define MSGID_SIGN_NAVIGATE                   0x21
 #define MSGID_SIGN_OTP                        0x22
@@ -31,6 +34,10 @@ QT_END_NAMESPACE
 
 #define MSGID_RETRIEVE_ADDRESS                0x25
 #define MSGID_RETRIEVE_ADDRESS_OTP            0x26
+
+#define MSGID_REGISTRATION                    0x27  //Dero: generate registration transaction
+#define MSGID_REGISTRATION_OTP                0x28
+#define MSGID_REGISTRATION_ACK                0x29
 
 #define MSGID_GEN_MNEMONIC                    0x30  //Generate a new mnemonic
 #define MSGID_GEN_MNEMONIC_PREVIOUS           0x31  //Show previous word

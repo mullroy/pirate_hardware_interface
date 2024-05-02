@@ -465,11 +465,11 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Pirate (ARRR) hardware wallet control interface</string>
+   <string>Pirate Plus hardware wallet control interface</string>
   </property>
   <property name="windowIcon">
    <iconset resource="pictures.qrc">
-    <normaloff>:/images/pirate.ico</normaloff>:/images/pirate.ico</iconset>
+    <normaloff>:/images/pirate_plus.ico</normaloff>:/images/pirate_plus.ico</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -958,7 +958,7 @@
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>13</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="pageWelcomeScreen">
      <widget class="QLabel" name="lbConnect_Heading">
@@ -1177,6 +1177,9 @@
         <kerning>true</kerning>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Pirate plus additional projects</string>
+      </property>
       <property name="autoFillBackground">
        <bool>false</bool>
       </property>
@@ -1227,7 +1230,8 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>11</pointsize>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="autoFillBackground">
@@ -1396,6 +1400,11 @@ QRadioButton{ background-color : transparent; color : white; }
         <height>161</height>
        </rect>
       </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
@@ -1410,7 +1419,9 @@ QRadioButton{ background-color : transparent; color : white; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The 'standard connection' is used to interact with the hardware wallet to set it up, create addresses and to sign transactions.&lt;br /&gt;The 'upgrade connection' is used to send additional software, as released by the development team, to the unit. The software archive is matched to your unit specifically. Don't use an upgrade file obtained from someone else. The dev. team will send announcements to the Pirate address you used for the purchase of your hardware wallet.&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The 'standard connection' is used to interact with the hardware wallet to set it up, create addresses and to sign transactions. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The 'upgrade connection' is used to send additional software, as released by the development team, to the unit. The software archive is matched to your unit specifically. Don't use an upgrade file obtained from someone else. The dev. team will send announcements to the Pirate address you used for the purchase of your hardware wallet.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="textInteractionFlags">
        <set>Qt::NoTextInteraction</set>
@@ -1436,7 +1447,7 @@ p, li { white-space: pre-wrap; }
        <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
-       <string>GUI version: 2.4</string>
+       <string>GUI version: 3.9</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -3010,7 +3021,7 @@ p, li { white-space: pre-wrap; }
        <string>RIGHT</string>
       </property>
      </widget>
-     <widget class="QLabel" name="lbVerifyPassword_Heading3_2">
+     <widget class="QLabel" name="lbLogin_Heading3">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -3057,7 +3068,7 @@ p, li { white-space: pre-wrap; }
        <string>B</string>
       </property>
      </widget>
-     <widget class="QLabel" name="lbVerifyPassword_Heading2_2">
+     <widget class="QLabel" name="lbLogin_Heading2">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -3521,7 +3532,342 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="pageAddress">
+    <widget class="QWidget" name="pageSelectCoin">
+     <widget class="QLabel" name="lbSelectCoin_Heading">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>781</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>SELECT PROJECT</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>39</y>
+        <width>761</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Click on the project (coin) you would like to interact with. The hardware wallet originally</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectCoin_Disconnect">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>452</y>
+        <width>100</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+      </property>
+      <property name="text">
+       <string>Disconnect</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectCoin_Pirate">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>190</y>
+        <width>141</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>120</width>
+        <height>120</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectCoin_Radiant">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>190</y>
+        <width>141</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/radiant.png</normaloff>:/images/radiant.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>120</width>
+        <height>120</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>761</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>supported only Pirate Chain. The funcationality was extended to support extra projects.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>761</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Each project requires its own online counterpart software to interact with. </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_4">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>340</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>https://pirate.black/wallets/treasure-chest</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Treasure Chest</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_5">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>340</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>https://github.com/RadiantBlockchain/electron-radiant</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Electrum Radiant</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_6">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>340</y>
+        <width>171</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Online counterpart:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectCoin_Dero">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>190</y>
+        <width>141</width>
+        <height>131</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/dero.png</normaloff>:/images/dero.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>120</width>
+        <height>120</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lbSelectCoin_Heading2_7">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>340</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>https://dero.io/download.html</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Dero-wallet-cli</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="pageAddressPirate">
      <widget class="QLabel" name="label_47">
       <property name="geometry">
        <rect>
@@ -3542,7 +3888,7 @@ p, li { white-space: pre-wrap; }
        <string notr="true">color: rgb(255, 255, 255);</string>
       </property>
       <property name="text">
-       <string>Retrieve addresses</string>
+       <string>Setup</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -3590,7 +3936,7 @@ p, li { white-space: pre-wrap; }
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="btRetrieveAddress_Disconnect">
+     <widget class="QPushButton" name="btRetrieveAddressPirate_Disconnect">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -3631,7 +3977,7 @@ p, li { white-space: pre-wrap; }
        <string>Disconnect</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="btRetrieveAddress_Sign">
+     <widget class="QPushButton" name="btRetrieveAddressPirate_Sign">
       <property name="geometry">
        <rect>
         <x>350</x>
@@ -3659,19 +4005,23 @@ p, li { white-space: pre-wrap; }
         <bold>true</bold>
        </font>
       </property>
+      <property name="toolTip">
+       <string>Sign transaction</string>
+      </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
       </property>
       <property name="text">
-       <string>Sign Tx</string>
+       <string>Sign
+Transaction</string>
       </property>
      </widget>
-     <widget class="QTextBrowser" name="tbRetrieveAddress_Heading">
+     <widget class="QTextBrowser" name="textConnect_2">
       <property name="geometry">
        <rect>
-        <x>20</x>
+        <x>100</x>
         <y>30</y>
-        <width>761</width>
+        <width>681</width>
         <height>131</height>
        </rect>
       </property>
@@ -3700,13 +4050,13 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The addresses are derived from your secret mnemonic phrase. We've allowed you to create 255 addresses. The index will identify a specific address uniquely. Each time you want to generate that particular address again, you just enter the same address index. Remember: The hardware wallet and PirateCoin Treasure Chest wallet are completely separate from each other. You have to keep track of the address indexes you've used when you want to restore your wallet. To remember the index it's best to generate the addresses in sequential order, so that you don't skip a previously used address. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Retrieve addresses derived from your secret mnemonic phrase. We've allowed you to create 255 addresses. The index will identify a specific address uniquely. Each time you want to generate that particular address again, you just enter the same address index. Remember: The hardware wallet and PirateCoin Treasure Chest wallet are completely separate from each other. You have to keep track of the address indexes you've used when you want to restore your wallet.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="textInteractionFlags">
        <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
-     <widget class="QStackedWidget" name="stackwidget_RetrieveAddress">
+     <widget class="QStackedWidget" name="stackwidget_RetrieveAddressPirate">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -3721,7 +4071,7 @@ p, li { white-space: pre-wrap; }
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="pageRetrieveAddress_MainControl">
+      <widget class="QWidget" name="pageRetrieveAddressPirate_MainControl">
        <widget class="QLabel" name="label_48">
         <property name="geometry">
          <rect>
@@ -3771,7 +4121,7 @@ p, li { white-space: pre-wrap; }
          <string>Address index:</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="btRetrieveAddress">
+       <widget class="QPushButton" name="btRetrieveAddressPirate">
         <property name="geometry">
          <rect>
           <x>400</x>
@@ -3794,7 +4144,7 @@ p, li { white-space: pre-wrap; }
          <string>Request address</string>
         </property>
        </widget>
-       <widget class="QTextEdit" name="teRetrieveAddress_SA">
+       <widget class="QTextEdit" name="teRetrieveAddressPirate_SA">
         <property name="geometry">
          <rect>
           <x>30</x>
@@ -4280,7 +4630,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial';&quot;&gt;zs1r5ndchh54mvgdscqeelz07hyxqht5p2fx44fgdjqytallcdeqpdxwpuxh5abzpt3n7yqvcd8qc9&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
-       <widget class="QSpinBox" name="sbRetrieveAddress_Index">
+       <widget class="QSpinBox" name="sbRetrieveAddressPirate_Index">
         <property name="geometry">
          <rect>
           <x>310</x>
@@ -4299,7 +4649,7 @@ p, li { white-space: pre-wrap; }
          <number>0</number>
         </property>
        </widget>
-       <widget class="QLabel" name="lbRetrieveAddress_Index">
+       <widget class="QLabel" name="lbRetrieveAddressPirate_Index">
         <property name="geometry">
          <rect>
           <x>90</x>
@@ -4372,7 +4722,7 @@ p, li { white-space: pre-wrap; }
        <widget class="QLabel" name="label_56">
         <property name="geometry">
          <rect>
-          <x>310</x>
+          <x>320</x>
           <y>40</y>
           <width>61</width>
           <height>20</height>
@@ -4385,7 +4735,7 @@ p, li { white-space: pre-wrap; }
          <string>(0..255)</string>
         </property>
        </widget>
-       <widget class="QTextEdit" name="teRetrieveAddress_EFVK">
+       <widget class="QTextEdit" name="teRetrieveAddressPirate_EFVK">
         <property name="geometry">
          <rect>
           <x>30</x>
@@ -4842,7 +5192,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="toolTip">
-         <string>This is the adres that you share with people to make payments to you.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You have to import the (extended full) viewing key into Treasure Chest to be able to monitor the activity on the address. Treasure Chest also use the viewing key when you want to create a transaction for the address.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="autoFillBackground">
          <bool>true</bool>
@@ -4872,7 +5222,7 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </widget>
-      <widget class="QWidget" name="pageRetrieveAddress_OTP">
+      <widget class="QWidget" name="pageRetrieveAddressPirate_OTP">
        <widget class="QLabel" name="label_57">
         <property name="geometry">
          <rect>
@@ -4896,7 +5246,7 @@ p, li { white-space: pre-wrap; }
          <string>OTP: </string>
         </property>
        </widget>
-       <widget class="QPushButton" name="btRetrieveAddress_OTP">
+       <widget class="QPushButton" name="btRetrieveAddressPirate_OTP">
         <property name="geometry">
          <rect>
           <x>420</x>
@@ -4919,7 +5269,7 @@ p, li { white-space: pre-wrap; }
          <string>Send OTP</string>
         </property>
        </widget>
-       <widget class="QLineEdit" name="leRetrieveAddress_OTP">
+       <widget class="QLineEdit" name="leRetrieveAddressPirate_OTP">
         <property name="geometry">
          <rect>
           <x>350</x>
@@ -4994,6 +5344,1873 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </widget>
+     </widget>
+     <widget class="QPushButton" name="btSelectProject1">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>37</y>
+        <width>80</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Select project</string>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>80</width>
+        <height>80</height>
+       </size>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="pageAddressElectrum">
+     <widget class="QLabel" name="label_50">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>781</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Setup</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textConnect_4">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>30</y>
+        <width>671</width>
+        <height>231</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 32);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The master public key (xpub) is derived from your secret mnemonic phrase. With the master public key all your addresses can be derived in the online wallet. With the master public key you can view the balance of each address and you can create a transaction for the addresses with funds in them. You'll sign/authorise the transaction with the hardware wallet.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The derivitive path is used in the BIP39 scheme to derive your addresses from your secret mnemonic phrase. The default derivative path for Radiant is m/44'/0'/0'. The last field (/0') is called the &amp;quot;account&amp;quot;. With the same seed phrase your can create completely separate wallets by changing the account number.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Note: When you restore your wallet in the future, you have to use the same account number, otherwise you won't see the expected addresses and per extension, the funds stored at those addreses. If you're not going to make use of the &amp;quot;account&amp;quot; feature, leave the value at &amp;quot;0&amp;quot;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
+     <widget class="QStackedWidget" name="stackwidget_RetrieveAddressElectrum">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>270</y>
+        <width>781</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="pageRetrieveAddressElectrum_MainControl">
+       <widget class="QLabel" name="label_53">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>70</y>
+          <width>551</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>This is the adres that you share with people to make payments to you.</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Master public key (xpub)</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btRetrieveAddressElectrum">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>11</y>
+          <width>151</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Request address</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="teRetrieveAddressElectrum_XPUB">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>90</y>
+          <width>701</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="127">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="127">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You have to import the (extended full) viewing key into Treasure Chest to be able to monitor the activity on the address. Treasure Chest also use the viewing key when you want to create a transaction for the address.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 32);</string>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'monospace'; color:#000000; background-color:#ffffff;&quot;&gt;xpub6CgJi36rkJtxKQuj37QhZC2GgElkNRN2Wr5JYDYcFTnF3fLtahptuPZRSKn7cXUjds7CATzu8uGisNfxZtfzZWbPEWJdzFAFWwvHzW6CbN3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_58">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>18</y>
+          <width>81</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Account:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_60">
+        <property name="geometry">
+         <rect>
+          <x>340</x>
+          <y>41</y>
+          <width>51</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>(0..255)</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="sbRetrieveAddressElectrum_Account">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>11</y>
+          <width>61</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_61">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>40</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Path: m/44'/0'/X'</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="pageRetrieveAddressElectrum_OTP">
+       <widget class="QLabel" name="label_76">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>90</y>
+          <width>61</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>OTP: </string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btRetrieveAddressElectrum_OTP">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>90</y>
+          <width>151</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Send OTP</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="leRetrieveAddressElectrum_OTP">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>90</y>
+          <width>51</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
+        </property>
+        <property name="inputMask">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_77">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>30</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Enter the 4 numbers of the one time passcode (OTP) as it appears</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_78">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>50</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>on the screen of the hardware wallet</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="btRetrieveAddressElectrum_Sign">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>452</y>
+        <width>105</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>Sign transaction</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Sign
+Transaction</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btRetrieveAddressElectrum_Disconnect">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>452</y>
+        <width>105</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+      </property>
+      <property name="text">
+       <string>Disconnect</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectProject2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>37</y>
+        <width>80</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Select project</string>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/radiant.png</normaloff>:/images/radiant.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>80</width>
+        <height>80</height>
+       </size>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="pageSetupDero">
+     <widget class="QLabel" name="label_50">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>781</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
+      <property name="text">
+       <string>Setup</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textConnect_4">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>30</y>
+        <width>671</width>
+        <height>251</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 32);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustIgnored</enum>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The Dero wallet requires 2 items for setup:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;1) The viewing key is derived from your secret mnemonic phrase. You use it to setup the online (viewing only) wallet. With the public key you can view the balance of your account and create transactions for the funds in your wallet. You'll sign/authorise the transaction with the hardware wallet. Dero has only one address per wallet. There aren't separate accounts, like you have in PirateChain or Radiant.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;2) The &amp;quot;registration transaction&amp;quot; registers your wallet with an online node. Takes approx. 5-10 million hashes to generate the required transaction at random, through Proof of Work (POW).&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Note:&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt; Unlike PirateChain and Radiant, the viewing key for Dero is only partial. It requires communication with the hardware wallet to decrypt parts of the blockchain in order to build the account balance. For this reason, you'll require full time communication between the hardware wallet and the Dero online wallet. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
+     <widget class="QStackedWidget" name="stackwidget_SetupDero">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>290</y>
+        <width>781</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="pageSetupDero_MainControl">
+       <widget class="QLabel" name="label_53">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>30</y>
+          <width>551</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Wallet response:</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSetupDero_ViewingKey">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>0</y>
+          <width>151</width>
+          <height>38</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Retrieve the viewing key from the h/w wallet</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Viewing key</string>
+        </property>
+       </widget>
+       <widget class="QTextEdit" name="teSetupDero_Response">
+        <property name="geometry">
+         <rect>
+          <x>40</x>
+          <y>60</y>
+          <width>701</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="palette">
+         <palette>
+          <active>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="127">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </active>
+          <inactive>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="127">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </inactive>
+          <disabled>
+           <colorrole role="WindowText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Button">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Light">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Midlight">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Dark">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>127</red>
+              <green>127</green>
+              <blue>127</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Mid">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>170</red>
+              <green>170</green>
+              <blue>170</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Text">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="BrightText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ButtonText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Base">
+            <brush brushstyle="NoBrush">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Window">
+            <brush brushstyle="SolidPattern">
+             <color alpha="32">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="Shadow">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="AlternateBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="0">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipBase">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>220</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="ToolTipText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>0</red>
+              <green>0</green>
+              <blue>0</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="SolidPattern">
+             <color alpha="255">
+              <red>255</red>
+              <green>255</green>
+              <blue>255</blue>
+             </color>
+            </brush>
+           </colorrole>
+          </disabled>
+         </palette>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;viewkey&amp;quot; is used to setup the online (view only) wallet.  The &amp;quot;registration&amp;quot; transaction is used to register your online wallet to the network.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 32);</string>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;viewkey,dero1q55555555554444444444333333333395ev0nkyh73023jkyvy6vvqgt5nd2e,223ca85a555555555544444444443333333333658f9d897f45ea8cac46134c601,223ca83dded9555555555544444444443333333333f9d897f45ea8cac46134c622a4a0c01325f2c07bb732d04be928240b9d3fdc845dca082f4b20cfe5ff4247;20822&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSetupDero_RegistrationTransaction">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>0</y>
+          <width>151</width>
+          <height>38</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate the registration transaction on the h/w wallet&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Registration
+transaction</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="pageSetupDero_OTP">
+       <widget class="QLabel" name="label_76">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>90</y>
+          <width>61</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>OTP: </string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSetupDero_OTP">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>90</y>
+          <width>151</width>
+          <height>34</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Send OTP</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="leSetupDero_OTP">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>90</y>
+          <width>51</width>
+          <height>32</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
+        </property>
+        <property name="inputMask">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+        <property name="maxLength">
+         <number>4</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_77">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>30</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Enter the 4 numbers of the one time passcode (OTP) as it appears</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_78">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>50</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>on the screen of the hardware wallet</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="btSetupDero_Sign">
+      <property name="geometry">
+       <rect>
+        <x>350</x>
+        <y>452</y>
+        <width>105</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>Sign transaction</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;;</string>
+      </property>
+      <property name="text">
+       <string>Sign
+Transaction</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSetupDero_Disconnect">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>452</y>
+        <width>105</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>105</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <pointsize>12</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+      </property>
+      <property name="text">
+       <string>Disconnect</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btSelectProject6">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>37</y>
+        <width>80</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Select project</string>
+      </property>
+      <property name="accessibleName">
+       <string>53</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="pictures.qrc">
+        <normaloff>:/images/dero.png</normaloff>:/images/dero.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>80</width>
+        <height>80</height>
+       </size>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="pageSign">
@@ -5117,7 +7334,7 @@ Address</string>
         <property name="geometry">
          <rect>
           <x>670</x>
-          <y>140</y>
+          <y>160</y>
           <width>88</width>
           <height>34</height>
          </rect>
@@ -5140,7 +7357,7 @@ Address</string>
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>250</y>
+          <y>260</y>
           <width>171</width>
           <height>21</height>
          </rect>
@@ -5163,13 +7380,14 @@ Address</string>
         <property name="geometry">
          <rect>
           <x>670</x>
-          <y>180</y>
+          <y>200</y>
           <width>88</width>
           <height>34</height>
          </rect>
         </property>
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>12</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -5188,10 +7406,10 @@ Address</string>
         </property>
         <property name="geometry">
          <rect>
-          <x>60</x>
-          <y>280</y>
+          <x>50</x>
+          <y>290</y>
           <width>581</width>
-          <height>111</height>
+          <height>91</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -5205,7 +7423,7 @@ Address</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
        <widget class="QProgressBar" name="pbSign">
@@ -5230,8 +7448,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QPlainTextEdit" name="teSign_Input">
         <property name="geometry">
          <rect>
-          <x>60</x>
-          <y>150</y>
+          <x>50</x>
+          <y>160</y>
           <width>581</width>
           <height>91</height>
          </rect>
@@ -5244,7 +7462,7 @@ p, li { white-space: pre-wrap; }
         <property name="geometry">
          <rect>
           <x>50</x>
-          <y>110</y>
+          <y>130</y>
           <width>171</width>
           <height>21</height>
          </rect>
@@ -5266,10 +7484,10 @@ p, li { white-space: pre-wrap; }
        <widget class="QTextBrowser" name="textConnect_3">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>761</width>
-          <height>91</height>
+          <x>100</x>
+          <y>0</y>
+          <width>671</width>
+          <height>131</height>
          </rect>
         </property>
         <property name="font">
@@ -5297,10 +7515,39 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The hardware wallet depends on Treasure Chest wallet to generate the transaction. Read the 'USAGE.md' document on how to setup the Treasure Chest wallet and how to create a transaction. Paste the transaction raw text here and select Sign to have it send to the hardware wallet. Its important to confirm all the transaction information on the wallet screen. The signed transaction will be returned here. Copy it and paste it back in Treasure Chest. From there it is submitted to the network to complete the transaction. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The hardware wallet depends on Treasure Chest wallet to generate the transaction. Read the 'USAGE.md' document on how to setup the Treasure Chest wallet and how to create a transaction. Paste the transaction raw text here and select Sign to have it send to the hardware wallet. Its important to confirm all the transaction information on the wallet screen. The signed transaction will be returned here. Copy it and paste it back in Treasure Chest. From there it is submitted to the network to complete the transaction. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="textInteractionFlags">
          <set>Qt::NoTextInteraction</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSelectProject3">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>7</y>
+          <width>80</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Select project</string>
+        </property>
+        <property name="accessibleName">
+         <string>53</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>80</width>
+          <height>80</height>
+         </size>
         </property>
        </widget>
       </widget>
@@ -5339,6 +7586,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>11</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -5423,6 +7671,35 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSelectProject4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>7</y>
+          <width>80</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Select project</string>
+        </property>
+        <property name="accessibleName">
+         <string>53</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>80</width>
+          <height>80</height>
+         </size>
         </property>
        </widget>
       </widget>
@@ -5516,6 +7793,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>12</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -5542,6 +7820,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="font">
          <font>
+          <family>Arial</family>
           <pointsize>12</pointsize>
           <weight>75</weight>
           <bold>true</bold>
@@ -5583,6 +7862,463 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSelectProject5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>7</y>
+          <width>80</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Select project</string>
+        </property>
+        <property name="accessibleName">
+         <string>53</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>80</width>
+          <height>80</height>
+         </size>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="pageSign_Dero">
+       <widget class="QLabel" name="label_75">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>110</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>4096 byte standard input (stdin) buffer of the console. It makes it impractical</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_79">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>70</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>The online (view only) wallet needs to interact with the hardware wallet</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_80">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>90</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>to decrypt the account balance and to sign transactions. This data exceeds the </string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSelectProject7">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>7</y>
+          <width>80</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Select project</string>
+        </property>
+        <property name="accessibleName">
+         <string>53</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="pictures.qrc">
+          <normaloff>:/images/pirate.png</normaloff>:/images/pirate.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>80</width>
+          <height>80</height>
+         </size>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_81">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>130</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>to copy&amp;pase the data between the online (view only) and offline (signing) wallet.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_82">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>150</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Furthermore, the Dero blockchain expects transactions from the time they're created</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_83">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>170</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>until they're submitted to the blockchain to be approx. 30 seconds. Copy&amp;pasting files</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_84">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>190</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>are too slow. The solution was to create a simple data bridge between the two wallets.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_85">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>220</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>The online (view only) wallet will create request files in it current working directory.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_86">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>240</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>The PiratePlus control interface (this app) will look for these files. The balance enquiries</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_87">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>260</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>will be send automatically to the h/w wallet for processing. A sign request will first need</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_88">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>280</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>to be authorised by a valid OTP. The processed results will be stored in the online </string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_89">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>300</y>
+          <width>771</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>(view only) wallet directory, where the wallet will process the data accordingly</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="leSign_Dero_Filename">
+        <property name="geometry">
+         <rect>
+          <x>270</x>
+          <y>360</y>
+          <width>281</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>./</string>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_90">
+        <property name="geometry">
+         <rect>
+          <x>38</x>
+          <y>360</y>
+          <width>201</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
+        </property>
+        <property name="text">
+         <string>Online wallet location:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btSign_Dero_Browse">
+        <property name="geometry">
+         <rect>
+          <x>610</x>
+          <y>360</y>
+          <width>100</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 255);color: rgb(0, 0, 0);font: 12pt &quot;Arial&quot;</string>
+        </property>
+        <property name="text">
+         <string>Browse</string>
         </property>
        </widget>
       </widget>
@@ -5690,7 +8426,7 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>50</x>
         <y>270</y>
-        <width>681</width>
+        <width>731</width>
         <height>91</height>
        </rect>
       </property>
@@ -5800,6 +8536,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -5841,6 +8578,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -5951,6 +8689,39 @@ QRadioButton{ background-color : transparent; color : white; }
        <bool>true</bool>
       </property>
      </widget>
+     <widget class="QTextEdit" name="teMnemonicInstruction">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>90</y>
+        <width>711</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);
+background-color: rgba(0, 0, 0, 32);</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;New mnemonic:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;The unit will generate a new master seed and display it on the LCD in the form of a mnemonic. The mnemonic is a way to present the seed in human readable form. The full dictionary consist of 2048 words of which 24 are used to represent the the seed. The words are not transferred over the communication interface for improved security. The order of the words are important. A number will be displayed next to each word. Record them on an index card with positions marked 1 to 24.  Do not record the mnemonic on a computer or take a photo with a digital camera or phone. Make sure a webcam or security camera doesn't record the mnemonic without your knowledge. Note: Malware in some printers even detect the mnemonics and send it off to hackers. &lt;/span&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;The security of your funds depends upon you keeping this phrase secret from everyone&lt;/span&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;. Save the mnemonic somewhere safe where fire and moisture will not damage it.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Restore mnemonic:&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;You will be prompted to enter a mnemonic into the hardware wallet. The wallet will accept 12, 18 and 24 word mnemonics.  It will regenerate the master seed from the entered words. Your adresses can then be regenerated from the seed, thereby restoring your addresses. The address are used to access your funds. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::NoTextInteraction</set>
+      </property>
+     </widget>
      <widget class="QPushButton" name="btDisconnect_4">
       <property name="geometry">
        <rect>
@@ -5974,6 +8745,7 @@ QRadioButton{ background-color : transparent; color : white; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6009,6 +8781,7 @@ QRadioButton{ background-color : transparent; color : white; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6019,38 +8792,6 @@ QRadioButton{ background-color : transparent; color : white; }
       </property>
       <property name="text">
        <string>Continue</string>
-      </property>
-     </widget>
-     <widget class="QTextBrowser" name="teMnemonicInstruction">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>90</y>
-        <width>741</width>
-        <height>301</height>
-       </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="lineWidth">
-       <number>0</number>
-      </property>
-      <property name="html">
-       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;New mnemonic:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;The unit will generate a new master seed and display it on the LCD in the form of a mnemonic. The mnemonic is a way to present the seed in human readable form. The full dictionary consist of 2048 words of which 24 are used to represent the the seed. The words are not transferred over the communication interface for improved security. The order of the words are important. A number will be displayed next to each word. Record them on an index card with positions marked 1 to 24.  Do not record the mnemonic on a computer or take a photo with a digital camera or phone. Make sure a webcam or security camera doesn't record the mnemonic without your knowledge. Note: Malware in some printers even detect the mnemonics and send it off to hackers. &lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt; font-weight:600;&quot;&gt;The security of your funds depends upon you keeping this phrase secret from everyone&lt;/span&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;. Save the mnemonic somewhere safe where fire and moisture will not damage it.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:12pt; font-weight:600;&quot;&gt;Restore mnemonic:&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;You will be prompted to enter a mnemonic into the hardware wallet. The wallet will accept 12, 18 and 24 word mnemonics.  It will regenerate the master seed from the entered words. Your adresses can then be regenerated from the seed, thereby restoring your addresses. The address are used to access your funds. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="textInteractionFlags">
-       <set>Qt::NoTextInteraction</set>
       </property>
      </widget>
     </widget>
@@ -6066,6 +8807,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6092,6 +8834,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6208,10 +8951,13 @@ background-color: rgba(0, 0, 0, 32);</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;All the words of your mnemonic must be entered in the correct order. The unit will recognise a valid 12, 18 and 24 word mnemonic.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The characters are scrambled on the display of the unit. Enter the corresponding number next to  each letter as it appears on the display of the unit.&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The first 4 characters of the requested word must be entered. For a 3 letter word set the last letter to '0'. &lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Arial'; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;All the words of your mnemonic must be entered in the correct order. The unit will&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;recognise a valid 12, 18 and 24 word mnemonic.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The characters are scrambled on the display of the unit. Enter the corresponding&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;number next to  each letter as it appears on the display of the unit.&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;The first 4 characters of the requested word must be entered. For a 3 letter word&lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:11pt;&quot;&gt;set the last letter to '0'. &lt;/span&gt;&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="textInteractionFlags">
        <set>Qt::NoTextInteraction</set>
@@ -6398,6 +9144,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6445,6 +9192,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6537,6 +9285,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6578,6 +9327,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6683,6 +9433,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6706,6 +9457,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6831,6 +9583,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6866,6 +9619,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6971,6 +9725,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -6994,6 +9749,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -7122,6 +9878,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -7157,6 +9914,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -9062,6 +11820,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -9132,6 +11891,7 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -9220,6 +11980,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -9255,6 +12016,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -11228,6 +13990,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -11468,6 +14231,7 @@ password</string>
          </property>
          <property name="font">
           <font>
+           <family>Arial</family>
            <pointsize>12</pointsize>
            <weight>75</weight>
            <bold>true</bold>
@@ -11497,6 +14261,7 @@ password</string>
          </property>
          <property name="font">
           <font>
+           <family>Arial</family>
            <pointsize>12</pointsize>
            <weight>75</weight>
            <bold>true</bold>
@@ -11611,6 +14376,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -12096,6 +14862,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -12131,6 +14898,7 @@ password</string>
       </property>
       <property name="font">
        <font>
+        <family>Arial</family>
         <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
@@ -12179,7 +14947,8 @@ password</string>
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:11pt;&quot;&gt;Please use a GUI with a matching communication version of the hardware wallet, or load newer firmware on the hardware wallet. You can send a private message to the Pirate payment address you've used to purchase your wallet to request the latest firmware upgrade file for your unit. Only an upgrade file prapared specifically for your hardware wallet will be accepted by it.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;Please use a GUI with a matching communication version of the hardware wallet, or load newer firmware on the hardware wallet. You can send a private message to the Pirate payment address you've used to purchase your wallet to request the latest firmware upgrade file for your unit. Only an upgrade file prapared specifically for your hardware wallet will be accepted by it.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:11pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbDownload_3">
@@ -12775,6 +15544,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>textBrowser_2</tabstop>
   <tabstop>rbMnemonicRestore</tabstop>
   <tabstop>rbMnemonicNew</tabstop>
+  <tabstop>teMnemonicInstruction</tabstop>
   <tabstop>btRestoreMnemonic_Next</tabstop>
   <tabstop>btRestoreMnemonic_Previous</tabstop>
   <tabstop>textBrowser_4</tabstop>

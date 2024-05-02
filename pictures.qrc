@@ -70,7 +70,6 @@
         <file>emojis/62.png</file>
         <file>emojis/64.png</file>
         <file>emojis/63.png</file>
-        <file>images/pirate.ico</file>
         <file>images/treasure.png</file>
         <file>images/piratemap.png</file>
         <file>emojis/65.png</file>
@@ -81,6 +80,11 @@
         <file>emojis/70.png</file>
         <file>emojis/72.png</file>
         <file>emojis/73.png</file>
+        <file>images/radiant.png</file>
+        <file>images/pirate_plus.ico</file>
+        <file>images/pirate_plus.png</file>
+        <file>images/pirate.png</file>
         <file>images/night.png</file>
+        <file>images/dero.png</file>
     </qresource>
 </RCC>
