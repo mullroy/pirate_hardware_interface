@@ -118,6 +118,7 @@ void MainWindow::stylesheet()
   QString sTextBrowser="color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 32); font: 11pt \"Arial\";";
   QString sSpinBox="background-color: rgba(255, 255, 255, 255); color: rgb(0,0,0); font: 12pt \"Arial\";";
   QString sLabel = "font: 11pt; color: rgb(255, 255, 255);";
+  QString sImageTooltip = "QToolTip { color: #FFFFFF; background-color: #5F5F5F; border: none; }";
 #endif
 
   ui->lbSign_Detail->setStyleSheet(sLabel);
@@ -202,6 +203,15 @@ void MainWindow::stylesheet()
 #if defined(__APPLE__)
   ui->leConnect->setFixedWidth(170);
   ui->leDownload_Port->setFixedWidth(170);
+#else
+  //Tooltips style working for MAC. Apply for Linux & Windows
+  ui->btSelectProject1->setStyleSheet(sImageTooltip);
+  ui->btSelectProject2->setStyleSheet(sImageTooltip);
+  ui->btSelectProject3->setStyleSheet(sImageTooltip);
+  ui->btSelectProject4->setStyleSheet(sImageTooltip);
+  ui->btSelectProject5->setStyleSheet(sImageTooltip);
+  ui->btSelectProject6->setStyleSheet(sImageTooltip);
+  ui->btSelectProject7->setStyleSheet(sImageTooltip);
 #endif
 
 
@@ -213,6 +223,7 @@ void MainWindow::stylesheet()
   ui->textConnect_2->setStyleSheet(sTextBrowser);
   ui->textConnect_3->setStyleSheet(sTextBrowser);
   ui->textConnect_4->setStyleSheet(sTextBrowser);
+  ui->textConnect_5->setStyleSheet(sTextBrowser);
   ui->textBrowser->setStyleSheet(sTextBrowser);
   ui->textBrowser_2->setStyleSheet(sTextBrowser);
   ui->textBrowser_4->setStyleSheet(sTextBrowser);
@@ -224,7 +235,6 @@ void MainWindow::stylesheet()
   ui->teRetrieveAddressElectrum_XPUB->setStyleSheet(sTextBrowser);
   ui->teSetupMneumonic4->setStyleSheet(sTextBrowser);  
   ui->teDownload_Mismatch->setStyleSheet(sTextBrowser);
-
 
 }
 void MainWindow::Exception()
@@ -984,16 +994,6 @@ void MainWindow::ResolveSerialPorts()
   if (sResult.length()==0)
   {
     ui->statusbar->showMessage("Could not detect the serial ports of the unit.");
-
-    ui->stackedWidget->setCurrentWidget(ui->pageSign);
-    if (cProject==PROJECT_DERO)
-    {
-      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_Dero);
-    }
-    else
-    {
-      ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
-    }
     return;
   }
   QStringList lstPorts = sResult.trimmed().split("\n");
