@@ -419,6 +419,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Set GUI to the login page
+    ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
+    //Initialise the serial ports
     CloseSerialPort();
 
 
