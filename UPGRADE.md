@@ -2,7 +2,7 @@
 The upgrade procedure can be triggered in two scenarios. You can decide from the connection screen to go directly to the upgrade screen, by setting the radio button to 'Upgrade'. If you've selected the 'Standard' operating mode, and there's a mismatch between the communication version of the wallet and
 GUI you'll be taken to the upgrade screen too.<br>
 Note: The communication version between the hardware wallet and GUI must match to use the standard functions of the hardware wallet. The application versions may differ. The application version indicate cosmetic changes in the applications themselves, but will not cause an incompatibility between the GUI and hardware wallet.<br>
-<b>NOTE:</b> The upgrade procedure will erase the device configuration, i.e. your mnemonic seed phrase and password. Make sure you have your mnemonic seed phrase on hand, since you'll need to set up the wallet again after the upgrade.<br>
+<b>NOTE:</b> Up to firmware version v3.6 the upgrade procedure erased the device configuration, i.e. your mnemonic seed phrase and password. Make sure you have your mnemonic seed phrase on hand, since you'll need to set up the wallet again after the upgrade. After hardware wallet firmware v3.6 the configuration isn't erased, but the upgrade procedure will not allow downgrades. You'll only be able to load newer firmware.<br>
 
 # Compatible versions
 The version numbers of three applications must match for the system to work: Treasure chest, the Qt GUI control application and the hardware wallet software.<br>
@@ -17,19 +17,21 @@ If you'd like to revert your GUI application to an earlier version, you can do s
   
 * View the tags in the repository:<br>
 <i>$ git tag</i><br>
-&nbsp;&nbsp;v2.7<br>
-&nbsp;&nbsp;v2.6<br>
-&nbsp;&nbsp;v2.5<br>
-&nbsp;&nbsp;v2.3<br>
+&nbsp;&nbsp;V3.9<br>
+&nbsp;&nbsp;V3.8<br>
+&nbsp;&nbsp;V2.7<br>
+&nbsp;&nbsp;V2.6<br>
+&nbsp;&nbsp;V2.5<br>
+&nbsp;&nbsp;V2.3<br>
 &nbsp;&nbsp;v1.2<br>
   
 * Revert to an earlier release:<br>
-<i>$ git checkout v1.2</i><br>
-&nbsp;&nbsp;Note: switching to 'v1.2'.<br>
+<i>$ git checkout v3.8</i><br>
+&nbsp;&nbsp;Note: switching to 'V3.8'.<br>
 &nbsp;&nbsp;You are in 'detached HEAD' state.<br>
 Only the source code was altered. You have to rebuild the project (qmake -makefile ; make) to get an executable that matches the source code.
 
-* To return to the top of the repository:<br>
+* To return to the newest commit (HEAD) of the repository:
 <br>$ git switch -</i><br>
 &nbsp;&nbsp;Switched to branch 'master'<br>
 &nbsp;&nbsp;Your branch is up to date with 'origin/master'.<br>
@@ -39,7 +41,7 @@ You will need four items to perform an upgrade of the hardware wallet firmware:<
 1) Latest version of the GUI application<br> 
 2) A hardware wallet<br>
 3) The upgrade file, which matches your hardware wallet serial number. Steps to obtain it detailed below.<br>
-4) Your mnemonic seed phrase. You'll need your mnemonic seed phrase to set up the wallet again after the upgrade.<br>
+4) Your mnemonic seed phrase. For wallet firmware prior to v3.6 you'll need your mnemonic seed phrase to set up the wallet again after the upgrade. For later firmware releases the existing configuration isn't erased. It is still good practice to confirm that you can still access your mnemonic from where you've stored it, to have peace of mind that you can restore your funds at any time.<br>
 
 # Obtain the firmware file
 Power up your device through the USB connection. The Pirate logo appears.<br>
@@ -98,5 +100,5 @@ The wallet deploys the archive.<br>
 **![Deploy archive](screenshots/upgrade/19_unit_boot_upgrade.jpg?raw=true "Deploy archive")**<br>
 After the upgrade is done the wallet will prompt you to power cycle it.<br>
 **![Upgrade complete](screenshots/upgrade/20_unit_boot_upgrade.jpg?raw=true "Upgrade complete")**<br>
-The wallet will boot up in operational mode and prompt you to configure your mnemonic seed phrase and password. The newer software release will show the firmware version number on the LCD display for easy reference.<br>
+Prior to v3.6 the wallet will prompt you to configure your mnemonic seed phrase and password again after the upgrade.<br>
 **![Operational](screenshots/upgrade/22_operational-2.jpg?raw=true "Operational")**<br>
