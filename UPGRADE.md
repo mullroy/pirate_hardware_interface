@@ -21,6 +21,7 @@ If you'd like to revert your GUI application to an earlier version, you can do s
   
 * View the tags in the repository:<br>
 <i>$ git tag</i><br>
+&nbsp;&nbsp;V4.10<br>
 &nbsp;&nbsp;V3.9<br>
 &nbsp;&nbsp;V3.8<br>
 &nbsp;&nbsp;V2.7<br>
@@ -30,8 +31,8 @@ If you'd like to revert your GUI application to an earlier version, you can do s
 &nbsp;&nbsp;v1.2<br>
   
 * Revert to an earlier release:<br>
-<i>$ git checkout v3.8</i><br>
-&nbsp;&nbsp;Note: switching to 'V3.8'.<br>
+<i>$ git checkout V3.9</i><br>
+&nbsp;&nbsp;Note: switching to 'V3.9'.<br>
 &nbsp;&nbsp;You are in 'detached HEAD' state.<br>
 Only the source code was altered. You have to rebuild the project (qmake -makefile ; make clean ; make) to get an executable that matches the source code.
 
