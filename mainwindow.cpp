@@ -249,7 +249,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
   try
   {
-    //printf("MainWindow() Start application\n");
+    //fprintf(stderr,"MainWindow() Start application\n");
     ui->setupUi(this);
     /*
     //specify a new font.
@@ -417,7 +417,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->statusbar->showMessage(" ");
 
-
     //Set GUI to the login page
     ui->stackedWidget->setCurrentWidget(ui->pageWelcomeScreen);
     //Initialise the serial ports
@@ -433,7 +432,6 @@ MainWindow::MainWindow(QWidget *parent)
     eff->setBlurRadius(5.0);
     eff->setColor(Qt::red);
     ui->centralwidget->setGraphicsEffect(eff);
-    
   }
   catch(...)
   {
@@ -850,10 +848,6 @@ int8_t MainWindow::CloseSerialPort()
 {
   try
   {
-//    uint8_t cByte;
-//    uint8_t caData[2];
-
-
     //Stop the timers:
     timerConnect->stop ();
     timerSendPeriodicMsgs->stop();
@@ -865,6 +859,10 @@ int8_t MainWindow::CloseSerialPort()
     cMessageQueued=0;
     cUpgradeStatus=0; //Idle
 
+    //Transactin transfer variables
+    cRequestingTransactionPacket=0;
+    cTotalTransactionPackets=0;
+    sTransaction="";
 
     //Reset the GUI
     cEmojiPosition=0;
@@ -908,7 +906,7 @@ void MainWindow::ResolveSerialPorts()
   sUpgradePort="(Could not auto detect)";
 
 #if defined(__CYGWIN__) //Windows
-  printf("Windows\n");
+  fprintf(stderr,"Windows\n");
   sBase="/dev/ttyS";
   //Get the serial ports
   sResult = exec("ls /dev/ttyS* 2>/dev/null  | grep -v '/dev/ttyS0' | awk '{ print $1 }' | sed -e 's/\\/dev\\/ttyS//'");
@@ -953,7 +951,7 @@ void MainWindow::ResolveSerialPorts()
   sPortB = sBase + sPort.asprintf("%d",iTwo);
 #elif defined(__APPLE__)
   //Get the serial ports
-  printf("MAC OSX\n");
+  fprintf(stderr,"MAC OSX\n");
 
   // Note: on Mac OSX the /dev/tty* ports are blocking (flow control) while the
   //       /dev/cu* counterparts do not have flow control. This is a deviation 
@@ -988,7 +986,7 @@ void MainWindow::ResolveSerialPorts()
 //  sPortA = "/dev/tty.serial1";
 //  sPortB = "/dev/tty.serial1";
 #else
-  printf("Linux\n");
+  fprintf(stderr,"Linux\n");
   sBase="/dev/ttyUSB";
   
   //Get the serial ports
@@ -1182,7 +1180,7 @@ void MainWindow::timerSignProgress_timeout()
   {
     int iProgress = ui->pbSign->value();
     iProgress++;
-    if (iProgress>=85)
+    if (iProgress>=ui->pbSign->maximum())
     {
       timerSignProgress->stop();
       ui->statusbar->showMessage("Expected time for response reached.");
@@ -1207,8 +1205,69 @@ void MainWindow::timerSendPeriodicMsgs_timeout()
 {
   try
   {
+    QString sTmp="";
     uint8_t cByte=0;
     int8_t cReturnCode=0;
+    int32_t wSize;
+    uint8_t caTransaction[COMMS_RX_BUFFER_SIZE+1];
+
+    if ((cTotalTransactionPackets>0) && (cRequestingTransactionPacket>0))
+    {
+      //Stop the periodic timer - Don't want ping/ping's inbetween packet transfer
+      timerSendPeriodicMsgs->stop();
+      cMessageQueued=3;
+
+      caTransaction[0]=cRequestingTransactionPacket;
+      caTransaction[1]=cTotalTransactionPackets;
+
+      //Isolate data from the transaction:
+      if ((cRequestingTransactionPacket+1)<cTotalTransactionPackets)
+      {
+        wSize=TRANSACTIONPACKETSIZE;
+      }
+      else
+      {
+        wSize = sTransaction.length() - (cTotalTransactionPackets-1)*TRANSACTIONPACKETSIZE;
+      }
+      memcpy(&caTransaction[2], sTransaction.toStdString().c_str()+(TRANSACTIONPACKETSIZE*cRequestingTransactionPacket), (size_t)wSize);
+
+      fprintf(stderr,"Tx length: %d, Packet: %d/%d, [%d]+%d\n",
+              sTransaction.length(),cRequestingTransactionPacket+1,cTotalTransactionPackets,
+              (TRANSACTIONPACKETSIZE*cRequestingTransactionPacket), (size_t)wSize
+             );
+
+      int8_t cReturnCode = oMsgFrame->Pack( MSGID_SIGN,
+                                            (uint8_t *)&caTransaction[0],
+                                            (uint16_t)wSize+2);
+      switch (cReturnCode)
+      {
+        case 0:
+          sTmp = sTmp.asprintf("Packet %d of %d of the transaction send to the hardware wallet.",(cRequestingTransactionPacket+1),cTotalTransactionPackets);
+          ui->teSign_Output->setText(sTmp);
+          fprintf(stderr,"%s\n",sTmp.toStdString().c_str());
+          break;
+        case -1:
+          ui->teSign_Output->setText("Input error. Could not queue the message for transmission.");
+          ui->statusbar->showMessage("Input error. Could not queue the message for transmission.");
+          break;
+        case -2:
+          ui->teSign_Output->setText("Could not queue the message for transmission.");
+          ui->statusbar->showMessage("Could not queue the message for transmission.");
+          break;
+        default:
+          ui->teSign_Output->setText("Unknown response from the communication");
+          ui->statusbar->showMessage("Could not queue the message for transmission.");
+          break;
+       }
+
+       if ((cRequestingTransactionPacket+1)==cTotalTransactionPackets)
+       {
+         cTotalTransactionPackets=0; //Finished
+       }
+       cRequestingTransactionPacket=0;
+       return;
+    }
+
     if (cMessageQueued>0)
     {
       cMessageQueued--;
@@ -1219,7 +1278,6 @@ void MainWindow::timerSendPeriodicMsgs_timeout()
       }
       return;
     }
-
 
     //If upgrade was initiated, poll the status to see when we should start
     //sending the file. Its a convenient place to send the status request along
@@ -1437,7 +1495,7 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
 
         if (pcaData[0]==0) //Session key failed
         {
-          printf("Session key failed\n");
+          fprintf(stderr,"Session key failed\n");
 
           timerSendPeriodicMsgs->stop();
           ui->statusbar->showMessage("Entered invalid session key");
@@ -2141,6 +2199,18 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         }
         break;
       case MSGID_SIGN_ACK:
+        if (iLength==1)
+        {
+          sTmp.asprintf("The unit is requesting data packet %d\n",pcaData[0] );
+          ui->teSign_Output->setText(sTmp);
+          cRequestingTransactionPacket=(uint8_t)pcaData[0];
+
+          //We're in a callback. We can't send the next packet from here.
+          //We have to schedule a timer that can perform the next action.
+          timerSendPeriodicMsgs->start(500);
+          break;
+        }
+
         if (timerSendPeriodicMsgs->isActive()==FALSE)
         {
           timerSendPeriodicMsgs->start(2000); //Start sending ping/pong
@@ -2201,18 +2271,31 @@ void MainWindow::message_framedetected(uint8_t cMsgID, uint8_t *pcaData, uint16_
         {
           ui->stackwidget_Sign->setCurrentWidget(ui->pageSign_MainControl);
 
-          //FIXIT: Add extra markers to verify that the contents are valid, like a checksum on the payload level?
-          if (iLength > COMMS_RX_BUFFER_SIZE)
+          //[0] - Packet number
+          //[1] - Total number of packets for the result data
+          sTmp=sTmp.asprintf("Received data packet %d of %d from the unit", pcaData[0]+1, pcaData[1] );
+          fprintf(stderr,"%s\n",sTmp.toStdString().c_str() );
+
+          ui->teSign_Output->setText(sTmp);
+          ui->teSign_Output->setVisible(true);
+          ui->pbSign->setVisible(false);
+
+          if (pcaData[0]==0)
           {
-            ui->teSign_Output->setText("Length of the response message is invalid");
-            break;
+            //Clear out the transaction array
+            sTransaction="";
           }
+          pcaData[iLength]=0;
+          sTmp = sTmp.asprintf("%s", (char *)&pcaData[2]);
+          sTransaction.append(sTmp);
 
-          memcpy(&caData[0], pcaData, iLength);
-          caData[iLength]=0;
+          //FIXIT: Add extra markers to verify that the contents are valid, like a checksum on the payload level?
 
-          sData = sData.asprintf("%s",&caData[0]);
-          ui->teSign_Output->setText("sendrawtransaction "+sData);
+          if ((pcaData[0]+1)==pcaData[1])
+          {
+            ui->teSign_Output->setText("sendrawtransaction "+sTransaction);
+            sTransaction="";
+          }
         }
         break;
 
@@ -2417,24 +2500,17 @@ void MainWindow::btSign_Sign_clicked()
     ui->teSign_Output->setText("");
 
     //Remove trailing whitespace that can be present after copy/paste
-    QString sTransaction = ui->teSign_Input->toPlainText().trimmed();
+    sTransaction = ui->teSign_Input->toPlainText().trimmed();
     if (sTransaction.length()==0)
     {
       ui->statusbar->showMessage("No transaction provided");
       return;
     }
 
-    iTmp = sTransaction.length();
-    if (iTmp > (COMMS_RX_BUFFER_SIZE) )
-    {
-      ui->statusbar->showMessage("Transaction too long - maximum 10,000 bytes");
-      return;
-    }
-
     if (cProject==PROJECT_PIRATE)
     {
       //Pirate
-      //Version 2 protocol:
+      //Version 3 protocol:
       //Parameter   [0]: Project - Expect 'arrr'
       //            [1]: Version - Layout of the command fields
       //            [2] Pay from address
@@ -2446,6 +2522,15 @@ void MainWindow::btSign_Sign_clicked()
       // Difference between version 1 & 2:
       // 'Witness' was replaced by 'MerklePath'. The serialised data structure is identical to version 1, except for
       // 'witnesspath' & 'witnessposition' that were replaced by 'merklepath' & 'merkleposition'
+      // The version number is increased to indicate this difference
+
+      // Difference between version 2 & 3:
+      // The commission is stored as part of the fee field instead of the 'change' back to ourselves
+      // A problem occurrs where the user selects 'Use all available funds' in the payment. If the
+      // commission is send as part of the 'change', it doesn't actually reflect in the transaction.
+      // The implication is that when the inputs are gathered, not all are used, since they payment
+      // amount is slightly less (the value of the commission) than the total funds available in the
+      // account.
       // The version number is increased to indicate this difference
 
       QStringList slParts = sTransaction.split(" ");
@@ -2476,10 +2561,10 @@ void MainWindow::btSign_Sign_clicked()
       }
 
       //Communication Version check:
-      if (iVersion != 2)
+      if (iVersion != 3)
       {
-        //Arrr: Only version 2 supported
-        ui->teSign_Output->setText("Transaction format error: Only transaction version 2 supported. Please upgrade Treasure Chest to 5.8 or newer");
+        //Arrr: Only version 3 supported
+        ui->teSign_Output->setText("Transaction format error: Only transaction version 3 supported. Please upgrade Treasure Chest to 5.8.2 or newer");
         return;
       }
 
@@ -2491,13 +2576,14 @@ void MainWindow::btSign_Sign_clicked()
 
       //Is the supplied transaction compatible with your hardware?
       //ARRR communication version 1 : Hardware 2.3-2.4
-      //ARRR communication version 2 : Hardware 3.5&newer
+      //ARRR communication version 2 : Hardware 3.5-3.6
+      //ARRR communication version 3 : Hardware 4.7&newer
       if (
-         (cWalletVersionCommunication!=3) ||
-         (cWalletVersionApplication<5)
+         (cWalletVersionCommunication!=4) ||
+         (cWalletVersionApplication<7)
          )
       {
-        ui->teSign_Output->setText("Version error: Pirate transaction version 2 requires that the h/w wallet runs version 3.5 or newer");
+        ui->teSign_Output->setText("Version error: Pirate transaction version 3 requires that the h/w wallet runs version 4.7 or newer");
         return;
       }
       sChecksumInput+=slParts[2]+" ";
@@ -2522,20 +2608,19 @@ void MainWindow::btSign_Sign_clicked()
       sMsg = sMsg.asprintf("Witnessed: %s\n",sInputs.toStdString().c_str() );
       //ui->teSign_Output->append(sMsg);
 
-      int iCount = slInputsParts.count()-1; //Last entry empty - Matching the last }
-      if (iCount < 1)
+      iTransactionInputParts = (uint16_t)slInputsParts.count()-1; //Last entry empty - Matching the last }
+      if (iTransactionInputParts < 1)
       {
         ui->teSign_Output->setText("Transaction format error: Could not detect the Witnesses");
         return;
       }
-      sMsg = sMsg.asprintf("Inputs: %d\n",iCount );
-      //ui->teSign_Output->append(sMsg);
+      fprintf(stderr,"Number of inputs: %d\n",iTransactionInputParts);
 
       sChecksumInput+="spending notes: ";
       sSpendType="merkle"; //Version 2
 
       uint64_t llTotalIn=0;
-      for (int iI=0;iI<iCount;iI++)
+      for (int iI=0;iI<iTransactionInputParts;iI++)
       {
         sMsg = slInputsParts[iI].replace(",{","");
         QStringList slWitness_Merkle_Parts = sMsg.split(",");
@@ -2656,9 +2741,11 @@ void MainWindow::btSign_Sign_clicked()
       uint64_t llChangeAmount=0;
       sChecksumInput+="outputs: ";
       uint64_t llTotalOut=0;
-      for (int iI=0;iI<slOutputsParts.count()-1;iI++)
+      iTransactionOutputParts = (uint16_t)slOutputsParts.count();
+      fprintf(stderr,"Number of outputs: %d\n",iTransactionOutputParts);
+      for (uint8_t cI=0;cI<iTransactionOutputParts-1;cI++)
       {
-        QString sOutput = slOutputsParts[iI].replace(",{","");
+        QString sOutput = slOutputsParts[cI].replace(",{","");
         sOutput = sOutput.replace("{","");
         sOutput = sOutput.replace("},","");
         sOutput = sOutput.replace("}","");
@@ -2771,6 +2858,39 @@ void MainWindow::btSign_Sign_clicked()
          return;
       }
 
+
+      //For the hardware wallet a 0.25% commission/tax/developer/maintenance fee is charged
+      //Check here if its a valid transaction before submitting it to the hw unit. It will fail there if its not correct too.
+      //This is just to catch it earlier for user convenience.
+      //The fee will be taken out of the change. If 100% funds are spend the user will first have to decrease the send amount:
+
+      uint64_t llCommission=0;
+      //Debug: verify that 6250 coin has commission of 15.625 coin (0.25%)
+      //llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
+      //llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
+
+      //Calculate the actual calculation on the Total outputs:
+      llCommission = llTotalOut * 25/10000; //0.25%
+      if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
+      {
+        //Cap maximum commission at 6250 coin.
+        llCommission = 1562500000;
+      }
+
+      //The commission was added to the transaction fee in T.C.
+      if ( llFee < llCommission)
+      {
+        double fCommission = (double)llCommission / 100000000;
+        double fmCommission = (double)llCommission / 100000;
+        double fuCommission = (double)llCommission / 100;
+        sTmp = sTmp.asprintf("Transaction error: Insufficient provision for the 0.25%% commission of %0.4f Arrr, %0.4f mArrr, %0.4f uARRR. Please decrease the sending amount",fCommission , fmCommission, fuCommission);
+        ui->teSign_Output->setText(sTmp);
+        return;
+      }
+
+      //Split fee & commission: Subtract the commission from the transaction fee
+      llFee-=llCommission;
+
       // Check that the user specified fee is not absurd.
       // This allows amount=0 (and all amount < nDefaultFee) transactions to use the default network fee
       // or anything less than nDefaultFee instead of being forced to use a custom fee and leak metadata
@@ -2804,7 +2924,7 @@ void MainWindow::btSign_Sign_clicked()
 
       //TreasureChest already added the change back to itself. Check if all the inputs
       //were send to an output:
-      if (llTotalIn != (llTotalOut+llFee))
+      if (llTotalIn != (llTotalOut+llFee+llCommission))
       {
   #if defined(__APPLE__)
         sTmp = sTmp.asprintf("Transaction error: The outputs (%llu) + fee (%lu) doesn't add up to all the inputs (%llu)",
@@ -2816,35 +2936,6 @@ void MainWindow::btSign_Sign_clicked()
         ui->teSign_Output->setText(sTmp);
         return;
       }
-
-      //For the hardware wallet a 0.25% commission/tax/developer/maintenance fee is charged
-      //Check here if its a valid transaction before submitting it to the hw unit. It will fail there if its not correct too.
-      //This is just to catch it earlier for user convenience.
-      //The fee will be taken out of the change. If 100% funds are spend the user will first have to decrease the send amount:
-
-      //Debug: verify that 6250 coin has commission of 15.625 coin (0.25%)
-      uint64_t llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
-      llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
-
-      //Calculate the actual calculation on the Total outputs:
-      llCommission = llTotalOut * 25/10000; //0.25%
-      if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
-      {
-        //Cap maximum commission at 6250 coin.
-        llCommission = 1562500000;
-      }
-
-      //Converted to Satoshi's: Compare avaialbe change vs the commission to be paid
-      if (llChangeAmount < llCommission)
-      {
-        double fCommission = (double)llCommission / 100000000;
-        double fmCommission = (double)llCommission / 100000;
-        double fuCommission = (double)llCommission / 100;
-        sTmp = sTmp.asprintf("Transaction error: Insufficient change left for the 0.25%% commission of %0.4f Arrr, %0.4f mArrr, %0.4f uARRR. Please decrease the sending amount",fCommission , fmCommission, fuCommission);
-        ui->teSign_Output->setText(sTmp);
-        return;
-      }
-
 
       QString sNextBlockHeight = slParts[8];
       llTmp = sNextBlockHeight.toULong(&bOK);
@@ -2936,7 +3027,7 @@ void MainWindow::btSign_Sign_clicked()
       //Parameter [16]: checksum
       //A simple checksum of the full string, to detect copy/paste errors between the wallets
       //The checksum equals the sum of the ASCII values of all the characters in the string:
-      printf("sChecksumInput:\n%s\n\n",sChecksumInput.toStdString().c_str());
+      //fprintf(stderr,"sChecksumInput:\n%s\n\n",sChecksumInput.toStdString().c_str());
       iChecksum=0x01;
       for (int iI=0;iI<sChecksumInput.length();iI++)
       {
@@ -2952,9 +3043,7 @@ void MainWindow::btSign_Sign_clicked()
          ui->teSign_Output->setText("Transaction format error: Parameter 16 not an integer");
          return;
       }
-      printf("Protocol checksum: %s, Calculated checksum: %u\n", sChecksum.toStdString().c_str(), iChecksum);
-
-
+      fprintf(stderr,"Protocol checksum: %s, Calculated checksum: %u\n", sChecksum.toStdString().c_str(), iChecksum);
     } //PIRATE
     else if (cProject==PROJECT_RADIANT)
     {
@@ -3003,15 +3092,22 @@ void MainWindow::btSign_Sign_clicked()
     }
 
 
-    uint16_t iSize = sTransaction.length();
-    if (iSize > COMMS_RX_BUFFER_SIZE)
+    int32_t wSize = sTransaction.length();
+    //Number of packets to transfer:
+    cTotalTransactionPackets = (uint8_t)(wSize / TRANSACTIONPACKETSIZE);
+    if ((wSize % TRANSACTIONPACKETSIZE) != 0)
     {
-      ui->teSign_Output->setText("Transaction too big to fit in the communication buffer");
-      return;
+      cTotalTransactionPackets++;
     }
-    memcpy(&caTransaction[0], sTransaction.toStdString().c_str(), iSize);
-    caTransaction[ iSize ]=0;
 
+    caTransaction[0]=0;        //Packet 0 of n
+    caTransaction[1]=cTotalTransactionPackets; //Number of packets
+    if (wSize>TRANSACTIONPACKETSIZE)
+    {
+      wSize=TRANSACTIONPACKETSIZE;
+    }
+    memcpy(&caTransaction[2], sTransaction.toStdString().c_str(), (size_t)wSize);
+    wSize+=2;
 
     if (cMessageQueued>0)
     {
@@ -3023,12 +3119,13 @@ void MainWindow::btSign_Sign_clicked()
     cMessageQueued=3;
     int8_t cReturnCode = oMsgFrame->Pack( MSGID_SIGN,
                                           (uint8_t *)&caTransaction[0],
-                                          iSize);
+                                          (uint16_t)wSize);
     switch (cReturnCode)
     {
       case 0:
-        ui->teSign_Output->setText("Transaction send to the hardware wallet.");
-        timerSendPeriodicMsgs->stop();
+        sTmp = sTmp.asprintf("Packet 1 of %d of the transaction send to the hardware wallet.",cTotalTransactionPackets);
+        ui->teSign_Output->setText(sTmp);
+//      timerSendPeriodicMsgs->stop();
         break;
       case -1:
         ui->teSign_Output->setText("Input error. Could not queue the message for transmission.");
@@ -3037,6 +3134,7 @@ void MainWindow::btSign_Sign_clicked()
         ui->teSign_Output->setText("Could not queue the message for transmission.");
         break;
      }
+    fprintf(stderr,"\nPacket send\n\n");
   }
   catch(...)
   {
@@ -3175,14 +3273,19 @@ void MainWindow::btSign_OTP_clicked()
     }
 
     //With the data send, start the countdown timer
+    // Processing the input take up the bulk of the time
+    uint16_t iDuration = iTransactionInputParts * 15 + iTransactionOutputParts;
     ui->pbSign->setValue(0);
+    ui->pbSign->setMaximum(iDuration); //15 seconds per item
     ui->pbSign->setVisible(true);
     ui->teSign_Output->setVisible(false);
+
     if (timerSignProgress->isActive()==FALSE)
     {
       timerSignProgress->start(1000); //1 second interval
     }
-    ui->statusbar->showMessage("It will take approx. 30 seconds to sign the transaction.");
+    sTmp = sTmp.asprintf("It will take approx. %u seconds to sign the transaction.", iDuration);
+    ui->statusbar->showMessage(sTmp);
   }
   catch (...)
   {
@@ -4286,7 +4389,7 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
   bufio = BIO_new_mem_buf((void*)qbaData.constData(), qbaData.size());
   //Should the bufio memory be cleared/freed?
 
-  EVP_PKEY* evp_key = PEM_read_bio_PUBKEY(bufio, NULL, NULL, NULL);
+  EVP_PKEY* evp_key = PEM_read_bio_PUBKEY(bufio, nullptr, nullptr, nullptr);
   pRSA_pubkey = EVP_PKEY_get1_RSA(evp_key);
 
   // Decrypt signature (in buffer) and verify it matches
@@ -4374,12 +4477,12 @@ void MainWindow::btSign_Dero_Browse_clicked()
 //A work around was to create a new, unused widget (pageDownloadNoStyle), and set
 //its background to white. The dialog appears correctly now
 #ifdef __CYGWIN__
-    printf("CYGWIN\n");
+    fprintf(stderr,"CYGWIN\n");
     sDirectory = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
                                                  "/",
                                                  ("Data container (*.dat)"));
 #else
-    printf("LIN\n");
+    fprintf(stderr,"LIN\n");
     sDirectory = QFileDialog::getExistingDirectory(this, "Choose Folder", ".", QFileDialog::ShowDirsOnly);
 #endif
     if (sDirectory.length()==0)
@@ -4393,7 +4496,7 @@ void MainWindow::btSign_Dero_Browse_clicked()
     pFH = fopen (sFilename.toStdString().c_str(), "w");
     if (pFH==nullptr)
     {
-        printf("Could not open file for writing");
+        fprintf(stderr,"Could not open file for writing");
     }
     cData='X';
     iSize = fwrite(&cData,1,1,pFH);
@@ -4455,12 +4558,12 @@ void MainWindow::btDownload_Browse_clicked()
 //A work around was to create a new, unused widget (pageDownloadNoStyle), and set
 //its background to white. The dialog appears correctly now
 #ifdef __CYGWIN__
-    printf("CYGWIN\n");
+    fprintf(stderr,"CYGWIN\n");
     sFilename = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
                                                  "/",
                                                  ("Data container (*.dat)"));
 #else
-    printf("LIN\n");
+    fprintf(stderr,"LIN\n");
     sFilename = QFileDialog::getOpenFileName(ui->pageDownloadNoStyle, ("Open File"),
                                                  ".",
                                                  ("Data container (*.dat)"));                                                 
@@ -5481,7 +5584,7 @@ void Worker::doWork()
   QThread* thisthread = this->thread();
   try
   {
-    //printf("thisthread starting\n");
+    //fprintf(stderr,"thisthread starting\n");
 
     memset(caPort,0,sizeof(caPort));
     memcpy(&caPort[0], sSerialPort.toLocal8Bit().data(), (size_t)sSerialPort.length()  );
@@ -5493,12 +5596,12 @@ void Worker::doWork()
     wFileSize = st.st_size;
     if (wFileSize==0)
     {
-        printf("%s doesn't exist\n",&caFilename[0]);
+        fprintf(stderr,"%s doesn't exist\n",&caFilename[0]);
         goto EXIT;
     }
     if (wFileSize >= (65536 * (COMMS_BUFFER_SIZE-10) ) )
     {
-        printf("%s is too large. Max size=%d\n",&caFilename[0], (65536 * (COMMS_BUFFER_SIZE-10)) );
+        fprintf(stderr,"%s is too large. Max size=%d\n",&caFilename[0], (65536 * (COMMS_BUFFER_SIZE-10)) );
         goto EXIT;
     }
 
@@ -5507,14 +5610,14 @@ void Worker::doWork()
     cReturnCode = md5sum(&caFilename[0], &caMD5[0]);
     if (cReturnCode != 0)
     {
-      printf("Failed to calculate the MD5 of the file\n");
+      fprintf(stderr,"Failed to calculate the MD5 of the file\n");
       goto EXIT;
     }
 
     pFH = fopen (&caFilename[0], "rb");
     if (pFH==nullptr)
     {
-        printf("Could not open file for reading\n");
+        fprintf(stderr,"Could not open file for reading\n");
         goto EXIT;
     }
 
@@ -5525,32 +5628,32 @@ void Worker::doWork()
       iReturnCode = CommsFiletx_Unpack(&caData[0], sizeof(caData), &cMsgID);
       if (iReturnCode>0)
       {
-        //printf("\nFound response. MsgID=%s, Size= %d after %u ms\n",CommsFileTx_PrintMsgID(cMsgID),iReturnCode,iCounter);
+        //fprintf(stderr,"\nFound response. MsgID=%s, Size= %d after %u ms\n",CommsFileTx_PrintMsgID(cMsgID),iReturnCode,iCounter);
 
         if (cMsgID==FILETX_ID_SYNC)
         {
           iSyncCount++;
           iWorker_Retries++;
-          printf("Resync. Challenge=%u, resync count=%u\n",caData[0],iSyncCount);
+          fprintf(stderr,"Resync. Challenge=%u, resync count=%u\n",caData[0],iSyncCount);
           iReturnCode = CommsFiletx_Pack(&caData[0], 1, FILETX_ID_SYNC);
           if (iReturnCode != 1)
           {
-            printf("Sync: Tx error: %d\n",iReturnCode);
+            fprintf(stderr,"Sync: Tx error: %d\n",iReturnCode);
           }
         }
         else if (cMsgID==FILETX_ID_START_UPGRADE)
         {
-          //printf("Start transmission\n");
+          //fprintf(stderr,"Start transmission\n");
           if (pFH==nullptr)
           {
-            printf("Error: File handle should be open\n");
+            fprintf(stderr,"Error: File handle should be open\n");
             usleep(10000);
             goto EXIT;
           }
           iReturnCode = fseek(pFH,0,SEEK_SET);
           if (iReturnCode != 0)
           {
-            printf("Could not seek to beginning of the file\n" );
+            fprintf(stderr,"Could not seek to beginning of the file\n" );
             usleep(10000);
             fclose(pFH);
             goto EXIT;
@@ -5559,11 +5662,11 @@ void Worker::doWork()
           iReturnCode = CommsFiletx_Pack(&caMD5[0], 32, FILETX_ID_START_UPGRADE);
           if (iReturnCode != 1)
           {
-            printf("Start: Tx error: %d\n",iReturnCode);
+            fprintf(stderr,"Start: Tx error: %d\n",iReturnCode);
           }
           else
           {
-            //printf("Start: Sent MD5\n");
+            //fprintf(stderr,"Start: Sent MD5\n");
           }
         }
         else if (cMsgID==FILETX_ID_DATA)
@@ -5571,13 +5674,13 @@ void Worker::doWork()
 
           iPacketNr  = (uint16_t) caData[0];
           iPacketNr |= (uint16_t)(caData[1]<<8);
-          //printf("Requesting packet nr %u\n",iPacketNr);
+          //fprintf(stderr,"Requesting packet nr %u\n",iPacketNr);
 
           //Get the packet data from the file
           wFilePosition= iPacketNr * (COMMS_BUFFER_SIZE-10);
           if ( (wFilePosition+1) >= wFileSize)
           {
-            printf("Requested file packet larger than the filesize\n");
+            fprintf(stderr,"Requested file packet larger than the filesize\n");
             fclose(pFH);
             goto EXIT;
           }
@@ -5585,7 +5688,7 @@ void Worker::doWork()
           iReturnCode = fseek(pFH,wFilePosition,SEEK_SET);
           if (iReturnCode != 0)
           {
-            printf("Could not seek to file position %u * %u\n",iPacketNr, (COMMS_BUFFER_SIZE-10) );
+            fprintf(stderr,"Could not seek to file position %u * %u\n",iPacketNr, (COMMS_BUFFER_SIZE-10) );
             fclose(pFH);
             goto EXIT;
           }
@@ -5593,7 +5696,7 @@ void Worker::doWork()
           tRead = fread(&caData[2], 1, (COMMS_BUFFER_SIZE-10), pFH);
           if (tRead==0)
           {
-            printf("Could not read from the file\n");
+            fprintf(stderr,"Could not read from the file\n");
             fclose(pFH);
             goto EXIT;
           }
@@ -5606,18 +5709,18 @@ void Worker::doWork()
           {
             bTick=TRUE;
             iWorker_PacketNr = iPacketNr;
-            //printf("Sending packet %u, size=%lu\n", iPacketNr, tRead);
+            //fprintf(stderr,"Sending packet %u, size=%lu\n", iPacketNr, tRead);
             iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_DATA);
           }
           else //End of file
           {            
             bComplete=TRUE;
-            //printf("Sending packet %u, size=%lu -- END OF FILE\n", iPacketNr, tRead);
+            //fprintf(stderr,"Sending packet %u, size=%lu -- END OF FILE\n", iPacketNr, tRead);
             iReturnCode = CommsFiletx_Pack(&caData[0], (tRead+2), FILETX_ID_END_OF_FILE);
           }
           if (iReturnCode != 1)
           {
-            printf("Could not pack the data for transmission.\n");
+            fprintf(stderr,"Could not pack the data for transmission.\n");
             fclose(pFH);
             goto EXIT;
           }
@@ -5626,17 +5729,17 @@ void Worker::doWork()
         {
             if (caData[0]==1) //Success
             {
-                //printf("Successfull transmission. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
+                //fprintf(stderr,"Successfull transmission. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
             }
             else
             {
-                printf("Transfer failed. Checksum mismatch. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
+                fprintf(stderr,"Transfer failed. Checksum mismatch. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
             }
             goto EXIT;
         }
         else
         {
-          printf("Unknown MsgID: 0x%02x\n",cMsgID);
+          fprintf(stderr,"Unknown MsgID: 0x%02x\n",cMsgID);
           goto EXIT;
         }
       }
@@ -5644,7 +5747,7 @@ void Worker::doWork()
       if (iCounter>=250)
       {
         iCounter=0;
-        printf("Timeout. No response from the unit after 2.5 seconds\n");
+        fprintf(stderr,"Timeout. No response from the unit after 2.5 seconds\n");
         goto EXIT;
       }
       usleep(10000);

@@ -14,6 +14,10 @@ If you'd like to revert your GUI application to an earlier version, you can do s
 <i>$ git status</i><br>
 &nbsp;&nbsp;On branch master<br>
 &nbsp;&nbsp;Your branch is up to date with 'origin/master'.<br>
+
+* To get the latest code from GitHUB:<br>
+<i>$ git pull</i><br>
+&nbsp;&nbsp;Pull the latest updates from the internet into your local copy.<br>
   
 * View the tags in the repository:<br>
 <i>$ git tag</i><br>
@@ -29,12 +33,13 @@ If you'd like to revert your GUI application to an earlier version, you can do s
 <i>$ git checkout v3.8</i><br>
 &nbsp;&nbsp;Note: switching to 'V3.8'.<br>
 &nbsp;&nbsp;You are in 'detached HEAD' state.<br>
-Only the source code was altered. You have to rebuild the project (qmake -makefile ; make) to get an executable that matches the source code.
+Only the source code was altered. You have to rebuild the project (qmake -makefile ; make clean ; make) to get an executable that matches the source code.
 
 * To return to the newest commit (HEAD) of the repository:
 <br>$ git switch -</i><br>
 &nbsp;&nbsp;Switched to branch 'master'<br>
 &nbsp;&nbsp;Your branch is up to date with 'origin/master'.<br>
+&nbsp;&nbsp;Remember to do a 'make clean' each time you switch branches or pull new code from the internet.<br>
   
 # Perform an upgrade
 You will need four items to perform an upgrade of the hardware wallet firmware:<br>

@@ -13,8 +13,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-#define COMMUNICATION_VERSION 0x03
-#define APPLICATION_VERSION   0x09
+#define COMMUNICATION_VERSION 0x04
+#define APPLICATION_VERSION   0x0A
 
 // GUI:   2.3 - 2.7
 // Wallet 2.4
@@ -31,6 +31,13 @@ QT_END_NAMESPACE
 // GUI:   3.9
 // Wallet 3.6
 //   Pirate  ver 2
+//   Dero    ver 1
+//   Radiant ver 1
+
+// Treasure chest: 5.8.2
+// GUI:   4.10
+// Wallet 4.7
+//   Pirate  ver 3
 //   Dero    ver 1
 //   Radiant ver 1
 
@@ -150,7 +157,12 @@ private:
   uint8_t cOTP_type=0; //0-Address, 1-Registration transaction, 2-Sign transaction
 
   bool_t bDero_scan_online_wallet=FALSE;
-
+  uint8_t cRequestingTransactionPacket;
+  uint8_t cTotalTransactionPackets;
+  QString sTransaction;
+  #define TRANSACTIONPACKETSIZE 9500
+  uint16_t iTransactionOutputParts;
+  uint16_t iTransactionInputParts;
 
   int8_t Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFileCommsVersion, uint8_t *pcFileAppVersion);
   int8_t Setup_GUI_for_upgrade();

@@ -20,6 +20,9 @@ You will have to rebuild the project again after a source code update
 $ cd pirate_hardware_interface<br>
 $ qmake -makefile<br>
    -- Let Qt create a Makefile for the project<br>
+$ make clean<br>
+   -- A clean build is required if you've checked out a new version in the git repository.<br>
+   -- View UPGRADE.md for more instructions on using git.<br>
 $ make -j 2<br>
    -- Compile the project, using 2 processor cores. You can increse the number, but the resources<br>
       used will also increase. Do not overload your machine by specifying a number higher than twice <br>

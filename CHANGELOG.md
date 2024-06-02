@@ -1,3 +1,11 @@
+## [4.10] - 2024-06-02
+Communication version 4, GUI application version 10<br>
+<b>Note: </b> This version requires a hardware wallet running v4.x firmware.<br>
+Changes:<br>
+Update transaction protocol with Treasure Chest to version 3. Treasure Chest 5.8.2 is required to exchange transaction data with the GUI application. The commission is stored differently which allows the full transaction amount to be spend, leaving the account with a 0.00 balance.<br>
+Addes support for hardware wallet version 4.7
+* Process the commission according to the new transaction format
+* When the transaction is larger than 10kb multiple packets are send to transfer the transaction input and signed output between the hardware wallet & GUI application.
 ## [3.9] - 2024-04-28
 Communication version 3, GUI application version 9<br>
 <b>Note:</b> This version requires a hardware wallet running v3.x firmware.<br>
