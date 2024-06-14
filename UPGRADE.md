@@ -44,10 +44,10 @@ Only the source code was altered. You have to rebuild the project (qmake -makefi
   
 # Perform an upgrade
 You will need four items to perform an upgrade of the hardware wallet firmware:<br>
-1) Latest version of the GUI application<br> 
-2) A hardware wallet<br>
-3) The upgrade file, which matches your hardware wallet serial number. Steps to obtain it detailed below.<br>
-4) Your mnemonic seed phrase. For wallet firmware prior to v3.6 you'll need your mnemonic seed phrase to set up the wallet again after the upgrade. For later firmware releases the existing configuration isn't erased. It is still good practice to confirm that you can still access your mnemonic from where you've stored it, to have peace of mind that you can restore your funds at any time.<br>
+1) A hardware wallet<br>
+2) The GUI, (git) checked out to the correct version matching your wallet
+2) The upgrade file, which matches your hardware wallet serial number. Steps to obtain it detailed below.<br>
+3) Your mnemonic seed phrase. For wallet firmware prior to v3.6 you'll need your mnemonic seed phrase to set up the wallet again after the upgrade. For later firmware releases the existing configuration isn't erased. It is still good practice to confirm that you can still access your mnemonic from where you've stored it, to have peace of mind that you can restore your funds at any time.<br>
 
 # Obtain the firmware file
 Power up your device through the USB connection. The Pirate logo appears.<br>
@@ -57,7 +57,8 @@ The serial number appears briefly on the screen. Take a photo of it with your sm
 You'll need to send your device serial number to the private Pirate address you've used to purchase your hardware wallet. The firmware file will be created by the development team. They'll correspond with you to determine the best way to send the upgrade file to you.
 
 # Perform the upgrade
-Power up the device and let it boot through to the main application. If your mnemonic seed phrase is not yet configured, it will print: "Unit needs to be configured", otherwise it will say "Ready".<br>
+Attach the unit directly to your PC, not through a USB hub. Use a USB3 port if your PC has one. The power available from USB2 is sometimes not enough. We've found that the unit might enter a 'boot loop' while starting up if not enought power is supplied.
+Wait for the unit to boot through to the main application. If your mnemonic seed phrase is not yet configured, it will print: "Unit needs to be configured", otherwise it will say "Ready".<br>
 At this point you can establish a connection to the hardware wallet with the GUI application.<br>
 Note: On newer versions the text was change to display the firmware version and the text changed to 'Please setup your mnemonic(seed phrase) and password).<br>
 **![Connection promp](screenshots/upgrade/02_unit_needs_to_be_configured.jpg?raw=true "Connection prompt")**<br>
