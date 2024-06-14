@@ -88,7 +88,7 @@ static int     iFileSize;
 static bool_t  bWorker_Success;
 static uint8_t cWorker_error=0;      //cError: 0 - No error
                                      //        1 - File doesn't exist
-                                     //        2 - Not a regular file
+                                     //        2 - File too big
                                      //        3 - File name too long
                                      //        4 - Serial port string too long
                                      //        5 - Serial port string too long
@@ -100,6 +100,7 @@ static uint8_t cWorker_error=0;      //cError: 0 - No error
                                      //       11 - Requested packet nr exceeds the filesize
                                      //       12 - Could not seek or read within the file
                                      //       13 - Checksum failed
+                                     //       14 - Exception occurred
 
 void MainWindow::stylesheet()
 {
@@ -694,12 +695,45 @@ void MainWindow::filetx_complete(uint8_t cStatus)
   QString sTmp="";
   switch (cStatus)
   {
-    case 0:
+    case 0: //cError: 0 - No error
       sTmp = "Transfer completed successfully";
       ui->lbDownload_Result->hide();
       break;
-    case 13:
-      sTmp = "Checksum failed\n";
+    case 1:  // File doesn't exist
+      sTmp="Can not find the specified upgrade file";
+      break;
+    case 2:  // File too big
+      sTmp="The upgrade file is too big";
+      break;
+    case 3:  // Port name too long
+      sTmp = "";
+      break;
+    case 6:  // Could not open the serial port.
+      sTmp = "Opening the serial port failed";
+      break;
+    case 7:  // Could not open the file
+      sTmp = "Opening the upgrade file failed";
+      break;
+    case 8:  // Could not send the data to the unit
+      sTmp = "Could not send data to the unit";
+      break;
+    case 9:  // Unexpected response from the unit
+      sTmp = "An unexpected response was received from the unit";
+      break;
+    case 10: // Timeout waiting for response from the unit
+      sTmp = "Timeout waiting for the unit response.";
+      break;
+    case 11: // Requested packet nr exceeds the filesize
+      sTmp = "The hardeware unit request data that exceeds the filesize";
+      break;
+    case 12: // Could not seek or read within the file
+      sTmp = "Cannot read from the upgrade file";
+      break;
+    case 13: // Checksum failed
+      sTmp = "File checksum invalid";
+      break;
+    case 14: // Exception occurred
+      sTmp = "A software exception occurred";
       break;
     default:
       sTmp = "Transfer aborted";
@@ -4404,13 +4438,13 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
     //Signature is valid
 
     //Serial number:
-    if (cWalletVersionCommunication<3) //Wallet running 2.x
+    if (cWalletVersionCommunication<4) //Wallet running 2.x & 3.x
     {
       //Ignore the unit serial nr
       memset(&caSerial[0],0,sizeof(caSerial));
       return 0;
     }
-
+/*
     if (
        (cWalletVersionCommunication==3) &&
        (cWalletVersionApplication==5  )
@@ -4420,8 +4454,8 @@ int8_t MainWindow::Verify_Upgrade_Signature(QString sUpgradeFile, uint8_t *pcFil
       memset(&caSerial[0],0,sizeof(caSerial));
       return 0;
     }
-
-    //Wallet running 3.6 or newer, serial nr must be available:
+*/
+    //Wallet running 4.7 or newer, serial nr must be available:
     if (bWalletSerialNrAvailable==false)
     {
       //The serial nr from the unit is not available
@@ -5493,32 +5527,32 @@ Worker::Worker(QString* oFileToSend,
     //FIXIT: Check if the serial port exist && that nobody else is connected to it
     if ( (oFileToSend->length()==0) || (oFileToSend->length()>=254) )
     {
-      cWorker_error=1; //File name too long
+      cWorker_error=3; //File name too long
       return;
     }
     ret = stat(sFileToSend.toLocal8Bit().data(), &st); //Access c-style char array of QString
     if (ret == -1)
     {
-      cWorker_error=2; //File doesn't exist
+      cWorker_error=1; //File doesn't exist
       return;
     }
     else
     {
       if (S_ISDIR(st.st_mode))
       {
-        cWorker_error=3; //Not a regular file
+        cWorker_error=7; //Not a regular file -- Can not open the file
         return;
       }
       else if (!S_ISREG(st.st_mode))
       {
-        cWorker_error=3; //Not a regular file
+        cWorker_error=7; //Not a regular file -- Can not open the file
         return;
       }
     }
 
     if (st.st_size >= (65536 * (COMMS_BUFFER_SIZE-10) ) )
     {
-        cWorker_error=4; //File too large
+        cWorker_error=2; //File too big
         return;
     }
 
@@ -5597,11 +5631,13 @@ void Worker::doWork()
     if (wFileSize==0)
     {
         fprintf(stderr,"%s doesn't exist\n",&caFilename[0]);
+        cWorker_error=1;
         goto EXIT;
     }
     if (wFileSize >= (65536 * (COMMS_BUFFER_SIZE-10) ) )
     {
         fprintf(stderr,"%s is too large. Max size=%d\n",&caFilename[0], (65536 * (COMMS_BUFFER_SIZE-10)) );
+        cWorker_error=2;
         goto EXIT;
     }
 
@@ -5611,6 +5647,7 @@ void Worker::doWork()
     if (cReturnCode != 0)
     {
       fprintf(stderr,"Failed to calculate the MD5 of the file\n");
+      cWorker_error=13;
       goto EXIT;
     }
 
@@ -5618,16 +5655,26 @@ void Worker::doWork()
     if (pFH==nullptr)
     {
         fprintf(stderr,"Could not open file for reading\n");
+        cWorker_error=7;
         goto EXIT;
     }
 
     cReturnCode = CommsFiletx_Init( &caPort[0] );
+    if (iReturnCode!=0)
+    {
+      fprintf(stderr,"Could not open the serial port. Return code=%d\n",cReturnCode);
+      cWorker_error=6; //Could not open the serial port
+      goto EXIT;
+    }
     iCounter=0;
     while(1)
     {
+      iCounter++;
+
       iReturnCode = CommsFiletx_Unpack(&caData[0], sizeof(caData), &cMsgID);
       if (iReturnCode>0)
       {
+        iCounter=0;
         //fprintf(stderr,"\nFound response. MsgID=%s, Size= %d after %u ms\n",CommsFileTx_PrintMsgID(cMsgID),iReturnCode,iCounter);
 
         if (cMsgID==FILETX_ID_SYNC)
@@ -5656,6 +5703,7 @@ void Worker::doWork()
             fprintf(stderr,"Could not seek to beginning of the file\n" );
             usleep(10000);
             fclose(pFH);
+            cWorker_error=12;
             goto EXIT;
           }
 
@@ -5682,6 +5730,7 @@ void Worker::doWork()
           {
             fprintf(stderr,"Requested file packet larger than the filesize\n");
             fclose(pFH);
+            cWorker_error=11;
             goto EXIT;
           }
 
@@ -5690,6 +5739,7 @@ void Worker::doWork()
           {
             fprintf(stderr,"Could not seek to file position %u * %u\n",iPacketNr, (COMMS_BUFFER_SIZE-10) );
             fclose(pFH);
+            cWorker_error=12;
             goto EXIT;
           }
 
@@ -5698,6 +5748,7 @@ void Worker::doWork()
           {
             fprintf(stderr,"Could not read from the file\n");
             fclose(pFH);
+            cWorker_error=12;
             goto EXIT;
           }
 
@@ -5722,6 +5773,7 @@ void Worker::doWork()
           {
             fprintf(stderr,"Could not pack the data for transmission.\n");
             fclose(pFH);
+            cWorker_error=8;
             goto EXIT;
           }
         }
@@ -5730,24 +5782,27 @@ void Worker::doWork()
             if (caData[0]==1) //Success
             {
                 //fprintf(stderr,"Successfull transmission. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
+                cWorker_error=0;
             }
             else
             {
                 fprintf(stderr,"Transfer failed. Checksum mismatch. Packets=%u, Syncs=%u\n",iPacketNr, iSyncCount);
+                cWorker_error=13;
             }
             goto EXIT;
         }
         else
         {
           fprintf(stderr,"Unknown MsgID: 0x%02x\n",cMsgID);
+          cWorker_error=9;
           goto EXIT;
         }
       }
 
       if (iCounter>=250)
       {
-        iCounter=0;
         fprintf(stderr,"Timeout. No response from the unit after 2.5 seconds\n");
+        cWorker_error=10; //Timeout
         goto EXIT;
       }
       usleep(10000);
@@ -5761,7 +5816,7 @@ void Worker::doWork()
   catch (...)
   {
       fprintf(stderr, "Worker::doWork() Exception");
-      cWorker_error=13; //Exception occurred
+      cWorker_error=14; //Exception occurred
   }
 
 EXIT:

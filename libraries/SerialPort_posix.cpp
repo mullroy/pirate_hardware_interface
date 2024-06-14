@@ -56,7 +56,8 @@ int8_t setBaudRate (BaudRateType_e eBaudRate,
       //pPosix_CommConfig->c_cflag |= B460800;
       
       #if defined(__APPLE__)
-      #define B460800 0010004
+      //#define B460800 0010004
+      #define B460800 460800
       #endif
       cfsetspeed(pPosix_CommConfig, B460800);
       break;      
@@ -64,7 +65,8 @@ int8_t setBaudRate (BaudRateType_e eBaudRate,
       //pPosix_CommConfig->c_cflag &= (~CBAUD);
       //pPosix_CommConfig->c_cflag |= B921600;
       #if defined(__APPLE__)
-      #define B921600 0010007
+      //#define B921600 0010007
+      #define B921600 921600
       #endif
       cfsetspeed(pPosix_CommConfig, B921600);
       break;
@@ -276,9 +278,9 @@ int8_t setFlowControl (FlowType_e eFlow, struct termios * pPosix_CommConfig)
 *
 * RETURN PARAMETERS : int8_t  0 : Success
 *                            -1 : There are no more ports available
-*                            -2 : The port could not be opened
-*                            -3 : Internal error: Slot already occupied
-*
+*                            -2 : The port is already open
+*                            -3 : The port could not be opened
+*                            -4 : Could not apply the baudrate settings
 * Note :
 *
 *
@@ -286,15 +288,44 @@ int8_t setFlowControl (FlowType_e eFlow, struct termios * pPosix_CommConfig)
 int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
                     uint8_t * pcSerialPortHandle)
 {
+  int8_t cReturnCode = 0;
   struct termios Posix_CommConfig;
   int fd;
-  
-  if (cSerialArrayCount >= (MAX_PORTS - 1)) {
+  uint8_t cI;
+  bool bFound=FALSE;
+
+  for (cI=0;cI<MAX_PORTS;cI++)
+  {
+    if (sSerialArray[cI].bStatus_PortIsOpen==true)
+    {
+      if ( strcmp(&sSerialArray[cI].sPortSettings.cPCComPortName[0], &spSerialSettings->cPCComPortName[0]) == 0 )
+      {
+        fprintf(stderr,"  Error: Serial port '%s' is already open in slot [%d]\n", &sSerialArray[cI].sPortSettings.cPCComPortName[0], cI);
+
+        //Reuse the port thats already open
+        *pcSerialPortHandle=cI;
+        return -2;
+      }
+    }
+  }
+
+  for (cI=0;cI<MAX_PORTS;cI++)
+  {
+    if (sSerialArray[cI].bStatus_PortIsOpen == FALSE)
+    {
+      //fprintf(stderr,"  SP_OpenPort() Found available slot [%d]\n",cI);
+      *pcSerialPortHandle = cI;
+      bFound=TRUE;
+      break;
+    }
+  }
+
+  if (bFound==FALSE)
+  {
+    fprintf(stderr,"  Error: No serial port slots available\n");
     return -1;
   }
-  if (sSerialArray[cSerialArrayCount].bStatus_PortIsOpen != FALSE) {
-    return -3;
-  }
+
   
   if (spSerialSettings->eFLowType==FLOW_OFF)
   {
@@ -305,7 +336,7 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
     fd = open(spSerialSettings->cPCComPortName, O_RDWR | O_NOCTTY | O_SYNC);
   }
   if (fd == -1) {
-    return -2;
+    return -3;
   }
   
   tcgetattr (fd, &Posix_CommConfig);
@@ -324,13 +355,20 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
   Posix_CommConfig.c_cc[VSTART] = vdisable;
   Posix_CommConfig.c_cc[VSTOP] = vdisable;
   Posix_CommConfig.c_cc[VSUSP] = vdisable;
-#endif
-  setBaudRate (spSerialSettings->eBaudRate,&Posix_CommConfig);
-  setDataBits (spSerialSettings->eDataBits,spSerialSettings->eStopBits,
-               &Posix_CommConfig);
-  setStopBits (spSerialSettings->eStopBits,&Posix_CommConfig);
-  setParity (spSerialSettings->eParity,&Posix_CommConfig);
-  setFlowControl (spSerialSettings->eFLowType,&Posix_CommConfig);
+#endif  
+  cReturnCode |= setBaudRate (spSerialSettings->eBaudRate,&Posix_CommConfig);
+  cReturnCode |= setDataBits (spSerialSettings->eDataBits,spSerialSettings->eStopBits,
+                              &Posix_CommConfig);
+  cReturnCode |= setStopBits (spSerialSettings->eStopBits,&Posix_CommConfig);
+  cReturnCode |= setParity (spSerialSettings->eParity,&Posix_CommConfig);
+  cReturnCode |= setFlowControl (spSerialSettings->eFLowType,&Posix_CommConfig);
+  if (cReturnCode != 0)
+  {
+    fprintf(stderr, "  Error: Could not apply the baudrate settings to the serial port\n");
+    close(fd);
+    return -4;
+  }
+
   if (spSerialSettings->eFLowType==FLOW_OFF)
   {
     Posix_CommConfig.c_cc[VMIN] = 0; //no block
@@ -340,19 +378,22 @@ int8_t SP_OpenPort (SerialSettings_s * spSerialSettings,
     Posix_CommConfig.c_cc[VMIN] = 1;  //block
   }
   Posix_CommConfig.c_cc[VTIME] = spSerialSettings->cTimeout; //VTIME in units of 100ms
-  tcsetattr (fd, TCSAFLUSH, &Posix_CommConfig);
+  int iReturnCode = tcsetattr (fd, TCSAFLUSH, &Posix_CommConfig);
+  if (iReturnCode != 0)
+  {
+    fprintf(stderr, "  Error: Could not apply the flow control settings to the serial port\n");
+    close(fd);
+    return -4;
+  }
 
   
-  memcpy (&sSerialArray[cSerialArrayCount].sPortSettings,
+  memcpy (&sSerialArray[*pcSerialPortHandle].sPortSettings,
           spSerialSettings,
           sizeof (SerialSettings_s)
          );
-  sSerialArray[cSerialArrayCount].hComPort = fd;
+  sSerialArray[*pcSerialPortHandle].hComPort = fd;
+  sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen = TRUE;
 
-  sSerialArray[cSerialArrayCount].bStatus_PortIsOpen = TRUE;
-  *pcSerialPortHandle = cSerialArrayCount;
-  
-  cSerialArrayCount++;
   return 0;
 }
 
@@ -383,24 +424,30 @@ int8_t SP_ClosePort (uint8_t * pcSerialPortHandle)
   if ((pcSerialPortHandle == NULL) ||
       (*pcSerialPortHandle >= (MAX_PORTS - 1))) 
   {
+    fprintf(stderr,"  Error: Requested slot [%d] out of range\n", *pcSerialPortHandle);
     return -1;
   }
   
   if (sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen == FALSE) 
   {
+    fprintf(stderr,"  Error: Slot [%d] is not an open port\n", *pcSerialPortHandle);
     return -2;
   }
   
   bReturnCode = close(sSerialArray[*pcSerialPortHandle].hComPort);
   if (bReturnCode != 0) 
   {
+    fprintf(stderr,"  Error: Could not close '%s', slot [%d]\n", &sSerialArray[*pcSerialPortHandle].sPortSettings.cPCComPortName[0], *pcSerialPortHandle);
     return -4;
   }
-  sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen = FALSE;  
+  //fprintf(stderr,"  SP_ClosePort() Closed serial port '%s', slot [%d]\n", &sSerialArray[*pcSerialPortHandle].sPortSettings.cPCComPortName[0], *pcSerialPortHandle);
+
+  sSerialArray[*pcSerialPortHandle].sPortSettings.cPCComPortName[0]=0;
+  sSerialArray[*pcSerialPortHandle].bStatus_PortIsOpen = FALSE;
   *pcSerialPortHandle=255;
 
   //Give OS time to release the file descriptor. Immediate open() after close() fails otherwise
-  sleep(1); 
+  sleep(1);   
   return 0;
 }
 
@@ -505,7 +552,7 @@ int16_t SP_Write (uint8_t *pcSerialPortHandle, uint8_t *pcBuffer, int16_t iCount
       return -3;
     }
 
-    //fprintf(stderr," Total=%d\n",iTotal);
+    //fprintf(stderr,"  [%d:%d] Sending %d, usleep %d\n",*pcSerialPortHandle, sSerialArray[*pcSerialPortHandle].hComPort,  BLOCKSIZE, wSleep);
     //usleep twice the transmission time as a safety margin for the O/S to clock out the data over the USB subsystem
     usleep( wSleep );
   }
@@ -542,7 +589,6 @@ int16_t SP_Read (uint8_t * pcSerialPortHandle, uint8_t * pcBuffer, int16_t iCoun
   }
 
   wBytesRead = read (sSerialArray[*pcSerialPortHandle].hComPort, pcBuffer, iCount);
-
   return wBytesRead;
 }
 

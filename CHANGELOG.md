@@ -1,4 +1,4 @@
-## [4.10] - 2024-06-02
+## [4.10] - 2024-06-14
 Communication version 4, GUI application version 10<br>
 <b>Note: </b> This version requires a hardware wallet running v4.x firmware.<br>
 Changes:<br>
@@ -6,6 +6,10 @@ Update transaction protocol with Treasure Chest to version 3. Treasure Chest 5.8
 Addes support for hardware wallet version 4.7
 * Process the commission according to the new transaction format
 * When the transaction is larger than 10kb multiple packets are send to transfer the transaction input and signed output between the hardware wallet & GUI application.
+* Expand the error reporting during the file transfer of the upgrade file.
+* Change the serial port open/close mechanism to keep better track of the serial ports
+* Fix the 460800 baud speed for MacOS X
+* The serial number comparison of the unit and upgrade file is changed to be active from version 4.7 onwards 
 ## [3.9] - 2024-04-28
 Communication version 3, GUI application version 9<br>
 <b>Note:</b> This version requires a hardware wallet running v3.x firmware.<br>

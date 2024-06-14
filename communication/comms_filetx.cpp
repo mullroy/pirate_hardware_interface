@@ -29,7 +29,8 @@ socklen_t slen;
 // OUTPUT      : None
 //
 // RETURN CODE : 0 : Success
-//             :-1 : Could not initialise the communication channel.
+//             :-1 : Serial port name too long
+//             :-2 : Could not open the communication channel.
 //-----------------------------------------------------------------------------
 int8_t CommsFiletx_Init(char_t *pcaPort )
 {
@@ -49,7 +50,7 @@ int8_t CommsFiletx_Init(char_t *pcaPort )
 
   if (strlen(pcaPort) >= sizeof(sSerialSettings.cPCComPortName))
   {
-    return -4;
+    return -1;
   }
 
   memset (&sSerialSettings.cPCComPortName[0], 0, sizeof(sSerialSettings.cPCComPortName)-1);
@@ -79,12 +80,12 @@ int8_t CommsFiletx_Init(char_t *pcaPort )
       wCount+=iReturnCode;
       usleep(1);
     }
-    printf("Serial port opened successfully. Port handle = %d. Flushed %u bytes\n",cPC_SerialPortHandle, wCount);
+    //printf("Serial port opened successfully. Port handle = %d. Flushed %u bytes\n",cPC_SerialPortHandle, wCount);
     return 0;
   }
   else
   {
-    printf("Failed to open the serial port\n");
+    printf("Failed to open the serial port. SP_OpenPort() ReturnCode=%d\n",cReturnCode);
     return -2;
   }
 }
@@ -241,7 +242,6 @@ int16_t CommsFiletx_Unpack(uint8_t *pDataBuffer,uint16_t iDataBufferSize,
         return -2;
       }      
     }    
-    
     
     //printf("%d-(%d+1)=%d bytes to process, internal position: %d, write-internal=%d\n",iNwBufWritePos, iNwBufReadPos, (iNwBufWritePos-iNwBufReadPos-1), iPC_InternalBufferPos, (iNwBufWritePos - iPC_InternalBufferPos) );
     cData=cNwBuf[iNwBufReadPos];
@@ -424,10 +424,7 @@ int8_t CommsFiletx_Poll(void)
 //               Note: The message layer must supply a valid message ID.
 // INPUT       : *pcaData   - Pointer to char array containing the message data
 //               iLength    - Length of message data to be transmitted 
-//               MsgID      - Message ID, project dependent, i.e 1=sapling_spend_proof
-//                                                               2=sapling_output_proof
-//                                                               3=sapling_spend_sig
-//                                                               4=sapling_binding_sig
+//               MsgID      - Message ID
 // OUTPUT      : none
 // RETURN CODE :  1  : Success
 //                0  : Not all the data was send

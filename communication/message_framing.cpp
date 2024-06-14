@@ -106,9 +106,9 @@ int8_t MsgFrame_Widget::OpenSerialConnection (char *pcDeviceName,
 
   if (cDeviceName_length >= sizeof(sSerialSettings.cPCComPortName))
   {
+    fprintf(stderr,"MAIN : Supplied serial port name too long\n");
     return -4;
   }
-
 
   memcpy (&sSerialSettings.cPCComPortName[0], pcDeviceName, cDeviceName_length);
   sSerialSettings.cPCComPortName[cDeviceName_length]=0;
@@ -140,6 +140,7 @@ int8_t MsgFrame_Widget::OpenSerialConnection (char *pcDeviceName,
   }
   else
   {
+    fprintf(stderr,"MAIN : Failed to open the serial port: '%s'\n",&sSerialSettings.cPCComPortName[0]);
     return -2;
   }
 }
