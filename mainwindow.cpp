@@ -2903,15 +2903,17 @@ void MainWindow::btSign_Sign_clicked()
       //llCommission = 6250;                          //Get an invalid result if directly assigning the calculation to the variable
       //llCommission = llCommission  * 100000000 * 25 / 10000; //0.25%
 
-      //Calculate the actual calculation on the Total outputs:
-      llCommission = llTotalOut * 25/10000; //0.25%
+      //Calculate the commission on the money paid to another address
+      // -- This excludes fees and change back to ourselves
+      llCommission = (llTotalOut-llChangeAmount) * 25/10000; //0.25%
       if (llCommission > 1562500000) //15.625Arrr, /1000 = milli, /1000=micro / 100=satoshi
       {
         //Cap maximum commission at 6250 coin.
         llCommission = 1562500000;
       }
 
-      //The commission was added to the transaction fee in T.C.
+      // In Treasure Chest, the commission was added to the fee field.
+      // Calculation wise, this makes it easier to spend the full balance of an address
       if ( llFee < llCommission)
       {
         double fCommission = (double)llCommission / 100000000;
