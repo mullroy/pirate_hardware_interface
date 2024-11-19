@@ -14,7 +14,7 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 #define COMMUNICATION_VERSION 0x04
-#define APPLICATION_VERSION   0x0A
+#define APPLICATION_VERSION   0x0B
 
 // GUI:   2.3 - 2.7
 // Wallet 2.4
@@ -34,8 +34,8 @@ QT_END_NAMESPACE
 //   Dero    ver 1
 //   Radiant ver 1
 
-// Treasure chest: 5.8.2
-// GUI:   4.10
+// Treasure chest: 5.8.2-5.9.0
+// GUI:   4.10-4.11
 // Wallet 4.7
 //   Pirate  ver 3
 //   Dero    ver 1
