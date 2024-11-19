@@ -8,9 +8,9 @@ Compatibility
 =============
 Make sure your hardware wallet, Control GUI and Treasure Chest applications have matching versions:
 <br>
-Qt GUI: 4 (4.10)<br>
+Qt GUI: 4 (4.10-4.11)<br>
 H/w wallet: 4 (4.7)<br>
-Treasure Chest: 5.8.2<br>
+Treasure Chest: 5.8.2-5.9.0<br>
 <br>
 Qt GUI: 3 (3.9)<br>
 H/w wallet: 3 (3.6)<br>
@@ -29,4 +29,3 @@ H/w wallet: 1 (1.1-1.2)<br>
 Treasure Chest: 5.6-5.7<br>
 
 View UPGRADE.md for instructions on how to upgrade the hardware wallet, or alternatively, to downgrade the GUI to an earlier release.
-
